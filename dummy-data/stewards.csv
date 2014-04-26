@@ -1,0 +1,4 @@
+"name","id","url","phone","address","publisher"
+"Local Park Agency","1","http://localparks.gov","555-555-555","123 Main St","no"
+"State Park Agency","1","http://stateparks.gov","555-555-555","213 Main St","no"
+"National Park Agency","1","http://nationalparks.gov","555-555-555","321 Main St","yes"

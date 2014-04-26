@@ -1,0 +1,377 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "01",
+        "stewardId": "1",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.26275634765625,
+            43.24320200099953
+          ],
+          [
+            -105.71319580078125,
+            43.42100882994726
+          ],
+          [
+            -105.71319580078125,
+            43.44100882994726
+          ],
+          [
+            -105.68319580078125,
+            43.44100882994726
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "02"
+        "stewardId": "2",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.91644287109374,
+            43.353892997158795
+          ],
+          [
+            -105.71319580078125,
+            43.42100882994726
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "03",
+        "stewardId": "2",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.91506958007812,
+            43.47111006634409
+          ],
+          [
+            -105.71319580078125,
+            43.42100882994726
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "04",
+        "stewardId": "2",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.71319580078125,
+            43.42100882994726
+          ],
+          [
+            -105.77499389648438,
+            43.52266348752663
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "05",
+        "stewardId": "2",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.82992553710938,
+            43.58735421230636
+          ],
+          [
+            -105.77499389648438,
+            43.52266348752663
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "06",
+        "stewardId": "3",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.47561645507812,
+            43.7601844942019
+          ],
+          [
+            -105.39321899414062,
+            43.50672896600787
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "07",
+        "stewardId": "2",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.39321899414062,
+            43.50672896600787
+          ],
+          [
+            -105.59371948242188,
+            43.3740090033526
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "08",
+        "stewardId": "3",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.18791198730469,
+            43.60724507891402
+          ],
+          [
+            -105.39321899414062,
+            43.50672896600787
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "09",
+        "stewardId": "3",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.39321899414062,
+            43.50672896600787
+          ],
+          [
+            -105.23597717285156,
+            43.416021362445136
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "10",
+        "stewardId": "3",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.23597717285156,
+            43.416021362445136
+          ],
+          [
+            -105.06019592285156,
+            43.42898792344157
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "11",
+        "stewardId": "1",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.23597717285156,
+            43.416021362445136
+          ],
+          [
+            -105.26275634765625,
+            43.24320200099953
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "12",
+        "stewardId": "3",
+        "name": "",
+        "highway": "path",
+        "motorVehicles": "no",
+        "foot": "yes",
+        "bicycle": "no",
+        "horse": "no",
+        "ski": "no",
+        "wheelchair": "no",
+        "osmTags": ["surface"="gravel", "width"="5"]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -105.39356231689453,
+            43.507226983493425
+          ],
+          [
+            -105.26687622070312,
+            43.53137589928477
+          ],
+          [
+            -105.25451660156249,
+            43.51693750319639
+          ],
+          [
+            -105.27202606201172,
+            43.50075243569041
+          ],
+          [
+            -105.29605865478516,
+            43.50747599069536
+          ],
+          [
+            -105.29090881347656,
+            43.52266348752663
+          ]
+        ]
+      }
+    }
+  ]
+}

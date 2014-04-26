@@ -1,0 +1,159 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Soutwest Trailhead",
+        "trailIds": "{'trailId': '1', 'trailId': '2'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.91644287109374,
+          43.35364335728179
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "West Side Trailhead",
+        "trailIds": "{'trailId': '2'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.91506958007812,
+          43.47036259175014
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Northwest Trailhead",
+        "trailIds": "{'trailId': '3'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.83129882812499,
+          43.58685685639638
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "North Side Trailhead",
+        "trailIds": "{'trailId': '4'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.47630310058594,
+          43.76315996157264
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Northeast Trailhead",
+        "trailIds": "{'trailId': '5', 'trailId': '6'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.1885986328125,
+          43.60724507891402
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "East Side Trailhead",
+        "trailIds": "{'trailId': '8'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.06088256835938,
+          43.42898792344157
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South Side Trailhead",
+        "trailIds": "{'trailId': '1', 'trailId': '6'}",
+        "stewardId": "2",
+        "areaId": "2",
+        "address": "",
+        "parking": "yes",
+        "drinkwater": "yes",
+        "restrooms": "yes",
+        "kiosk": "no",
+        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -105.26275634765625,
+          43.23920036180898
+        ]
+      }
+    }
+  ]
+}
