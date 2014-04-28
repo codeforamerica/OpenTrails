@@ -7,13 +7,13 @@
         "id": "01",
         "stewardId": "1",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -43,13 +43,13 @@
         "id": "02",
         "stewardId": "2",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -71,13 +71,13 @@
         "id": "03",
         "stewardId": "2",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -99,13 +99,13 @@
         "id": "04",
         "stewardId": "2",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -127,13 +127,13 @@
         "id": "05",
         "stewardId": "2",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -155,13 +155,13 @@
         "id": "06",
         "stewardId": "3",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -183,13 +183,13 @@
         "id": "07",
         "stewardId": "2",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -211,13 +211,13 @@
         "id": "08",
         "stewardId": "3",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -239,13 +239,13 @@
         "id": "09",
         "stewardId": "3",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -267,13 +267,13 @@
         "id": "10",
         "stewardId": "3",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -295,13 +295,13 @@
         "id": "11",
         "stewardId": "1",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
@@ -323,13 +323,13 @@
         "id": "12",
         "stewardId": "3",
         "name": "",
-        "motorVehicles": "no",
+        "vehicles": "no",
         "foot": "yes",
         "bicycle": "no",
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": "surface=gravel; width=5"
+        "osmTags": "surface=gravel; width=5; motorVehicles=no"
       },
       "geometry": {
         "type": "LineString",
