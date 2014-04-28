@@ -14,7 +14,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -41,7 +41,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "02"
+        "id": "02",
         "stewardId": "2",
         "name": "",
         "highway": "path",
@@ -51,7 +51,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -80,7 +80,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -109,7 +109,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -138,7 +138,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -167,7 +167,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -196,7 +196,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -225,7 +225,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -254,7 +254,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -283,7 +283,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -312,7 +312,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",
@@ -341,7 +341,7 @@
         "horse": "no",
         "ski": "no",
         "wheelchair": "no",
-        "osmTags": ["surface"="gravel", "width"="5"]
+        "osmTags": ["surface=gravel", "width=5"]
       },
       "geometry": {
         "type": "LineString",

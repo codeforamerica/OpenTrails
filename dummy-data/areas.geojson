@@ -4,7 +4,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "State Park"
+        "name": "State Park",
         "id": "2",
         "stewardId": "2",
         "url": ""
@@ -64,7 +64,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "National Park"
+        "name": "National Park",
         "id": "3",
         "stewardId": "3",
         "url": ""
