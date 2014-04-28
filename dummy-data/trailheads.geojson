@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "name": "Soutwest Trailhead",
-        "trailIds": "{'trailId': '1', 'trailId': '2'}",
+        "trailIds": "1; 2"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -13,7 +13,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -27,7 +27,7 @@
       "type": "Feature",
       "properties": {
         "name": "West Side Trailhead",
-        "trailIds": "{'trailId': '2'}",
+        "trailIds": "2"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -35,7 +35,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -49,7 +49,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northwest Trailhead",
-        "trailIds": "{'trailId': '3'}",
+        "trailIds": "3"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -57,7 +57,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -71,7 +71,7 @@
       "type": "Feature",
       "properties": {
         "name": "North Side Trailhead",
-        "trailIds": "{'trailId': '4'}",
+        "trailIds": "4"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -79,7 +79,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -93,7 +93,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northeast Trailhead",
-        "trailIds": "{'trailId': '5', 'trailId': '6'}",
+        "trailIds": "5; 6"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -101,7 +101,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -115,7 +115,7 @@
       "type": "Feature",
       "properties": {
         "name": "East Side Trailhead",
-        "trailIds": "{'trailId': '8'}",
+        "trailIds": "8"
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -123,7 +123,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
@@ -137,7 +137,7 @@
       "type": "Feature",
       "properties": {
         "name": "South Side Trailhead",
-        "trailIds": "{'trailId': '1', 'trailId': '6'}",
+        "trailIds": "1; 6",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -145,7 +145,7 @@
         "drinkwater": "yes",
         "restrooms": "yes",
         "kiosk": "no",
-        "osmTags":"{'natural'='stone', 'natural'='tree'}"
+        "osmTags":"natural=stone; natural=tree"
       },
       "geometry": {
         "type": "Point",
