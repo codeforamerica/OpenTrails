@@ -7,7 +7,8 @@
         "name": "State Park",
         "id": "2",
         "stewardId": "2",
-        "url": ""
+        "url": "",
+        "osmTags": "landuse=forest; boundary=administrative"
       },
       "geometry": {
         "type": "Polygon",
@@ -67,7 +68,8 @@
         "name": "National Park",
         "id": "3",
         "stewardId": "3",
-        "url": ""
+        "url": "",
+        "osmTags": "landuse=forest; boundary=administrative"
       },
       "geometry": {
         "type": "Polygon",
@@ -127,7 +129,8 @@
         "name": "Local Park",
         "id": "1",
         "stewardId": "1",
-        "url": ""
+        "url": "",
+        "osmTags": "landuse=forest; boundary=administrative"
       },
       "geometry": {
         "type": "Polygon",
