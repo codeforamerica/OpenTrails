@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "name": "Soutwest Trailhead",
-        "trailIds": "1; 2"
+        "trailIds": "1; 2",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -27,7 +27,7 @@
       "type": "Feature",
       "properties": {
         "name": "West Side Trailhead",
-        "trailIds": "2"
+        "trailIds": "2",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -49,7 +49,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northwest Trailhead",
-        "trailIds": "3"
+        "trailIds": "3",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -71,7 +71,7 @@
       "type": "Feature",
       "properties": {
         "name": "North Side Trailhead",
-        "trailIds": "4"
+        "trailIds": "4",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -93,7 +93,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northeast Trailhead",
-        "trailIds": "5; 6"
+        "trailIds": "5; 6",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
@@ -115,7 +115,7 @@
       "type": "Feature",
       "properties": {
         "name": "East Side Trailhead",
-        "trailIds": "8"
+        "trailIds": "8",
         "stewardId": "2",
         "areaId": "2",
         "address": "",
