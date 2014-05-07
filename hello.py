@@ -24,7 +24,7 @@ def unzipfile(filepath):
 def shp2geojson(filename):
     import subprocess
     # HEROKU
-    subprocess.call("/app/vendor/gdal/bin/ogr2ogr -t_srs EPSG:4326 -f GeoJSON uploads/"+filename+".geojson " + os.path.join(app.config['UPLOAD_FOLDER'], filename), shell=True)
+    subprocess.call("ogr2ogr -t_srs EPSG:4326 -f GeoJSON uploads/"+filename+".geojson " + os.path.join(app.config['UPLOAD_FOLDER'], filename), shell=True)
     # LOCAL DEV
     # subprocess.call("/Library/Frameworks/GDAL.framework/Versions/Current/Programs/ogr2ogr -t_srs EPSG:4326 -f GeoJSON uploads/"+filename+".geojson " + os.path.join(app.config['UPLOAD_FOLDER'], filename), shell=True)
     return "uploads/"+filename+".geojson"
