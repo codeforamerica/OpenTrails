@@ -1,11 +1,14 @@
 from open_trails import app, transformers
 from flask import request, render_template
+import json
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    # Show an uplaod form or process an uploaded shapefile
-    if request.method == 'POST':
-        return transformers.transform_shapefile(request.files['file'])
+    return render_template('index.html')
 
-    if request.method == 'GET':
-        return render_template('index.html')
+@app.route('/map', methods=['POST'])
+def map():
+    # import pdb; pdb.set_trace()
+    # Show an uplaod form or process an uploaded shapefile
+    data = transformers.transform_shapefile(request.files['file'])
+    return render_template('map.html', data = data)

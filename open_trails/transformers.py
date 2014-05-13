@@ -134,10 +134,10 @@ def transform_shapefile(file):
         shapefile_path = unzipfile(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         geojson_path = shp2geojson(shapefile_path)
         data = open_geojson(geojson_path)
+        return data
         # namedtrails = create_namedtrails(data)
         # write_namedtrails(namedtrails)
         # ot_data = convert2open_trails(data)
-        return json.dumps(data, sort_keys=True)
 #
 # @app.route('/uploads/<filename>')
 # def uploaded_file(filename):
