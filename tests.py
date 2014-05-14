@@ -1,16 +1,23 @@
 # -- coding: utf-8 --
+from shutil import rmtree
 from unittest import TestCase, main
 from os.path import join, dirname
 from urlparse import urljoin
+from tempfile import mkdtemp
 
 from bs4 import BeautifulSoup
 
-from open_trails import app
+from open_trails import app, transformers
 
 class TestApp (TestCase):
 
     def setUp(self):
         self.app = app.test_client()
+        self.tmp = mkdtemp(prefix='plats-')
+        app.config['UPLOAD_FOLDER'] = self.tmp
+    
+    def tearDown(self):
+        rmtree(self.tmp)
     
     def test_upload(self):
         ''' Check basic file upload flow.
@@ -35,9 +42,6 @@ class TestApp (TestCase):
         response = self.app.post(action, data={input: file})
         
         self.assertEqual(response.status_code, 200)
-    
-    def tearDown(self):
-        pass
 
 if __name__ == '__main__':
     main()
