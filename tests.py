@@ -76,7 +76,7 @@ class TestApp (TestCase):
     def tearDown(self):
         rmtree(self.tmp)
     
-    def test_upload(self):
+    def testUpload(self):
         ''' Check basic file upload flow.
         '''
         names = ('test-files/lake-man.zip',
@@ -86,9 +86,9 @@ class TestApp (TestCase):
                  'test-files/lake-man-Portland.zip')
 
         for name in names:
-            self.do_upload(name)
+            self.doUpload(name)
     
-    def do_upload(self, name):
+    def doUpload(self, name):
         ''' Check basic file upload flow for named file.
         '''
         response = self.app.get('/')
