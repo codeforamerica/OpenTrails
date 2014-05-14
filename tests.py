@@ -35,7 +35,8 @@ class TestTransformers (TestCase):
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
-                 'test-files/lake-man-Santa-Clara.zip')
+                 'test-files/lake-man-Santa-Clara.zip',
+                 'test-files/lake-man-Portland.zip')
 
         for name in names:
             self.doFileConversion(name)
@@ -81,7 +82,8 @@ class TestApp (TestCase):
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
-                 'test-files/lake-man-Santa-Clara.zip')
+                 'test-files/lake-man-Santa-Clara.zip',
+                 'test-files/lake-man-Portland.zip')
 
         for name in names:
             self.do_upload(name)
