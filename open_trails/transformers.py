@@ -1,4 +1,4 @@
-import os, json, subprocess, zipfile
+import os, os.path, json, subprocess, zipfile
 from werkzeug.utils import secure_filename
 from open_trails import app
 
@@ -25,7 +25,8 @@ def shp2geojson(filename):
 
     args = 'ogr2ogr -t_srs EPSG:4326 -f GeoJSON ___ ___'.split()
     args[-2:] = out_file, in_file
-    os.remove(out_file)
+    if os.path.exists(out_file):
+        os.remove(out_file)
     subprocess.check_call(args)
     return out_file
 
