@@ -9,6 +9,51 @@ from bs4 import BeautifulSoup
 
 from open_trails import app, transformers
 
+class FakeUpload:
+    ''' Pretend to be a file upload in flask.
+    '''
+    def __init__(self, path):
+        self._file = open(path, 'r')
+        self.filename = path
+    
+    def save(self, path):
+        with open(path, 'w') as file:
+            file.write(self._file.read())
+
+class TestTransformers (TestCase):
+
+    def setUp(self):
+        self.tmp = mkdtemp(prefix='plats-')
+        app.config['UPLOAD_FOLDER'] = self.tmp
+    
+    def tearDown(self):
+        rmtree(self.tmp)
+    
+    def testConvert(self):
+        ''' Test basic SHP to GeoJSON conversion.
+        '''
+        file = FakeUpload(join(dirname(__file__), 'test-files/lake-man.zip'))
+        geojson = transformers.transform_shapefile(file)
+        
+        #
+        # Is it GeoJSON?
+        #
+        self.assertEqual(geojson['type'], 'FeatureCollection')
+        self.assertEqual(len(geojson['features']), 6)
+        self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+        
+        #
+        # Does it cover the expected geographic area?
+        #
+        lons, lats = [], []
+        
+        for f in geojson['features']:
+            lons.extend([y for (x, y) in f['geometry']['coordinates']])
+            lats.extend([x for (x, y) in f['geometry']['coordinates']])
+        
+        self.assertTrue(37.80071 < min(lons) and max(lons) < 37.80436)
+        self.assertTrue(-122.25925 < min(lats) and max(lats) < -122.25671)
+
 class TestApp (TestCase):
 
     def setUp(self):
