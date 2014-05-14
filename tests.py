@@ -5,7 +5,7 @@ from urlparse import urljoin
 
 from bs4 import BeautifulSoup
 
-from hello import app
+from open_trails import app
 
 class TestApp (TestCase):
 
