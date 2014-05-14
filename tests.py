@@ -32,7 +32,8 @@ class TestTransformers (TestCase):
     def testConvert(self):
         ''' Test basic SHP to GeoJSON conversion.
         '''
-        names = 'test-files/lake-man.zip', 'test-files/lake-man-GGNRA.zip'
+        names = ('test-files/lake-man.zip', 'test-files/lake-man-GGNRA.zip',
+                 'test-files/lake-man-San-Antonio.zip')
 
         for name in names:
             self.doFileConversion(name)
@@ -73,6 +74,13 @@ class TestApp (TestCase):
         rmtree(self.tmp)
     
     def test_upload(self):
+        names = ('test-files/lake-man.zip', 'test-files/lake-man-GGNRA.zip',
+                 'test-files/lake-man-San-Antonio.zip')
+
+        for name in names:
+            self.do_upload(name)
+    
+    def do_upload(self, name):
         ''' Check basic file upload flow.
         '''
         response = self.app.get('/')
@@ -91,7 +99,7 @@ class TestApp (TestCase):
         #
         action = urljoin('/', form['action'])
         input = form.find('input', attrs=dict(type='file'))['name']
-        file = open(join(dirname(__file__), 'test-files/lake-man.zip'))
+        file = open(join(dirname(__file__), name))
         response = self.app.post(action, data={input: file})
         
         self.assertEqual(response.status_code, 200)
