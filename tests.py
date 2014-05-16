@@ -60,11 +60,11 @@ class TestTransformers (TestCase):
         lons, lats = [], []
     
         for f in geojson['features']:
-            lons.extend([y for (x, y) in f['geometry']['coordinates']])
-            lats.extend([x for (x, y) in f['geometry']['coordinates']])
+            lons.extend([x for (x, y) in f['geometry']['coordinates']])
+            lats.extend([y for (x, y) in f['geometry']['coordinates']])
     
-        self.assertTrue(37.80071 < min(lons) and max(lons) < 37.80436)
-        self.assertTrue(-122.25925 < min(lats) and max(lats) < -122.25671)
+        self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
+        self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
 
 class TestApp (TestCase):
 
