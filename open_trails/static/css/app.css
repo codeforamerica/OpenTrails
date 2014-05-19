@@ -1,0 +1,38 @@
+/* From codeforamerica.org index.html, pulled out */
+.masthead:before {
+	background-image: url('media/images/masthead/masthead-1.jpg');
+}
+.feature-action{
+  display:none;
+}
+
+@media (min-width: 40em) {
+  .feature-action{
+    margin-top:27px;
+    display: block;
+  }
+  .feature-action a{
+    float:right;
+  }
+}
+
+/* Custom Styles */
+
+/* Form widths for Organization Section */
+
+body {
+  background: white;
+}
+
+#steward-form input {
+  width: 80%;
+}
+
+#steward-form .submit-button-row {
+  display: inline-block;
+  width: 100%;
+}
+
+.submit-button-row input {
+  width: auto;
+}
