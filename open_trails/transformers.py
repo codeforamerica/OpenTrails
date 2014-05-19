@@ -1,13 +1,5 @@
 import os, os.path, json, subprocess, zipfile
-from werkzeug.utils import secure_filename
 from open_trails import app
-
-app.config['UPLOAD_FOLDER'] = 'uploads'
-ALLOWED_EXTENSIONS = set(['zip'])
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def unzipfile(filepath):
     # Unzips an archive and searches for the contained .shp file
@@ -135,9 +127,10 @@ def convert2open_trails(data):
     return ot_data
 
 def transform_shapefile(file):
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    # import pdb; pdb.set_trace()
+    # if file and allowed_file(file.filename):
+    #     filename = secure_filename(file.filename)
+    #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         shapefile_path = unzipfile(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         geojson_path = shp2geojson(shapefile_path)
         data = open_geojson(geojson_path)

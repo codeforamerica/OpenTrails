@@ -1,4 +1,6 @@
-from open_trails import app, transformers
+from open_trails import app
+from open_trails.upload import upload_to_s3, download_s3
+from open_trails.transformers import unzipfile
 from flask import request, render_template
 import json
 
@@ -6,9 +8,17 @@ import json
 def index():
     return render_template('index.html')
 
-@app.route('/map', methods=['POST'])
-def map():
-    # import pdb; pdb.set_trace()
-    # Show an uplaod form or process an uploaded shapefile
-    data = transformers.transform_shapefile(request.files['file'])
-    return render_template('map.html', data = data)
+@app.route('/upload', methods=['POST'])
+def upload():
+    s3_file_url = upload_to_s3(request.form['org-name'], request.files['file'])
+
+# @app.route('/map', methods=['POST'])
+# def map():
+#     data = transformers.transform_shapefile(shapefile)
+#     return render_template('map.html', data = data)
+
+# @app.route('/map/<org_name>')
+# def map_existing_org(org_name):
+#     import pdb; pdb.set_trace()
+#     filepath = download_s3(org_name)
+#     return unzipfile(filepath)
