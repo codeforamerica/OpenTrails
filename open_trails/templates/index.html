@@ -36,42 +36,77 @@
 
 	</section>
 
+    <!-- <form action="/upload" method=post enctype=multipart/form-data>
+      <p><input type=text name=org-name><input type=file name=file>
+         <input type=submit value=Upload></p>
+    </form> -->
+
+    {% if not stewards_info %}
 	<section class="layout-semibreve slab-gray" id="steward-form">
-		<form id="steward" action="" method=post>
+		<form id="stewards" action="/stewards" method=post enctype=multipart/form-data>
 			<h3 class="h3">Create your Organization Profile</h3>
 			<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
 			<div class="layout-minim">
 				<!-- Steward name -->
 				<p>
 					<label for="name">Organization Name<abbr title="Required">*</abbr></label>
-					<input id="name" class="input" type="name" required/>
+					<input name="name" class="input" type="text" required/>
 				</p>
 				<!-- Steward email -->
 				<p>
 					<label for="email">Contact E-mail<abbr title="Required">*</abbr></label>
-					<input id="email" class="input" type="email" placeholder="you@example.gov" required/>
+					<input name="email" class="input" type="email" placeholder="you@example.gov" required/>
 				</p>
 			</div>
 			<div class="layout-minim">
 				<!-- Steward phone -->
 				<p>
 					<label for="phone">Contact Phone <abbr title="Required">*</abbr></label>
-					<input id="phone" class="input" type="phone" placeholder="555-555-5555" required/>
+					<input name="phone" class="input" type="phone" placeholder="555-555-5555" required/>
 				</p>
 				<!-- Steward url -->
 				<p>
 					<label for="url">Web Address <abbr title="Required">*</abbr></label>
-					<input id="url" class="input" type="url" placeholder="http://example.com" required/>
+					<input name="url" class="input" type="url" placeholder="http://example.com" required/>
 				</p>
 			</div>
 
 			<div class="layout-minim">
 			</div>
 			<p class="submit-button-row">
-				<input type=submit value=Upload id="steward-form-submit-btn">
+				<input type=submit id="steward-form-submit-btn">
 			</p>
 		</form>
 	</section>
+    {% endif %}
+
+    {% if stewards_info %}
+    <section class="layout-semibreve slab-gray" id="steward">
+            <h3 class="h3">Your Organization Profile</h3>
+            <p>This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
+            <div class="layout-minim">
+                <!-- Steward name -->
+                <p>
+                    {{ stewards_info.name }}
+                </p>
+                <!-- Steward email -->
+                <p>
+
+                </p>
+            </div>
+            <div class="layout-minim">
+                <!-- Steward phone -->
+                <p>
+                    {{ stewards_info.phone}}
+                </p>
+                <!-- Steward url -->
+                <p>
+                    {{ stewards_info.url}}
+                </p>
+            </div>
+
+    </section>
+    {% endif %}
 
 	<section class="layout-semibreve">
 		<h3 class="h3">Upload your trail segment data</h3>
@@ -118,23 +153,26 @@
 <!--  Scripts to be moved into seperate files later -->
 
 
-el.style.display = 'none';
+<!-- el.style.display = 'none'; -->
 <script>
-
-window.addEventListener("DOMContentLoaded", function () {
-	console.log("onload event fired")
-
-	var stewardFormSubmitBtn = document.getElementById("steward-form-submit-btn")
-
-	//  Event Listeners
-	stewardFormSubmitBtn.addEventListener("click", function(stewardForm) {
-		console.log("submit-btn clicked")
-		stewardForm = document.getElementById("steward-form");
-		fields = document.getElementsByClassName("input");
-		console.log(fields)
-		fields.style.display = 'none';
-	});
+$('#stewards').submit(function () {
+ return false;
 });
+
+// window.addEventListener("DOMContentLoaded", function () {
+// 	console.log("onload event fired")
+//
+// 	var stewardFormSubmitBtn = document.getElementById("steward-form-submit-btn")
+//
+// 	//  Event Listeners
+// 	stewardFormSubmitBtn.addEventListener("click", function(stewardForm) {
+// 		console.log("submit-btn clicked")
+// 		stewardForm = document.getElementById("steward-form");
+// 		fields = document.getElementsByClassName("input");
+// 		console.log(fields)
+// 		fields.style.display = 'none';
+// 	});
+// });
 
 </script>
 </html>

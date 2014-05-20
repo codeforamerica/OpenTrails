@@ -7,4 +7,4 @@ from flask import Flask
 app = Flask(__name__)
 app.debug = True
 
-import settings, routes
+import settings, routes, functions
