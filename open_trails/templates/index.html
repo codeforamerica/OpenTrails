@@ -43,7 +43,7 @@
 
     {% if not stewards_info %}
 	<section class="layout-semibreve slab-gray" id="steward-form">
-		<form id="stewards" action="/stewards" method=post enctype=multipart/form-data>
+		<form id="stewards" action="/new-steward" method=post enctype=multipart/form-data>
 			<h3 class="h3">Create your Organization Profile</h3>
 			<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
 			<div class="layout-minim">
@@ -109,70 +109,17 @@
     {% endif %}
 
 	<section class="layout-semibreve">
-		<h3 class="h3">Upload your trail segment data</h3>
-		<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
-        <form action="" method=post enctype=multipart/form-data>
+		<h3 class="h3">Upload your trail data!!!!</h3>
+		<p>Give it all to us!</p>
+        <form action="/upload-shapefiles-zip" method=post enctype=multipart/form-data>
 			<p>
-				<label for="combined">Contextual Information goes here</label>
+				<label for="combined">One Zip File With All the Shapes</label>
 				<input type=file name=file>
-				<input type=submit value=Upload>
+				<input type=submit>
 			</p>
         </form>
 	</section>
 
-	<section class="layout-semibreve">
-
-		<h3 class="h3">Upload your trailhead data</h3>
-		<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
-	        <form action="" method=post enctype=multipart/form-data>
-				<p>
-					<label for="combined">Contextual Information goes here</label>
-					<span class="combined">
-						<input type=file name=trailheads>
-						<input type=submit value=Upload>
-					</span>
-				</p>
-	        </form>
-	</section>
-
-	<section class="layout-semibreve">
-
-		<h3 class="h3">Upload your area data (boundaries)</h3>
-		<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
-	        <form action="" method=post enctype=multipart/form-data>
-				<p>
-					<label for="combined">Contextual Information goes here</label>
-					<span class="combined">
-						<input type=file name=areas>
-						<input type=submit value=Upload>
-					</span>
-				</p>
-	        </form>
-	</section>
-</body>
-<!--  Scripts to be moved into seperate files later -->
-
-
-<!-- el.style.display = 'none'; -->
 <script>
-$('#stewards').submit(function () {
- return false;
-});
-
-// window.addEventListener("DOMContentLoaded", function () {
-// 	console.log("onload event fired")
-//
-// 	var stewardFormSubmitBtn = document.getElementById("steward-form-submit-btn")
-//
-// 	//  Event Listeners
-// 	stewardFormSubmitBtn.addEventListener("click", function(stewardForm) {
-// 		console.log("submit-btn clicked")
-// 		stewardForm = document.getElementById("steward-form");
-// 		fields = document.getElementsByClassName("input");
-// 		console.log(fields)
-// 		fields.style.display = 'none';
-// 	});
-// });
-
 </script>
 </html>

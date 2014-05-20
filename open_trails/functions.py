@@ -11,7 +11,7 @@ from boto.s3.key import Key
 
 def clean_name(name):
     '''
-    Replace underscores with dashes in an org_name for prettier urls
+    Replace underscores with dashes in an steward_name for prettier urls
     '''
     return secure_filename(name).lower().replace("_","-")
 
@@ -45,26 +45,26 @@ def download_from_s3(filepath):
 #         if name.rsplit('.', 1)[1] == 'shp':
 #             return name
 
-def make_folders(org_name):
+def make_folders(steward_name):
     # Try and make the folder, ex. san-antonio/uploads, san-antonio/opentrails
     try:
-        os.mkdir(org_name)
+        os.mkdir(steward_name)
     except OSError:
         pass
     try:
-        os.mkdir(os.path.join(org_name, 'uploads'))
+        os.mkdir(os.path.join(steward_name, 'uploads'))
     except OSError:
         pass
     try:
-        os.mkdir(os.path.join(org_name, 'opentrails'))
+        os.mkdir(os.path.join(steward_name, 'opentrails'))
     except OSError:
         pass
 
-def get_orgs_list():
+def get_stewards_list():
     conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
     bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
     conn.close()
-    orgs_list = []
+    stewards_list = []
     for org in list(bucket.list("", "/")):
-        orgs_list.append(org.name.replace("/",""))
-    return orgs_list
+        stewards_list.append(org.name.replace("/",""))
+    return stewards_list
