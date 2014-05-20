@@ -26,6 +26,11 @@
 
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="../static/css/app.css" />
+
+    {% if geojson %}
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
+    {% endif %}
 </head>
 
 <!-- Remove this inline style -->
@@ -35,11 +40,6 @@
 	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
 
 	</section>
-
-    <!-- <form action="/upload" method=post enctype=multipart/form-data>
-      <p><input type=text name=org-name><input type=file name=file>
-         <input type=submit value=Upload></p>
-    </form> -->
 
     {% if not stewards_info %}
 	<section class="layout-semibreve slab-gray" id="steward-form">
@@ -106,19 +106,39 @@
             </div>
 
     </section>
-    {% endif %}
 
-	<section class="layout-semibreve">
-		<h3 class="h3">Upload your trail data!!!!</h3>
-		<p>Give it all to us!</p>
-        <form action="/upload-shapefiles-zip" method=post enctype=multipart/form-data>
-			<p>
-				<label for="combined">One Zip File With All the Shapes</label>
-				<input type=file name=file>
-				<input type=submit>
-			</p>
-        </form>
-	</section>
+        {% if not geojson %}
+        <section class="layout-semibreve">
+            <h3 class="h3">Upload your trail data!!!!</h3>
+            <p>Give it all to us!</p>
+            <form action="/stewards/{{ stewards_info.name }}/upload-zip" method=post enctype=multipart/form-data>
+                <p>
+                    <input type=file name=file>
+                 <input type=submit value=Upload>
+                </p>
+            </form>
+        </section>
+        {% endif %}
+
+        {% if geojson %}
+        <section class="layout-semibreve">
+            <div id="map"></div>
+        </section>
+        <script>
+            var geojson = {{ geojson | tojson | safe }}
+            var map = L.mapbox.map('map', 'codeforamerica.i7jo99nd')
+            geojsonLayer = L.geoJson(geojson, {
+                style: function (feature) {
+                    return {color: "red"};
+                }
+            })
+            geojsonLayer.addTo(map);
+            map.fitBounds(geojsonLayer.getBounds());
+        </script>
+        {% endif %}
+
+
+    {% endif %}
 
 <script>
 </script>

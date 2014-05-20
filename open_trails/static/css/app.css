@@ -1,4 +1,4 @@
-/* From codeforamerica.org index.html, pulled out */
+/* From codeforamerica.steward index.html, pulled out */
 .masthead:before {
 	background-image: url('media/images/masthead/masthead-1.jpg');
 }
@@ -18,7 +18,7 @@
 
 /* Custom Styles */
 
-/* Form widths for Organization Section */
+/* Form widths for stewardanization Section */
 
 body {
   background: white;
@@ -35,4 +35,9 @@ body {
 
 .submit-button-row input {
   width: auto;
+}
+
+#map {
+	width:100%;
+	height: 400px;
 }

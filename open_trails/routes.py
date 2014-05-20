@@ -1,11 +1,13 @@
 from open_trails import app
-from functions import upload_to_s3, download_from_s3, clean_name, make_folders, get_stewards_list
+from functions import upload_to_s3, download_from_s3, clean_name, make_folders, get_stewards_list, get_s3_filelist, unzip
+from transformers import transform_shapefile
 from flask import request, render_template, redirect
-import json, os, csv
+import json, os, csv, zipfile
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/new-steward', methods=['POST'])
 def new_steward():
@@ -22,7 +24,8 @@ def new_steward():
         writer.writerow(["name","id","url","phone","address","publisher"])
         writer.writerow([steward_name,"id",url,phone,"address","publisher"])
     upload_to_s3(stewards_filepath)
-    return redirect(steward_name)
+    return redirect('/stewards/' + steward_name)
+
 
 @app.route('/stewards')
 def stewards():
@@ -32,33 +35,56 @@ def stewards():
     stewards_list = get_stewards_list()
     return render_template('stewards_list.html', stewards_list=stewards_list)
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in set(['zip'])
+
+@app.route('/stewards/<steward_name>/upload-zip', methods=['POST'])
+def upload_zip(steward_name):
+    '''
+    Upload a zip full of shapefiles
+    '''
+    zip_filepath = os.path.join(steward_name, 'uploads', request.files['file'].filename)
+    if request.files['file'] and allowed_file(request.files['file'].filename):
+        request.files['file'].save(zip_filepath)
+        upload_to_s3(zip_filepath)
+    return redirect('/stewards/' + steward_name)
+
+
 @app.route('/stewards/<steward_name>')
 def existing_steward(steward_name):
     '''
-    Reads available files on S3 to figure out how far an org has gotten in the process
+    Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
-    import pdb; pdb.set_trace()
+    # Init some variables
+    stewards_info = False
+    geojson = False
+    uploaded_stewards = False
+    uploaded_zip = False
     make_folders(steward_name)
-    stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
-    download_from_s3(stewards_filepath)
-    with open(stewards_filepath, 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            stewards_info = row
-    return render_template('index.html', stewards_info=stewards_info)
+    filelist = get_s3_filelist(steward_name)
+    for file in filelist:
+        if 'stewards.csv' in file:
+            uploaded_stewards = True
+        if '.zip' in file:
+            uploaded_zip = True
 
-# @app.route('/upload', methods=['POST'])
-# def upload():
-#     return upload_to_s3(request.form['org-name'], request.files['file'])
-    # return s3_file_url
+    if uploaded_stewards:
+        stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
+        download_from_s3(stewards_filepath)
+        with open(stewards_filepath, 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                stewards_info = row
 
-# @app.route('/map', methods=['POST'])
-# def map():
-#     data = transformers.transform_shapefile(shapefile)
-#     return render_template('map.html', data = data)
+    if uploaded_zip:
+        for file in filelist:
+            if '.zip' in file:
+                download_from_s3(file)
+                filepath = file
+                break
+        shapefile_path = unzip(filepath)
+        geojson = transform_shapefile(shapefile_path)
 
-# @app.route('/map/<steward_name>')
-# def map_existing_org(steward_name):
-#     import pdb; pdb.set_trace()
-#     filepath = download_s3(steward_name)
-#     return unzipfile(filepath)
+    return render_template('index.html', stewards_info = stewards_info, geojson = geojson)
