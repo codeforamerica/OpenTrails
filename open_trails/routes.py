@@ -33,7 +33,7 @@ def stewards():
     List out all the stewards that have used PLATS so far
     '''
     stewards_list = get_stewards_list()
-    return render_template('stewards_list.html', stewards_list=stewards_list)
+    return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
 
 
 def allowed_file(filename):
