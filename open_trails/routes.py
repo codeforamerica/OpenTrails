@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import make_datastore, clean_name, get_stewards_list, unzip
+from functions import make_datastore, clean_name, unzip
 from transformers import transform_shapefile
 from flask import request, render_template, redirect
 import json, os, csv, zipfile
@@ -36,7 +36,8 @@ def stewards():
     '''
     List out all the stewards that have used PLATS so far
     '''
-    stewards_list = get_stewards_list()
+    datastore = make_datastore(app.config['DATASTORE'])
+    stewards_list = datastore.stewards()
     return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
 
 

@@ -48,6 +48,11 @@ class FilesystemDatastore:
                     names.append(name)
 
         return names
+    
+    def stewards(self):
+        ''' Retrieve a list of stewards based on directory names.
+        '''
+        raise NotImplementedError()
 
 class S3Datastore:
 
@@ -76,6 +81,11 @@ class S3Datastore:
         ''' Retrieve a list of files under a name prefix.
         '''
         return [file.name for file in self.bucket.list(prefix)]
+    
+    def stewards(self):
+        ''' Retrieve a list of stewards based on directory names.
+        '''
+        return [steward.name.replace('/', '') for steward in self.bucket.list('', '/')]
 
 def make_datastore(config):
     ''' Returns an object with an upload method.
@@ -94,17 +104,6 @@ def make_datastore(config):
     else:
       # make a new boto-based S3 thing
       raise NotImplementedError("Don't know how to do anything with %s yet" % config)
-
-def get_stewards_list():
-    '''Return a list of stewards from S3 folder names
-    '''
-    conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
-    bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
-    conn.close()
-    stewards_list = []
-    for steward in list(bucket.list("", "/")):
-        stewards_list.append(steward.name.replace("/",""))
-    return stewards_list
 
 def unzip(filepath):
     '''Unzip and return the path of a shapefile
