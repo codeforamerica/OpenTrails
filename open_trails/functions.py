@@ -18,7 +18,6 @@ class FilesystemDatastore:
         ''' Upload a file to the datastore.
         '''
         destination = os.path.join(self.dirpath, filepath)
-        print 'uploading', filepath, 'to', destination
         try:
             os.makedirs(os.path.dirname(destination))
         except OSError:
@@ -41,7 +40,6 @@ class FilesystemDatastore:
         names = []
 
         for dirname, dirnames, filenames in os.walk(self.dirpath):
-            # print path to all filenames.
             for filename in filenames:
                 name = os.path.relpath(os.path.join(dirname, filename), self.dirpath)
                 if name.startswith(prefix):
