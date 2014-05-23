@@ -84,7 +84,7 @@ def make_datastore(config):
 
     if parsed.scheme == 'file':
       # make a filesystem datastore suitable for testing
-      return FilesystemDatastore(path)
+      return FilesystemDatastore(parsed.path)
     
     elif parsed.scheme == 's3n':
       # make an S3 datastore using a Hadoop-style URL.
