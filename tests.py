@@ -24,6 +24,7 @@ class FakeUpload:
 class TestTransformers (TestCase):
 
     def setUp(self):
+        self.dir = os.getcwd()
         self.tmp = mkdtemp(prefix='plats-')
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
@@ -32,9 +33,12 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-Portland.zip')
         for name in names:
             copy(name, self.tmp)
+        
+        os.chdir(self.tmp)
 
     def tearDown(self):
         rmtree(self.tmp)
+        os.chdir(self.dir)
 
     def testConvert(self):
         ''' Test basic SHP to GeoJSON conversion.
@@ -75,6 +79,7 @@ def whooo():
 class TestApp (TestCase):
 
     def setUp(self):
+        self.dir = os.getcwd()
         self.tmp = mkdtemp(prefix='plats-')
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
@@ -94,6 +99,7 @@ class TestApp (TestCase):
 
     def tearDown(self):
         rmtree(self.tmp)
+        os.chdir(self.dir)
 
     #@patch('open_trails.routes.new_steward')
     def test_new_stewards(self):
