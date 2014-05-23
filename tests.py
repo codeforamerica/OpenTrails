@@ -84,6 +84,9 @@ class TestApp (TestCase):
         for name in names:
             copy(name, self.tmp)
 
+        os.mkdir(self.tmp + '/working-dir')
+        os.chdir(self.tmp + '/working-dir')
+        
         os.mkdir(self.tmp + '/datastore')
         app.config.update(DATASTORE='file://%s/datastore' % self.tmp)
 

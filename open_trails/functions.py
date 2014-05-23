@@ -9,7 +9,7 @@ def clean_name(name):
     '''
     return secure_filename(name).lower().replace("_","-")
 
-class LocalDatastore:
+class FilesystemDatastore:
 
     def __init__(self, dirpath):
         self.dirpath = dirpath
@@ -17,7 +17,7 @@ class LocalDatastore:
     def upload(self, filepath):
         ''' Upload a file to the datastore.
         '''
-        destination = '%s/%s' % (self.dirpath, filepath)
+        destination = os.path.join(self.dirpath, filepath)
         print 'uploading', filepath, 'to', destination
         try:
             os.makedirs(os.path.dirname(destination))
@@ -27,14 +27,25 @@ class LocalDatastore:
             # filepath example: "steward/uploads/file.csv"
             with open(destination, 'w') as output:
                 output.write(input.read())
+
+    def download(self, filepath):
+        ''' Download a single file from datastore to local working directory.
+        '''
+        with open(os.path.join(self.dirpath, filepath), 'r') as input:
+            with open(filepath, 'w') as output:
+                output.write(input.read())
     
     def filelist(self, prefix):
+        ''' Retrieve a list of files under a name prefix.
+        '''
         names = []
 
         for dirname, dirnames, filenames in os.walk(self.dirpath):
             # print path to all filenames.
             for filename in filenames:
-                names.append(os.path.relpath(os.path.join(dirname, filename), self.dirpath))
+                name = os.path.relpath(os.path.join(dirname, filename), self.dirpath)
+                if name.startswith(prefix):
+                    names.append(name)
 
         return names
 
@@ -45,8 +56,8 @@ def make_datastore(config):
     scheme, host, path, _, _, _ = urlparse(config)
 
     if scheme == 'file':
-      # make a local datastore suitable for testing
-      return LocalDatastore(path)
+      # make a filesystem datastore suitable for testing
+      return FilesystemDatastore(path)
 
     else:
       # make a new boto-based S3 thing

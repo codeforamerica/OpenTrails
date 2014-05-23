@@ -19,6 +19,10 @@ def new_steward():
     steward_name = clean_name(steward_name)
     make_folders(steward_name)
     stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
+    try:
+        os.makedirs(os.path.dirname(stewards_filepath))
+    except OSError:
+        pass
     with open(stewards_filepath, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["name","id","url","phone","address","publisher"])
@@ -74,7 +78,7 @@ def existing_steward(steward_name):
 
     if uploaded_stewards:
         stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
-        download_from_s3(stewards_filepath)
+        datastore.download(stewards_filepath)
         with open(stewards_filepath, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
