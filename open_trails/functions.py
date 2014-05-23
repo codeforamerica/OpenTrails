@@ -9,11 +9,30 @@ def clean_name(name):
     '''
     return secure_filename(name).lower().replace("_","-")
 
-def upload_to_s3(filepath):
+class Datastore:
+
+    def upload(self, filepath):
+        ''' Upload a file to the datastore.
+        '''
+        pass
+
+def make_datastore(config):
+    ''' Returns an object with an upload method.
+    '''
+    if config == 'testing':
+      # make a local datastore suitable for testing
+      return Datastore()
+
+    else:
+      # make a new boto-based S3 thing
+      raise NotImplementedError("Don't know how to do anything else yet")
+
+def upload_to_s3(filepath, datastore):
     '''
     Upload a file to S3
     Return url to file
     '''
+    raise NotImplementedError('making this go away')
     conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
     bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
     k = Key(bucket)

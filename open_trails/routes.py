@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import upload_to_s3, download_from_s3, clean_name, make_folders, get_stewards_list, get_s3_filelist, unzip
+from functions import make_datastore, download_from_s3, clean_name, make_folders, get_stewards_list, get_s3_filelist, unzip
 from transformers import transform_shapefile
 from flask import request, render_template, redirect
 import json, os, csv, zipfile
@@ -23,7 +23,8 @@ def new_steward():
         writer = csv.writer(csvfile)
         writer.writerow(["name","id","url","phone","address","publisher"])
         writer.writerow([steward_name,"id",url,phone,"address","publisher"])
-    upload_to_s3(stewards_filepath)
+    datastore = make_datastore(app.config['DATASTORE'])
+    datastore.upload(stewards_filepath)
     return redirect('/stewards/' + steward_name)
 
 
