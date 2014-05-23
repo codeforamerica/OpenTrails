@@ -52,7 +52,7 @@ class FilesystemDatastore:
     def stewards(self):
         ''' Retrieve a list of stewards based on directory names.
         '''
-        raise NotImplementedError()
+        return list(os.listdir(self.dirpath))
 
 class S3Datastore:
 

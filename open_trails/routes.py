@@ -50,10 +50,11 @@ def upload_zip(steward_name):
     '''
     Upload a zip full of shapefiles
     '''
+    datastore = make_datastore(app.config['DATASTORE'])
     zip_filepath = os.path.join(steward_name, 'uploads', request.files['file'].filename)
     if request.files['file'] and allowed_file(request.files['file'].filename):
         request.files['file'].save(zip_filepath)
-        upload_to_s3(zip_filepath)
+        datastore.upload(zip_filepath)
     return redirect('/stewards/' + steward_name)
 
 
@@ -86,7 +87,7 @@ def existing_steward(steward_name):
     if uploaded_zip:
         for file in filelist:
             if '.zip' in file:
-                download_from_s3(file)
+                datastore.download(file)
                 filepath = file
                 break
         shapefile_path = unzip(filepath)
