@@ -1,6 +1,6 @@
 from open_trails import app
 from werkzeug.utils import secure_filename
-import os, json, subprocess, zipfile, csv, boto
+import os, os.path, json, subprocess, zipfile, csv, boto, tempfile
 from boto.s3.key import Key
 
 def clean_name(name):
@@ -9,34 +9,48 @@ def clean_name(name):
     '''
     return secure_filename(name).lower().replace("_","-")
 
-class Datastore:
+class LocalDatastore:
 
-    def __init__(self):
-        self.files = {}
+    def __init__(self, dirpath):
+        self.dirpath = dirpath
 
     def upload(self, filepath):
         ''' Upload a file to the datastore.
         '''
-        print 'uploading', filepath
-        with open(filepath, 'r') as file:
+        destination = '%s/%s' % (self.dirpath, filepath)
+        print 'uploading', filepath, 'to', destination
+        try:
+            os.makedirs(os.path.dirname(destination))
+        except OSError:
+            pass
+        with open(filepath, 'r') as input:
             # filepath example: "steward/uploads/file.csv"
-            self.files[filepath] = file.read()
+            with open(destination, 'w') as output:
+                output.write(input.read())
     
     def filelist(self, prefix):
-        print 'retrieving', prefix,
-        print 'from', self.files
-        return [name for name in self.files if name.startswith(prefix)]
+        names = []
+
+        for dirname, dirnames, filenames in os.walk(self.dirpath):
+            # print path to all filenames.
+            for filename in filenames:
+                names.append(os.path.relpath(os.path.join(dirname, filename), self.dirpath))
+
+        return names
 
 def make_datastore(config):
     ''' Returns an object with an upload method.
     '''
-    if config == 'testing':
+    from urlparse import urlparse
+    scheme, host, path, _, _, _ = urlparse(config)
+
+    if scheme == 'file':
       # make a local datastore suitable for testing
-      return Datastore()
+      return LocalDatastore(path)
 
     else:
       # make a new boto-based S3 thing
-      raise NotImplementedError("Don't know how to do anything else yet")
+      raise NotImplementedError("Don't know how to do anything with %s yet" % config)
 
 def upload_to_s3(filepath, datastore):
     '''

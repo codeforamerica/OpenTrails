@@ -75,8 +75,6 @@ def whooo():
 class TestApp (TestCase):
 
     def setUp(self):
-        app.config.update(DATASTORE='testing')
-        self.app = app.test_client()
         self.tmp = mkdtemp(prefix='plats-')
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
@@ -85,6 +83,11 @@ class TestApp (TestCase):
                  'test-files/lake-man-Portland.zip')
         for name in names:
             copy(name, self.tmp)
+
+        os.mkdir(self.tmp + '/datastore')
+        app.config.update(DATASTORE='file://%s/datastore' % self.tmp)
+
+        self.app = app.test_client()
 
     def tearDown(self):
         rmtree(self.tmp)
@@ -103,6 +106,7 @@ class TestApp (TestCase):
         response = self.app.post('/new-steward', data=data, follow_redirects=True)
         #mock_new_steward.make_folders.assert_called()
         self.assertEqual(response.status_code, 200)
+        self.assertTrue('test-steward' in response.data)
     #
     #
     #
