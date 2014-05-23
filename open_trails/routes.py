@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import make_datastore, download_from_s3, clean_name, get_stewards_list, unzip
+from functions import make_datastore, clean_name, get_stewards_list, unzip
 from transformers import transform_shapefile
 from flask import request, render_template, redirect
 import json, os, csv, zipfile

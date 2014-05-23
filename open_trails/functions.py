@@ -1,6 +1,6 @@
 from open_trails import app
 from werkzeug.utils import secure_filename
-import os, os.path, json, subprocess, zipfile, csv, boto, tempfile
+import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib
 from boto.s3.key import Key
 
 def clean_name(name):
@@ -49,43 +49,51 @@ class FilesystemDatastore:
 
         return names
 
+class S3Datastore:
+
+    def __init__(self, key, secret, bucketname):
+        conn = boto.connect_s3(key, secret)
+        self.bucket = conn.get_bucket(bucketname)
+    
+    #def __delete__(self):
+    #    self.conn.close()
+
+    def upload(self, filepath):
+        ''' Upload a file to S3.
+        '''
+        k = Key(self.bucket)
+        k.key = filepath
+        k.set_contents_from_filename(filepath)
+        self.bucket.set_acl('public-read', k.key)
+
+    def download(self, filepath):
+        ''' Download a single file from S3 to local working directory.
+        '''
+        key = self.bucket.get_key(filepath)
+        key.get_contents_to_filename(filepath)
+    
+    def filelist(self, prefix):
+        ''' Retrieve a list of files under a name prefix.
+        '''
+        return [file.name for file in self.bucket.list(prefix)]
+
 def make_datastore(config):
     ''' Returns an object with an upload method.
     '''
-    from urlparse import urlparse
-    scheme, host, path, _, _, _ = urlparse(config)
+    parsed = urlparse.urlparse(config)
 
-    if scheme == 'file':
+    if parsed.scheme == 'file':
       # make a filesystem datastore suitable for testing
       return FilesystemDatastore(path)
+    
+    elif parsed.scheme == 's3n':
+      # make an S3 datastore using a Hadoop-style URL.
+      key, secret = urllib.unquote(parsed.username), urllib.unquote(parsed.password)
+      return S3Datastore(key, secret, parsed.hostname)
 
     else:
       # make a new boto-based S3 thing
       raise NotImplementedError("Don't know how to do anything with %s yet" % config)
-
-def upload_to_s3(filepath, datastore):
-    '''
-    Upload a file to S3
-    Return url to file
-    '''
-    raise NotImplementedError('making this go away')
-    conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
-    bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
-    k = Key(bucket)
-    k.key = filepath
-    k.set_contents_from_filename(filepath)
-    bucket.set_acl('public-read', k.key)
-    conn.close()
-    # return "https://%s.s3.amazonaws.com/%s" % (app.config["S3_BUCKET_NAME"], filepath
-
-def download_from_s3(filepath):
-    '''Download a file from s3 and save it to the same path.
-    '''
-    conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
-    bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
-    key = bucket.get_key(filepath)
-    key.get_contents_to_filename(filepath)
-    conn.close()
 
 def get_stewards_list():
     '''Return a list of stewards from S3 folder names
@@ -97,17 +105,6 @@ def get_stewards_list():
     for steward in list(bucket.list("", "/")):
         stewards_list.append(steward.name.replace("/",""))
     return stewards_list
-
-def get_s3_filelist(steward_name):
-    '''Return a list of files saved in a named S3 folder.
-    '''
-    conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"], app.config["AWS_SECRET_ACCESS_KEY"])
-    bucket = conn.get_bucket(app.config["S3_BUCKET_NAME"])
-    conn.close()
-    filelist = []
-    for file in list(bucket.list(steward_name)):
-        filelist.append(file.name)
-    return filelist
 
 def unzip(filepath):
     '''Unzip and return the path of a shapefile
