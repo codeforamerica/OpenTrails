@@ -64,7 +64,8 @@ def existing_steward(steward_name):
     uploaded_stewards = False
     uploaded_zip = False
     make_folders(steward_name)
-    filelist = get_s3_filelist(steward_name)
+    datastore = make_datastore(app.config['DATASTORE'])
+    filelist = datastore.filelist(steward_name)
     for file in filelist:
         if 'stewards.csv' in file:
             uploaded_stewards = True

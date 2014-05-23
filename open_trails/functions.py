@@ -11,10 +11,21 @@ def clean_name(name):
 
 class Datastore:
 
+    def __init__(self):
+        self.files = {}
+
     def upload(self, filepath):
         ''' Upload a file to the datastore.
         '''
-        pass
+        print 'uploading', filepath
+        with open(filepath, 'r') as file:
+            # filepath example: "steward/uploads/file.csv"
+            self.files[filepath] = file.read()
+    
+    def filelist(self, prefix):
+        print 'retrieving', prefix,
+        print 'from', self.files
+        return [name for name in self.files if name.startswith(prefix)]
 
 def make_datastore(config):
     ''' Returns an object with an upload method.
