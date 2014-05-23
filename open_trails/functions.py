@@ -87,22 +87,6 @@ def download_from_s3(filepath):
     key.get_contents_to_filename(filepath)
     conn.close()
 
-def make_folders(steward_name):
-    '''Try and make the folders, ex. san-antonio/uploads, san-antonio/opentrails
-    '''
-    try:
-        os.mkdir(steward_name)
-    except OSError:
-        pass
-    try:
-        os.mkdir(os.path.join(steward_name, 'uploads'))
-    except OSError:
-        pass
-    try:
-        os.mkdir(os.path.join(steward_name, 'opentrails'))
-    except OSError:
-        pass
-
 def get_stewards_list():
     '''Return a list of stewards from S3 folder names
     '''

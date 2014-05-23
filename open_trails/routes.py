@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import make_datastore, download_from_s3, clean_name, make_folders, get_stewards_list, get_s3_filelist, unzip
+from functions import make_datastore, download_from_s3, clean_name, get_stewards_list, unzip
 from transformers import transform_shapefile
 from flask import request, render_template, redirect
 import json, os, csv, zipfile
@@ -17,7 +17,6 @@ def new_steward():
     '''
     steward_name, email, phone, url = request.form['name'], request.form['email'], request.form['phone'], request.form['url']
     steward_name = clean_name(steward_name)
-    make_folders(steward_name)
     stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
     try:
         os.makedirs(os.path.dirname(stewards_filepath))
@@ -67,7 +66,6 @@ def existing_steward(steward_name):
     geojson = False
     uploaded_stewards = False
     uploaded_zip = False
-    make_folders(steward_name)
     datastore = make_datastore(app.config['DATASTORE'])
     filelist = datastore.filelist(steward_name)
     for file in filelist:
