@@ -1,8 +1,8 @@
 from open_trails import app
 from functions import make_datastore, clean_name, unzip
 from transformers import transform_shapefile
-from flask import request, render_template, redirect
-import json, os, csv, zipfile
+from flask import request, render_template, redirect, make_response
+import json, os, csv, zipfile, time
 
 @app.route('/')
 def index():
@@ -94,3 +94,27 @@ def existing_steward(steward_name):
         geojson = transform_shapefile(shapefile_path)
 
     return render_template('index.html', stewards_info = stewards_info, geojson = geojson)
+
+### Engine Light - http://engine-light.codeforamerica.org/
+@app.route('/.well-known/status', methods=['GET'])
+def status():
+    response = {}
+    response['status'] = 'ok'
+    response["updated"] = int(time.time())
+    response["dependencies"] = ["S3"]
+
+    # Connect to S3
+    try:
+      datastore = make_datastore(app.config['DATASTORE'])
+    except AttributeError:
+      response['status'] = 'Can\'t parse S3 auth'
+      response = make_response(json.dumps(response), 403)
+      return response
+
+    if not datastore.bucket:
+      response['status'] = 'Can\'t connect to S3'
+      response = make_response(json.dumps(response), 403)
+      return response
+
+    response = make_response(json.dumps(response), 200)
+    return response
