@@ -13,6 +13,6 @@ and depends on [Amazon S3](http://aws.amazon.com/s3/) for storage of uploads.
 Amazon Web Services configuration comes from the `DATASTORE` environmental
 variable, given in this form:
 
-    s3n://<AWS key>:<AWS secret>/<S3 bucket name>
+    s3n://<AWS key>:<AWS secret>@<S3 bucket name>
 
 PLATS doesn’t do a lot at the moment.
