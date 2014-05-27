@@ -97,9 +97,37 @@ class TestApp (TestCase):
         rmtree(self.tmp)
         os.chdir(self.dir)
 
-    #@patch('open_trails.routes.new_steward')
-    def test_new_stewards(self):
+    def test_new_steward(self):
         '''Test creating a new stewards.csv
+        '''
+        data = {
+            "name" : "Test Steward",
+            "email" : "testemail@email.com",
+            "url" : "http://testurl.com",
+            "phone" : "123456789"
+            }
+
+        created = self.app.post('/new-steward', data=data, follow_redirects=True)
+        self.assertEqual(created.status_code, 200)
+        self.assertTrue('test-steward' in created.data)
+
+    def test_stewards_list(self):
+        ''' Test that /stewards returns a list of stewards
+        '''
+        for i in range(1,10):
+            data = {
+                "name" : "Test Steward" + str(i),
+                "email" : "testemail@email.com",
+                "url" : "http://testurl.com",
+                "phone" : "123456789"
+                }
+            self.app.post('/new-steward', data=data)
+
+        response = self.app.get('/stewards')
+        self.assertTrue('test-steward9' in response.data)
+
+    def test_upload_zip(self):
+        ''' Test that a new steward page has a upload form and that it works
         '''
         data = {
             "name" : "Test Steward",
