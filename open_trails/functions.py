@@ -33,7 +33,7 @@ class FilesystemDatastore:
         with open(os.path.join(self.dirpath, filepath), 'r') as input:
             with open(filepath, 'w') as output:
                 output.write(input.read())
-    
+
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''
@@ -46,7 +46,7 @@ class FilesystemDatastore:
                     names.append(name)
 
         return names
-    
+
     def stewards(self):
         ''' Retrieve a list of stewards based on directory names.
         '''
@@ -57,7 +57,7 @@ class S3Datastore:
     def __init__(self, key, secret, bucketname):
         conn = boto.connect_s3(key, secret)
         self.bucket = conn.get_bucket(bucketname)
-    
+
     #def __delete__(self):
     #    self.conn.close()
 
@@ -74,12 +74,12 @@ class S3Datastore:
         '''
         key = self.bucket.get_key(filepath)
         key.get_contents_to_filename(filepath)
-    
+
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''
         return [file.name for file in self.bucket.list(prefix)]
-    
+
     def stewards(self):
         ''' Retrieve a list of stewards based on directory names.
         '''
@@ -93,7 +93,7 @@ def make_datastore(config):
     if parsed.scheme == 'file':
       # make a filesystem datastore suitable for testing
       return FilesystemDatastore(parsed.path)
-    
+
     elif parsed.scheme == 's3n':
       # make an S3 datastore using a Hadoop-style URL.
       key, secret = urllib.unquote(parsed.username), urllib.unquote(parsed.password)
