@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/codeforamerica/PLATS.png)](https://travis-ci.org/codeforamerica/PLATS)
+
 PLATS
 =====
 
@@ -14,4 +16,3 @@ variable, given in this form:
     s3n://<AWS key>:<AWS secret>/<S3 bucket name>
 
 PLATS doesn’t do a lot at the moment.
-
