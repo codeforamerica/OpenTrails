@@ -10,67 +10,67 @@ from bs4 import BeautifulSoup
 from open_trails import app, transformers
 from open_trails.functions import unzip
 
-# class FakeUpload:
-#     ''' Pretend to be a file upload in flask.
-#     '''
-#     def __init__(self, path):
-#         self._file = open(path, 'r')
-#         self.filename = path
-#
-#     def save(self, path):
-#         with open(path, 'w') as file:
-#             file.write(self._file.read())
-#
-# class TestTransformers (TestCase):
-#
-#     def setUp(self):
-#         self.dir = os.getcwd()
-#         self.tmp = mkdtemp(prefix='plats-')
-#         names = ('test-files/lake-man.zip',
-#                  'test-files/lake-man-GGNRA.zip',
-#                  'test-files/lake-man-San-Antonio.zip',
-#                  'test-files/lake-man-Santa-Clara.zip',
-#                  'test-files/lake-man-Portland.zip')
-#         for name in names:
-#             copy(name, self.tmp)
-#
-#         os.chdir(self.tmp)
-#
-#     def tearDown(self):
-#         rmtree(self.tmp)
-#         os.chdir(self.dir)
-#
-#     def testConvert(self):
-#         ''' Test basic SHP to GeoJSON conversion.
-#         '''
-#         for name in os.listdir(self.tmp):
-#             path = unzip(join(self.tmp,name))
-#             self.doFileConversion(path)
-#
-#     def doFileConversion(self, path):
-#         ''' Test conversion results for named file.
-#         '''
-#         file = join(dirname(__file__), path)
-#         geojson = transformers.transform_shapefile(path)
-#
-#         #
-#         # Is it GeoJSON?
-#         #
-#         self.assertEqual(geojson['type'], 'FeatureCollection')
-#         self.assertEqual(len(geojson['features']), 6)
-#         self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
-#
-#         #
-#         # Does it cover the expected geographic area?
-#         #
-#         lons, lats = [], []
-#
-#         for f in geojson['features']:
-#             lons.extend([x for (x, y) in f['geometry']['coordinates']])
-#             lats.extend([y for (x, y) in f['geometry']['coordinates']])
-#
-#         self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
-#         self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
+class FakeUpload:
+    ''' Pretend to be a file upload in flask.
+    '''
+    def __init__(self, path):
+        self._file = open(path, 'r')
+        self.filename = path
+
+    def save(self, path):
+        with open(path, 'w') as file:
+            file.write(self._file.read())
+
+class TestTransformers (TestCase):
+
+    def setUp(self):
+        self.dir = os.getcwd()
+        self.tmp = mkdtemp(prefix='plats-')
+        names = ('test-files/lake-man.zip',
+                 'test-files/lake-man-GGNRA.zip',
+                 'test-files/lake-man-San-Antonio.zip',
+                 'test-files/lake-man-Santa-Clara.zip',
+                 'test-files/lake-man-Portland.zip')
+        for name in names:
+            copy(name, self.tmp)
+
+        os.chdir(self.tmp)
+
+    def tearDown(self):
+        rmtree(self.tmp)
+        os.chdir(self.dir)
+
+    def testConvert(self):
+        ''' Test basic SHP to GeoJSON conversion.
+        '''
+        for name in os.listdir(self.tmp):
+            path = unzip(join(self.tmp,name))
+            self.doFileConversion(path)
+
+    def doFileConversion(self, path):
+        ''' Test conversion results for named file.
+        '''
+        file = join(dirname(__file__), path)
+        geojson = transformers.transform_shapefile(path)
+
+        #
+        # Is it GeoJSON?
+        #
+        self.assertEqual(geojson['type'], 'FeatureCollection')
+        self.assertEqual(len(geojson['features']), 6)
+        self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+
+        #
+        # Does it cover the expected geographic area?
+        #
+        lons, lats = [], []
+
+        for f in geojson['features']:
+            lons.extend([x for (x, y) in f['geometry']['coordinates']])
+            lats.extend([y for (x, y) in f['geometry']['coordinates']])
+
+        self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
+        self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
 
 class TestApp (TestCase):
 
