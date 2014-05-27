@@ -46,36 +46,19 @@
 		<form id="stewards" action="/new-steward" method=post enctype=multipart/form-data>
 			<h3 class="h3">Create your Organization Profile</h3>
 			<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
-			<div class="layout-minim">
-				<!-- Steward name -->
-				<p>
-					<label for="name">Organization Name<abbr title="Required">*</abbr></label>
-					<input name="name" class="input" type="text" required/>
-				</p>
-				<!-- Steward email -->
-				<p>
-					<label for="email">Contact E-mail<abbr title="Required">*</abbr></label>
-					<input name="email" class="input" type="email" placeholder="you@example.gov" required/>
-				</p>
-			</div>
-			<div class="layout-minim">
-				<!-- Steward phone -->
-				<p>
-					<label for="phone">Contact Phone <abbr title="Required">*</abbr></label>
-					<input name="phone" class="input" type="phone" placeholder="555-555-5555" required/>
-				</p>
-				<!-- Steward url -->
-				<p>
-					<label for="url">Web Address <abbr title="Required">*</abbr></label>
-					<input name="url" class="input" type="url" placeholder="http://example.com" required/>
-				</p>
-			</div>
-
-			<div class="layout-minim">
-			</div>
-			<p class="submit-button-row">
-				<input type=submit id="steward-form-submit-btn">
-			</p>
+			<ul class="list-form">
+        <li class="form-field-group">
+            <div class="form-field">
+              <label for="name">Organization Name<abbr title="Required">*</abbr></label>
+              <input name="name" class="input" type="text" required/>
+            </div>
+            <div class="form-field">
+              <label for="url">Web Address <abbr title="Required">*</abbr></label>
+              <input name="url" class="input" type="url" placeholder="http://example.com" required/>
+            </div>
+        </li>
+        <input type=submit id="steward-form-submit-btn" class="button">
+      </ul>
 		</form>
 	</section>
     {% endif %}
