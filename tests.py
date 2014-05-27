@@ -34,8 +34,6 @@ class TestTransformers (TestCase):
         for name in names:
             copy(name, self.tmp)
 
-        os.chdir(self.tmp)
-
     def tearDown(self):
         rmtree(self.tmp)
         os.chdir(self.dir)
@@ -50,7 +48,6 @@ class TestTransformers (TestCase):
     def doFileConversion(self, path):
         ''' Test conversion results for named file.
         '''
-        file = join(dirname(__file__), path)
         geojson = transformers.transform_shapefile(path)
 
         #
