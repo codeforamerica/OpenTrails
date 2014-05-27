@@ -9,6 +9,12 @@ def clean_name(name):
     '''
     return secure_filename(name).lower().replace("_","-")
 
+def clean_url(url):
+    ''' Clean up the url given to make pretty urls.
+    '''
+    parsed = urlparse.urlparse(url)
+    return secure_filename(parsed.netloc).lower().replace("_","-")
+
 class FilesystemDatastore:
 
     def __init__(self, dirpath):

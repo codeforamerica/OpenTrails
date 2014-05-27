@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import make_datastore, clean_name, unzip
+from functions import make_datastore, clean_name, unzip, clean_url
 from transformers import transform_shapefile
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time
@@ -12,12 +12,12 @@ def index():
 @app.route('/new-steward', methods=['POST'])
 def new_steward():
     '''
-    Create a stewards file from the webform
-    Upload it to S3
+    Create a unique url for this steward to work under
+    Create a folder on S3 using this url
     '''
-    steward_name, email, phone, url = request.form['name'], request.form['email'], request.form['phone'], request.form['url']
-    steward_name = clean_name(steward_name)
-    stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
+    steward_name, url = request.form['name'], request.form['url']
+    url = clean_url(url)
+    stewards_filepath = os.path.join(url, 'uploads', 'stewards.csv')
     try:
         os.makedirs(os.path.dirname(stewards_filepath))
     except OSError:
@@ -25,10 +25,10 @@ def new_steward():
     with open(stewards_filepath, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["name","id","url","phone","address","publisher"])
-        writer.writerow([steward_name,"id",url,phone,"address","publisher"])
+        writer.writerow([steward_name,"",url,"","","yes"])
     datastore = make_datastore(app.config['DATASTORE'])
     datastore.upload(stewards_filepath)
-    return redirect('/stewards/' + steward_name)
+    return redirect('/stewards/' + url)
 
 
 @app.route('/stewards')
