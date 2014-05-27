@@ -33,7 +33,7 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-Portland.zip')
         for name in names:
             copy(name, self.tmp)
-        
+
         os.chdir(self.tmp)
 
     def tearDown(self):
@@ -87,7 +87,7 @@ class TestApp (TestCase):
 
         os.mkdir(self.tmp + '/working-dir')
         os.chdir(self.tmp + '/working-dir')
-        
+
         os.mkdir(self.tmp + '/datastore')
         app.config.update(DATASTORE='file://%s/datastore' % self.tmp)
 
@@ -111,7 +111,7 @@ class TestApp (TestCase):
         created = self.app.post('/new-steward', data=data, follow_redirects=True)
         self.assertEqual(created.status_code, 200)
         self.assertTrue('test-steward' in created.data)
-   
+
         #
         # Check for a file upload field in the home page form.
         #
@@ -119,7 +119,7 @@ class TestApp (TestCase):
         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
         self.assertTrue('multipart/form-data' in form['enctype'])
         self.assertTrue(form.find_all('input', attrs=dict(type='file')))
-   
+
         #
         # Attempt to upload a series of test shapefiles.
         #
@@ -128,7 +128,7 @@ class TestApp (TestCase):
             input = form.find('input', attrs=dict(type='file'))['name']
             file = open(join(dirname(__file__), filename))
             uploaded = self.app.post(action, data={input: file}, follow_redirects=True)
-        
+
             self.assertEqual(uploaded.status_code, 200)
 
 if __name__ == '__main__':
