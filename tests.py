@@ -36,7 +36,6 @@ class TestTransformers (TestCase):
 
     def tearDown(self):
         rmtree(self.tmp)
-        os.chdir(self.dir)
 
     def testConvert(self):
         ''' Test basic SHP to GeoJSON conversion.
