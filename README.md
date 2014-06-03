@@ -3,9 +3,8 @@
 ### OpenTrails Converter and Sample Data (neé PLATS)
 =====
 
-Open Trail System Specification (OpenTrails) Converter Tool
-
-#### Description
+Description
+-----------
 
 This in-development tool will allow park agencies and other trail data stewards to upload and transformer their existing shapefile data describing trail networks—including trail segments, trailheads, and the areas they traverse—into OpenTrails-compliant GeoJSON and CSV files.
 
