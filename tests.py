@@ -26,6 +26,7 @@ class TestTransformers (TestCase):
     def setUp(self):
         self.dir = os.getcwd()
         self.tmp = mkdtemp(prefix='plats-')
+
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
@@ -41,7 +42,7 @@ class TestTransformers (TestCase):
         ''' Test basic SHP to GeoJSON conversion.
         '''
         for name in os.listdir(self.tmp):
-            path = unzip(join(self.tmp,name))
+            path = unzip(join(self.tmp, name))
             self.doFileConversion(path)
 
     def doFileConversion(self, path):
@@ -73,19 +74,21 @@ class TestApp (TestCase):
     def setUp(self):
         self.dir = os.getcwd()
         self.tmp = mkdtemp(prefix='plats-')
+
+        os.mkdir(self.tmp + '/working-dir')
+
         names = ('test-files/lake-man.zip',
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip')
         for name in names:
-            copy(name, self.tmp)
-
-        os.mkdir(self.tmp + '/working-dir')
-        os.chdir(self.tmp + '/working-dir')
+            copy(name, os.path.join(self.tmp, 'working-dir'))
 
         os.mkdir(self.tmp + '/datastore')
         app.config.update(DATASTORE='file://%s/datastore' % self.tmp)
+
+        os.chdir(self.tmp + '/working-dir')
 
         self.app = app.test_client()
 
@@ -152,9 +155,11 @@ class TestApp (TestCase):
     def test_upload_zip(self):
         ''' Test uploading zips to the test steward
         '''
-        for filename in glob.glob(os.path.join(self.tmp, '*.zip')):
-            file = open(join(dirname(__file__), filename))
-            uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file}, follow_redirects=True)
+        for filepath in glob.glob(os.path.join(self.tmp, '*.zip')):
+            filename = os.path.split(filepath)[1]
+            file = open(filepath)
+            uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file" : file}, follow_redirects=True)
+            self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
             self.assertEqual(uploaded.status_code, 200)
 
 if __name__ == '__main__':
