@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/codeforamerica/PLATS.png)](https://travis-ci.org/codeforamerica/PLATS)
 
-### OpenTrails Converter and Sample Data (neé PLATS)
+OpenTrails Converter
 =====
 
 Description
