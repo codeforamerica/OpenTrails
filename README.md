@@ -1,9 +1,14 @@
 [![Build Status](https://travis-ci.org/codeforamerica/PLATS.png)](https://travis-ci.org/codeforamerica/PLATS)
 
-PLATS
+OpenTrails Converter and Sample Data (neé PLATS)
 =====
 
-Public Land and Trail Specification
+Open Trail System Specification (OpenTrails) Converter Tool
+
+#### Description
+
+This in-development tool will allow park agencies and other trail data stewards to upload and transformer their existing shapefile data describing trail networks—including trail segments, trailheads, and the areas they traverse—into OpenTrails-compliant GeoJSON and CSV files.
+
 
 Install
 -------
