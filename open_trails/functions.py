@@ -9,6 +9,13 @@ def clean_name(name):
     '''
     return secure_filename(name).lower().replace("_","-")
 
+def make_id_from_url(url):
+    ''' Clean up the url given to make a steward id
+    '''
+    parsed = urlparse.urlparse(url)
+    steward_id = parsed.netloc.split('.')[0]
+    return secure_filename(steward_id).lower().replace("_","-")
+
 class FilesystemDatastore:
 
     def __init__(self, dirpath):

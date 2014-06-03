@@ -1,5 +1,5 @@
 from open_trails import app
-from functions import make_datastore, clean_name, unzip
+from functions import make_datastore, clean_name, unzip, make_id_from_url
 from transformers import transform_shapefile
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time
@@ -12,12 +12,12 @@ def index():
 @app.route('/new-steward', methods=['POST'])
 def new_steward():
     '''
-    Create a stewards file from the webform
-    Upload it to S3
+    Create a unique url for this steward to work under
+    Create a folder on S3 using this url
     '''
-    steward_name, email, phone, url = request.form['name'], request.form['email'], request.form['phone'], request.form['url']
-    steward_name = clean_name(steward_name)
-    stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
+    steward_name, steward_url = request.form['name'], request.form['url']
+    steward_id = make_id_from_url(steward_url)
+    stewards_filepath = os.path.join(steward_id, 'uploads', 'stewards.csv')
     try:
         os.makedirs(os.path.dirname(stewards_filepath))
     except OSError:
@@ -25,10 +25,10 @@ def new_steward():
     with open(stewards_filepath, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["name","id","url","phone","address","publisher"])
-        writer.writerow([steward_name,"id",url,phone,"address","publisher"])
+        writer.writerow([steward_name,steward_id,steward_url,"","","yes"])
     datastore = make_datastore(app.config['DATASTORE'])
     datastore.upload(stewards_filepath)
-    return redirect('/stewards/' + steward_name)
+    return redirect('/stewards/' + steward_id)
 
 
 @app.route('/stewards')
@@ -45,17 +45,17 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in set(['zip'])
 
-@app.route('/stewards/<steward_name>/upload-zip', methods=['POST'])
-def upload_zip(steward_name):
+@app.route('/stewards/<steward_id>/upload-zip', methods=['POST'])
+def upload_zip(steward_id):
     '''
-    Upload a zip full of shapefiles
+    Upload a zip of one shapefile
     '''
     datastore = make_datastore(app.config['DATASTORE'])
-    zip_filepath = os.path.join(steward_name, 'uploads', request.files['file'].filename)
+    zip_filepath = os.path.join(steward_id, 'uploads', request.files['file'].filename)
     if request.files['file'] and allowed_file(request.files['file'].filename):
         request.files['file'].save(zip_filepath)
         datastore.upload(zip_filepath)
-    return redirect('/stewards/' + steward_name)
+    return redirect('/stewards/' + steward_id)
 
 
 @app.route('/stewards/<steward_name>')
