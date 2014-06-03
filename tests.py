@@ -89,6 +89,14 @@ class TestApp (TestCase):
 
         self.app = app.test_client()
 
+        # Set up file structure of a fake steward
+        data = {
+            "name" : "Test Steward",
+            "url" : "http://testurl.com",
+            "phone" : "123456789"
+            }
+        self.app.post('/new-steward', data=data)
+
     def tearDown(self):
         rmtree(self.tmp)
         os.chdir(self.dir)
@@ -97,59 +105,56 @@ class TestApp (TestCase):
         '''Test creating a new stewards.csv
         '''
         data = {
-            "name" : "Test Steward",
-            "url" : "http://testurl.com",
+            "name" : "New Test Steward",
+            "url" : "http://newtesturl.com",
             "phone" : "123456789"
             }
 
         created = self.app.post('/new-steward', data=data, follow_redirects=True)
         self.assertEqual(created.status_code, 200)
-        self.assertTrue('testurl' in created.data)
+        self.assertTrue('newtesturl' in created.data)
 
     def test_stewards_list(self):
         ''' Test that /stewards returns a list of stewards
         '''
         for i in range(1,10):
             data = {
-                "name" : "Test Steward",
-                "url" : "http://testurl"+str(i)+".com",
+                "name" : "New Test Steward" +str(i),
+                "url" : "http://newtesturl"+str(i)+".com",
                 "phone" : "123456789"
                 }
             self.app.post('/new-steward', data=data)
 
         response = self.app.get('/stewards')
-        self.assertTrue('testurl9' in response.data)
+        self.assertTrue('newtesturl1' in response.data)
+        self.assertTrue('newtesturl5' in response.data)
+        self.assertTrue('newtesturl9' in response.data)
 
-    def test_upload_zip(self):
-        ''' Test that a new steward page has a upload form and that it works
+    def test_existing_steward_only_stewards_csv(self):
+        ''' Test accessing a steward at the first step,
+            with only a steward.csv file available
         '''
-        data = {
-            "name" : "Test Steward",
-            "url" : "http://testurl.com",
-            "phone" : "123456789"
-            }
-
-        created = self.app.post('/new-steward', data=data, follow_redirects=True)
-        self.assertEqual(created.status_code, 200)
-        self.assertTrue('testurl' in created.data)
-
+        #
+        # Check that page shows test steward
+        #
+        response = self.app.get("/stewards/testurl")
+        self.assertTrue('Test Steward' in response.data)
+        self.assertTrue('testurl' in response.data)
         #
         # Check for a file upload field in the home page form.
         #
-        soup = BeautifulSoup(created.data)
+        soup = BeautifulSoup(response.data)
         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertEqual("/stewards/testurl/upload-zip", form['action'])
         self.assertTrue('multipart/form-data' in form['enctype'])
         self.assertTrue(form.find_all('input', attrs=dict(type='file')))
 
-        #
-        # Attempt to upload a series of test shapefiles.
-        #
+    def test_upload_zip(self):
+        ''' Test uploading zips to the test steward
+        '''
         for filename in glob.glob(os.path.join(self.tmp, '*.zip')):
-            action = urljoin('/', form['action'])
-            input = form.find('input', attrs=dict(type='file'))['name']
             file = open(join(dirname(__file__), filename))
-            uploaded = self.app.post(action, data={input: file}, follow_redirects=True)
-
+            uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file}, follow_redirects=True)
             self.assertEqual(uploaded.status_code, 200)
 
 if __name__ == '__main__':
