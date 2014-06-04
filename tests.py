@@ -162,5 +162,17 @@ class TestApp (TestCase):
             self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
             self.assertEqual(uploaded.status_code, 200)
 
+    def test_transform_segments(self):
+        ''' Test transforming trail segments
+        '''
+        # Upload a trail segments zip
+        # Test its transformed output
+        file = open('lake-man-Portland.zip')
+        uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file})
+        self.assertTrue( 'lake-man-Portland.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+        self.assertEqual(uploaded.status_code, 302)
+
+        self.app.get("/stewards/testurl/transform")
+
 if __name__ == '__main__':
     main()
