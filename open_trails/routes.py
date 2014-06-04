@@ -55,7 +55,65 @@ def upload_zip(steward_id):
     if request.files['file'] and allowed_file(request.files['file'].filename):
         request.files['file'].save(zip_filepath)
         datastore.upload(zip_filepath)
-    return redirect('/stewards/' + steward_id)
+        filename = os.path.split(request.files['file'].filename)[1]
+    return redirect('/stewards/' + steward_id + '/segments/transform')
+
+@app.route('/stewards/<steward_id>/segments/transform')
+def transform(steward_id):
+    '''
+    Grab a zip file off of datastore
+    Unzip it
+    Transform into PLATS
+    Upload to datastore
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    for filename in datastore.filelist(steward_id):
+        if '.zip' in filename:
+            datastore.download(filename)
+            shapefile_path = unzip(filename)
+            raw_geojson = transform_shapefile(shapefile_path)
+            plats_geojson = {'type': 'FeatureCollection', 'features': []}
+
+            # Transform geojson to PLATS
+
+            def bicycle(properties):
+                if properties['ROADBIKE'] == 'Yes' or properties['MTNBIKE'] == 'Yes':
+                    return "yes"
+                else:
+                    return "no"
+
+            def horse(properties):
+                if properties['EQUESTRIAN'] == 'Yes':
+                    return "yes"
+                else:
+                    return "no"
+
+            def wheelchair(properties):
+                if properties['ACCESSIBLE'] == 'Yes':
+                    return "yes"
+                else:
+                    return "no"
+
+            for old_segment in raw_geojson['features']:
+                new_segment = {
+                 "type" : "Feature",
+                 "geometry" : old_segment['geometry'],
+                 "properties" : {
+                     "id" : old_segment['properties']['TRAILID'],
+                     "stewardId" : old_segment['properties']['AGENCYNAME'],
+                     "name" : old_segment['properties']['TRAILNAME'],
+                     "vehicles" : None,
+                     "foot" : old_segment['properties']['HIKE'],
+                     "bicycle" : bicycle(old_segment['properties']),
+                     "horse" : horse(old_segment['properties']),
+                     "ski" : None,
+                     "wheelchair" : wheelchair(old_segment['properties']),
+                     "osmTags" : None
+                 }
+                }
+                plats_geojson['features'].append(new_segment)
+
+    return json.dumps(plats_geojson, sort_keys=True)
 
 
 @app.route('/stewards/<steward_name>')
