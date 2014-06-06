@@ -133,14 +133,14 @@ def existing_steward(steward_id):
     stewards_info = False
     geojson = False
     uploaded_stewards = False
-    uploaded_zip = False
+    segments_transformed = False
     datastore = make_datastore(app.config['DATASTORE'])
     filelist = datastore.filelist(steward_id)
     for file in filelist:
         if 'stewards.csv' in file:
             uploaded_stewards = True
-        if '.zip' in file:
-            uploaded_zip = True
+        if 'segments.geojson' in file:
+            segments_transformed = True
 
     if uploaded_stewards:
         stewards_filepath = os.path.join(steward_id, 'uploads', 'stewards.csv')
@@ -150,14 +150,10 @@ def existing_steward(steward_id):
             for row in reader:
                 stewards_info = row
 
-    if uploaded_zip:
-        for file in filelist:
-            if '.zip' in file:
-                datastore.download(file)
-                filepath = file
-                break
-        shapefile_path = unzip(filepath)
-        geojson = transform_shapefile(shapefile_path)
+    if segments_transformed:
+        datastore.download(steward_id + '/opentrails/segments.geojson')
+        segments_data = open(steward_id + '/opentrails/segments.geojson')
+        geojson = json.load(segments_data)
 
     return render_template('index.html', stewards_info = stewards_info, geojson = geojson)
 
