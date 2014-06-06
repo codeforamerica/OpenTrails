@@ -122,9 +122,10 @@ def transform(steward_id):
             output.close()
             datastore.upload(steward_id + '/opentrails/segments.geojson')
 
+    return redirect('/stewards/' + steward_id)
 
-@app.route('/stewards/<steward_name>')
-def existing_steward(steward_name):
+@app.route('/stewards/<steward_id>')
+def existing_steward(steward_id):
     '''
     Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
@@ -134,7 +135,7 @@ def existing_steward(steward_name):
     uploaded_stewards = False
     uploaded_zip = False
     datastore = make_datastore(app.config['DATASTORE'])
-    filelist = datastore.filelist(steward_name)
+    filelist = datastore.filelist(steward_id)
     for file in filelist:
         if 'stewards.csv' in file:
             uploaded_stewards = True
@@ -142,7 +143,7 @@ def existing_steward(steward_name):
             uploaded_zip = True
 
     if uploaded_stewards:
-        stewards_filepath = os.path.join(steward_name, 'uploads', 'stewards.csv')
+        stewards_filepath = os.path.join(steward_id, 'uploads', 'stewards.csv')
         datastore.download(stewards_filepath)
         with open(stewards_filepath, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
