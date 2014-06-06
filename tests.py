@@ -2,7 +2,7 @@
 from shutil import rmtree, copy
 from unittest import TestCase, main
 from os.path import join, dirname
-import os, glob
+import os, glob, json
 from urlparse import urljoin
 from tempfile import mkdtemp
 from bs4 import BeautifulSoup
@@ -81,7 +81,8 @@ class TestApp (TestCase):
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
-                 'test-files/lake-man-Portland.zip')
+                 'test-files/lake-man-Portland.zip',
+                 'test-files/portland-segments.geojson')
         for name in names:
             copy(name, os.path.join(self.tmp, 'working-dir'))
 
@@ -171,8 +172,12 @@ class TestApp (TestCase):
         uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file})
         self.assertTrue( 'lake-man-Portland.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
         self.assertEqual(uploaded.status_code, 302)
+        transformed = self.app.get("/stewards/testurl/segments/transform", follow_redirects=True)
+        f = open(self.tmp + '/working-dir/portland-segments.geojson')
+        geojson = f.read()
+        f.close()
+        self.assertTrue( geojson in transformed.data )
 
-        self.app.get("/stewards/testurl/transform")
 
 if __name__ == '__main__':
     main()
