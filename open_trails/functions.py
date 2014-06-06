@@ -80,6 +80,10 @@ class S3Datastore:
         ''' Download a single file from S3 to local working directory.
         '''
         key = self.bucket.get_key(filepath)
+        try:
+            os.makedirs(os.path.dirname(filepath))
+        except OSError:
+            pass
         key.get_contents_to_filename(filepath)
 
     def filelist(self, prefix):
