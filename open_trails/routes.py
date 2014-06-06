@@ -103,7 +103,7 @@ def transform(steward_id):
                      "stewardId" : old_segment['properties']['AGENCYNAME'],
                      "name" : old_segment['properties']['TRAILNAME'],
                      "vehicles" : None,
-                     "foot" : old_segment['properties']['HIKE'],
+                     "foot" : old_segment['properties']['HIKE'].lower(),
                      "bicycle" : bicycle(old_segment['properties']),
                      "horse" : horse(old_segment['properties']),
                      "ski" : None,
