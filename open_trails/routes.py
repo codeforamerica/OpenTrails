@@ -113,7 +113,14 @@ def transform(steward_id):
                 }
                 plats_geojson['features'].append(new_segment)
 
-    return json.dumps(plats_geojson, sort_keys=True)
+            try:
+                os.makedirs(os.path.join(steward_id, 'opentrails'))
+            except OSError:
+                pass
+            output = open(steward_id + '/opentrails/segments.geojson','w')
+            output.write(json.dumps(plats_geojson, sort_keys=True, indent=4))
+            output.close()
+            datastore.upload(steward_id + '/opentrails/segments.geojson')
 
 
 @app.route('/stewards/<steward_name>')
