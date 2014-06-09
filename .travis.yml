@@ -1,7 +1,7 @@
 language: python
 python:
   - "2.7"
-before_install: sudo apt-get install --fix-missing gdal-bin
+before_install: sudo apt-get install gdal
 install: pip install -r requirements.txt
 script:  python tests.py
 notifications:
