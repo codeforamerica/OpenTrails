@@ -37,9 +37,11 @@ class FilesystemDatastore:
     def download(self, filepath):
         ''' Download a single file from datastore to local working directory.
         '''
-        with open(os.path.join(self.dirpath, filepath), 'r') as input:
-            with open(filepath, 'w') as output:
-                output.write(input.read())
+        # Check if file already exists
+        if not os.path.isfile(filepath):
+            with open(os.path.join(self.dirpath, filepath), 'r') as input:
+                with open(filepath, 'w') as output:
+                    output.write(input.read())
 
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
@@ -79,12 +81,14 @@ class S3Datastore:
     def download(self, filepath):
         ''' Download a single file from S3 to local working directory.
         '''
-        key = self.bucket.get_key(filepath)
-        try:
-            os.makedirs(os.path.dirname(filepath))
-        except OSError:
-            pass
-        key.get_contents_to_filename(filepath)
+        # Check if file already exists
+        if not os.path.isfile(filepath):
+            key = self.bucket.get_key(filepath)
+            try:
+                os.makedirs(os.path.dirname(filepath))
+            except OSError:
+                pass
+            key.get_contents_to_filename(filepath)
 
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
@@ -122,3 +126,17 @@ def unzip(filepath):
     for file in os.listdir(os.path.split(filepath)[0]):
         if '.shp' in file:
             return os.path.split(filepath)[0] + '/' + file
+
+def simplified_copy(geojson):
+    ''' Simplify large geojson to show on the web
+    '''
+    i = 0
+    simple_geojson = {'type': 'FeatureCollection', 'features': []}
+    for feature in geojson['features']:
+        i += 1
+        simple_geojson['features'].append(feature)
+        if i == 10:
+            break
+
+    return simple_geojson
+        

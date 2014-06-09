@@ -34,7 +34,7 @@ def new_steward():
 @app.route('/stewards')
 def stewards():
     '''
-    List out all the stewards that have used PLATS so far
+    List out all the stewards that have used opentrails so far
     '''
     datastore = make_datastore(app.config['DATASTORE'])
     stewards_list = datastore.stewards()
@@ -56,15 +56,16 @@ def upload_zip(steward_id):
         request.files['file'].save(zip_filepath)
         datastore.upload(zip_filepath)
         filename = os.path.split(request.files['file'].filename)[1]
-    return redirect('/stewards/' + steward_id + '/segments/transform')
+    return redirect('/stewards/' + steward_id + '/transform')
 
-@app.route('/stewards/<steward_id>/segments/transform')
+@app.route('/stewards/<steward_id>/transform')
 def transform(steward_id):
     '''
     Grab a zip file off of datastore
     Unzip it
-    Transform into PLATS
-    Upload to datastore
+    Transform into opentrails
+    Make a simplified copy of opentrails_geojson 
+    Upload both to datastore
     '''
     datastore = make_datastore(app.config['DATASTORE'])
     for filename in datastore.filelist(steward_id):
@@ -72,9 +73,9 @@ def transform(steward_id):
             datastore.download(filename)
             shapefile_path = unzip(filename)
             raw_geojson = transform_shapefile(shapefile_path)
-            plats_geojson = {'type': 'FeatureCollection', 'features': []}
+            opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
 
-            # Transform geojson to PLATS
+            # Transform geojson to opentrails
 
             def bicycle(properties):
                 if properties['ROADBIKE'] == 'Yes' or properties['MTNBIKE'] == 'Yes':
@@ -111,16 +112,26 @@ def transform(steward_id):
                      "osmTags" : None
                  }
                 }
-                plats_geojson['features'].append(new_segment)
+                opentrails_geojson['features'].append(new_segment)
 
             try:
                 os.makedirs(os.path.join(steward_id, 'opentrails'))
             except OSError:
                 pass
             output = open(steward_id + '/opentrails/segments.geojson','w')
-            output.write(json.dumps(plats_geojson, sort_keys=True, indent=4))
+            output.write(json.dumps(opentrails_geojson, sort_keys=True))
             output.close()
-            datastore.upload(steward_id + '/opentrails/segments.geojson')
+
+            # Make a simplified copy
+            simplified_geojson = simplified_copy(opentrails_geojson)
+
+            # Zip files before uploading them
+            # Mkae them into files first
+            zipped_opentrails = compress(opentrails_geojson)
+            zipped_simplified = compress(simplified_geojson)
+
+            datastore.upload(steward_id + '/opentrails/' + zipped_opentrails)
+            datastore.upload(steward_id + '/web/' + zipped_simplified)
 
     return redirect('/stewards/' + steward_id)
 
@@ -134,6 +145,7 @@ def existing_steward(steward_id):
     geojson = False
     uploaded_stewards = False
     segments_transformed = False
+    segments_geojson = False
     datastore = make_datastore(app.config['DATASTORE'])
     filelist = datastore.filelist(steward_id)
     for file in filelist:
@@ -153,9 +165,9 @@ def existing_steward(steward_id):
     if segments_transformed:
         datastore.download(steward_id + '/opentrails/segments.geojson')
         segments_data = open(steward_id + '/opentrails/segments.geojson')
-        geojson = json.load(segments_data)
+        segments_geojson = json.load(segments_data)
 
-    return render_template('index.html', stewards_info = stewards_info, geojson = geojson)
+    return render_template('index.html', stewards_info = stewards_info, segments_geojson = segments_geojson)
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])

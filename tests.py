@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from bs4 import BeautifulSoup
 
 from open_trails import app, transformers
-from open_trails.functions import unzip
+from open_trails.functions import unzip, simplified_copy
 
 class FakeUpload:
     ''' Pretend to be a file upload in flask.
@@ -172,11 +172,21 @@ class TestApp (TestCase):
         uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file})
         self.assertTrue( 'lake-man-Portland.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
         self.assertEqual(uploaded.status_code, 302)
-        transformed = self.app.get("/stewards/testurl/segments/transform", follow_redirects=True)
+        transformed = self.app.get("/stewards/testurl/transform", follow_redirects=True)
         f = open(self.tmp + '/working-dir/portland-segments.geojson')
         geojson = f.read()
         f.close()
         self.assertTrue( geojson in transformed.data )
+
+    def test_simplify_segments(self):
+        '''
+        Test simplifying large geojson files.
+        '''
+        f = open('portland-segments.geojson')
+        geojson = json.load(f)
+        f.close()
+        simple_geojson = simplified_copy(geojson)
+        print simple_geojson
 
 
 if __name__ == '__main__':

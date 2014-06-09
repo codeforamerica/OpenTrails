@@ -27,10 +27,11 @@
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="../static/css/app.css" />
 
-    {% if geojson %}
+    {% if segments_geojson %}
     <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
     {% endif %}
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
 <!-- Remove this inline style -->
@@ -90,7 +91,7 @@
 
     </section>
 
-        {% if not geojson %}
+        {% if not segments_geojson %}
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trail data!!!!</h3>
             <p>Give it all to us!</p>
@@ -103,13 +104,20 @@
         </section>
         {% endif %}
 
-        {% if geojson %}
+        {% if segments_geojson %}
         <section class="layout-semibreve">
             <h3>Segments</h3>
             <div id="map"></div>
         </section>
-        <script>
-            var geojson = {{ geojson | tojson | safe }}
+
+        <section class="layout-semibreve">
+            <h3>Named Trails</h3>
+            <div id="named-trails">
+            </div>
+        </section>
+
+           <script>
+            var geojson = {{ segments_geojson | tojson | safe }}
             var map = L.mapbox.map('map', 'codeforamerica.i7jo99nd')
             geojsonLayer = L.geoJson(geojson, {
                 style: function (feature) {
@@ -118,7 +126,14 @@
             })
             geojsonLayer.addTo(map);
             map.fitBounds(geojsonLayer.getBounds());
+
+            for (segment in geojson.features) {
+                console.log(geojson.features[segment]['properties']);
+                var p = "<p>"+geojson.features[segment]['properties']['id']+"</p>";
+                $("#named-trails").append(p)
+            }
         </script>
+
         {% endif %}
 
 
