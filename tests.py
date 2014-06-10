@@ -82,7 +82,9 @@ class TestApp (TestCase):
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
-                 'test-files/portland-segments.geojson')
+                 'test-files/portland-segments.geojson',
+                 'test-files/sa-trailheads-test.zip',
+                 'test-files/sa-trailheads.geojson')
         for name in names:
             copy(name, os.path.join(self.tmp, 'working-dir'))
 
@@ -149,7 +151,7 @@ class TestApp (TestCase):
         #
         soup = BeautifulSoup(response.data)
         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
-        self.assertEqual("/stewards/testurl/upload-zip", form['action'])
+        self.assertEqual("/stewards/testurl/upload", form['action'])
         self.assertTrue('multipart/form-data' in form['enctype'])
         self.assertTrue(form.find_all('input', attrs=dict(type='file')))
 
@@ -159,7 +161,7 @@ class TestApp (TestCase):
         for filepath in glob.glob(os.path.join(self.tmp, '*.zip')):
             filename = os.path.split(filepath)[1]
             file = open(filepath)
-            uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file" : file}, follow_redirects=True)
+            uploaded = self.app.post("/stewards/testurl/upload", data={"file" : file}, follow_redirects=True)
             self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
             self.assertEqual(uploaded.status_code, 200)
 
@@ -169,21 +171,27 @@ class TestApp (TestCase):
         # Upload a trail segments zip
         # Test its transformed output
         file = open('lake-man-Portland.zip')
-        uploaded = self.app.post("/stewards/testurl/upload-zip", data={"file": file})
-        self.assertTrue( 'lake-man-Portland.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+        uploaded = self.app.post("/stewards/testurl/upload", data={"file": file, "trailtype" : "segments"})
+        self.assertTrue( 'segments.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
         self.assertEqual(uploaded.status_code, 302)
-        transformed = self.app.get("/stewards/testurl/transform", follow_redirects=True)
+        transformed = self.app.get("/stewards/testurl/transform/segments", follow_redirects=True)
         f = open(self.tmp + '/working-dir/portland-segments.geojson')
         geojson = f.read()
         f.close()
         self.assertTrue( geojson in transformed.data )
 
-    def test_simplify_segments(self):
+    def test_transform_trailheads(self):
+        ''' Test transforming trailheads
         '''
-        Test simplifying large geojson files.
-        '''
-        f = open('portland-segments.geojson')
-        geojson = json.load(f)
+        # Upload a trailheads zip
+        # Test its transformed output
+        file = open('sa-trailheads-test.zip')
+        uploaded = self.app.post("/stewards/testurl/upload", data={"file": file, "trailtype" : "trailheads"})
+        self.assertTrue( 'trailheads.zip' in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+        self.assertEqual(uploaded.status_code, 302)
+        transformed = self.app.get("/stewards/testurl/transform/trailheads", follow_redirects=True)
+        f = open(self.tmp + '/working-dir/sa-trailheads.geojson')
+        geojson = f.read()
         f.close()
         self.assertTrue( geojson in transformed.data )
 
