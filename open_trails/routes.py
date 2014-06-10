@@ -1,6 +1,6 @@
 from open_trails import app
-from functions import make_datastore, clean_name, unzip, make_id_from_url
-from transformers import transform_shapefile
+from functions import make_datastore, clean_name, unzip, make_id_from_url, compress
+from transformers import transform_shapefile, portland_transform, sa_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time
 
@@ -126,12 +126,8 @@ def transform(steward_id):
             simplified_geojson = simplified_copy(opentrails_geojson)
 
             # Zip files before uploading them
-            # Mkae them into files first
-            zipped_opentrails = compress(opentrails_geojson)
-            zipped_simplified = compress(simplified_geojson)
-
-            datastore.upload(steward_id + '/opentrails/' + zipped_opentrails)
-            datastore.upload(steward_id + '/web/' + zipped_simplified)
+            compress(geojson_filename, zip_filename)
+            datastore.upload(zip_filename)
 
     return redirect('/stewards/' + steward_id)
 
@@ -163,7 +159,8 @@ def existing_steward(steward_id):
                 stewards_info = row
 
     if segments_transformed:
-        datastore.download(steward_id + '/opentrails/segments.geojson')
+        datastore.download(steward_id + '/opentrails/segments.zip')
+        unzip(steward_id + '/opentrails/segments.zip')
         segments_data = open(steward_id + '/opentrails/segments.geojson')
         segments_geojson = json.load(segments_data)
 

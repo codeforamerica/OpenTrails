@@ -1,6 +1,6 @@
 from open_trails import app
 from werkzeug.utils import secure_filename
-import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib
+import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 from boto.s3.key import Key
 
 def clean_name(name):
@@ -127,16 +127,8 @@ def unzip(filepath):
         if '.shp' in file:
             return os.path.split(filepath)[0] + '/' + file
 
-def simplified_copy(geojson):
-    ''' Simplify large geojson to show on the web
+def compress(input, output):
+    '''Zips up a file
     '''
-    i = 0
-    simple_geojson = {'type': 'FeatureCollection', 'features': []}
-    for feature in geojson['features']:
-        i += 1
-        simple_geojson['features'].append(feature)
-        if i == 10:
-            break
-
-    return simple_geojson
-        
+    with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
+        myzip.write(input, os.path.split(input)[1])
