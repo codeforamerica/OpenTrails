@@ -82,7 +82,12 @@ def transform(steward_id, trailtype):
             datastore.download(filename)
             shapefile_path = unzip(filename)
             raw_geojson = transform_shapefile(shapefile_path)
-            opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
+            
+            # delete shapefiles
+            dont_delete = ['stewards.csv','segments.zip','namedtrails.csv','trailheads.zip','areas.zip']
+            for file in os.listdir(os.path.split(filename)[0]):
+                if file not in dont_delete: 
+                    os.remove(os.path.split(filename)[0]+'/'+file)
 
             # Transform geojson to opentrails
             if trailtype == 'segments':
