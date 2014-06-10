@@ -95,10 +95,11 @@
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trail data!!!!</h3>
             <p>Give it all to us!</p>
-            <form action="/stewards/{{ stewards_info.id }}/upload-zip" method=post enctype=multipart/form-data>
+            <form action="/stewards/{{ stewards_info.id }}/upload" method=post enctype=multipart/form-data>
                 <p>
                     <input type=file name=file>
-                 <input type=submit value=Upload>
+                    <input type=hidden name="trailtype" value="segments">
+                    <input type=submit value=Upload>
                 </p>
             </form>
         </section>
@@ -128,11 +129,46 @@
             map.fitBounds(geojsonLayer.getBounds());
 
             for (segment in geojson.features) {
-                console.log(geojson.features[segment]['properties']);
                 var p = "<p>"+geojson.features[segment]['properties']['id']+"</p>";
                 $("#named-trails").append(p)
             }
         </script>
+
+        {% endif %}
+
+        {% if not trailheads_geojson %}
+        <section class="layout-semibreve">
+            <h3 class="h3">Upload your trailheads!!!!</h3>
+            <p>Give it all to us!</p>
+            <form action="/stewards/{{ stewards_info.id }}/upload" method=post enctype=multipart/form-data>
+                <p>
+                    <input type=file name=file>
+                    <input type=hidden name="trailtype" value="trailheads">
+                    <input type=submit value=Upload>
+                </p>
+            </form>
+        </section>
+
+        {% endif %}
+
+        {% if trailheads_geojson %}
+
+        <section class="layout-semibreve">
+            <h3>Trail Heads</h3>
+            <div id="trailhead-map"></div>
+        </section>
+
+       <script>
+        var trailheads = {{ trailheads_geojson | tojson | safe }}
+        var trailheadsmap = L.mapbox.map('trailhead-map', 'codeforamerica.i7jo99nd')
+        trailheadsgeojsonLayer = L.geoJson(trailheads, {
+            style: function (feature) {
+                return {color: "red"};
+            }
+        })
+        trailheadsgeojsonLayer.addTo(trailheadsmap);
+        trailheadsmap.fitBounds(trailheadsgeojsonLayer.getBounds());
+        </script>        
 
         {% endif %}
 

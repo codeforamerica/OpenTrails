@@ -37,7 +37,7 @@ body {
   width: auto;
 }
 
-#map {
+#map, #trailhead-map {
 	width:100%;
 	height: 400px;
 }
