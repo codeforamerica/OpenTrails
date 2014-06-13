@@ -1,5 +1,6 @@
 from open_trails import app
-from functions import make_datastore, clean_name, unzip, make_id_from_url, compress, allowed_file
+from models import Steward, make_datastore
+from functions import make_steward_from_datastore, clean_name, unzip, make_id_from_url, compress, allowed_file
 from transformers import shapefile2geojson, portland_transform, sa_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time
@@ -15,20 +16,31 @@ def new_steward():
     Create a unique url for this steward to work under
     Create a folder on S3 using this url
     '''
-    steward_name, steward_url = request.form['name'], request.form['url']
-    steward_id = make_id_from_url(steward_url)
-    stewards_filepath = os.path.join(steward_id, 'uploads', 'stewards.csv')
+    # Get info from form
+    name, url = request.form['name'], request.form['url']
+    id = make_id_from_url(url)
+
+    # Make a new steward object
+    steward = Steward(id=id, name=name, url=url, phone=None, address=None, publisher="yes")
+    
+    # Make local folders for steward
     try:
-        os.makedirs(os.path.dirname(stewards_filepath))
+        os.makedirs(steward.id + "/uploads")
+        os.makedirs(steward.id + "/opentrails")
     except OSError:
         pass
-    with open(stewards_filepath, 'w') as csvfile:
+
+    # Write a stewards.csv file
+    stewards_info_filepath = os.path.join(steward.id, 'uploads', 'stewards.csv')
+    with open(stewards_info_filepath, 'w') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["name","id","url","phone","address","publisher"])
-        writer.writerow([steward_name,steward_id,steward_url,"","","yes"])
+        writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
+    
+    # Upload stewards.csv to datastore
     datastore = make_datastore(app.config['DATASTORE'])
-    datastore.upload(stewards_filepath)
-    return redirect('/stewards/' + steward_id)
+    datastore.upload(stewards_info_filepath)
+    return redirect('/stewards/' + steward.id)
 
 
 @app.route('/stewards')
@@ -183,56 +195,50 @@ def upload_zip(steward_id):
 
 #     return redirect('/stewards/' + steward_id)
 
-@app.route('/stewards/<steward_id>')
-def existing_steward(steward_id):
+@app.route('/stewards/<id>')
+def existing_steward(id):
     '''
     Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
+
     # Init some variables
-    stewards_info = False
-    geojson = False
-    uploaded_stewards = False
-    uploaded_segments = False
-    segments_transformed = False
-    segments_geojson = False
-    trailheads_uploaded = False
-    trailheads_geojson = False
-    sample_geojson = False
-    raw_segments = False
-    sample_segment = False
+    # stewards_info = False
+    # geojson = False
+    # uploaded_stewards = False
+    # uploaded_segments = False
+    # segments_transformed = False
+    # segments_geojson = False
+    # trailheads_uploaded = False
+    # trailheads_geojson = False
+    # sample_geojson = False
+    # raw_segments = False
+    # sample_segment = False
 
     datastore = make_datastore(app.config['DATASTORE'])
-    filelist = datastore.filelist(steward_id)
-    for file in filelist:
-        if 'uploads/stewards.csv' in file:
-            uploaded_stewards = True
-        if 'uploads/segments.zip' in file:
-            uploaded_segments = True
-        if 'uploads/segments.geojson.zip' in file:
-            raw_segments = True
+    filelist = datastore.filelist(id)
+
+    for filepath in filelist:
+        if 'uploads/stewards.csv' in filepath:
+            steward = make_steward_from_datastore(datastore, filepath)
+    #     if 'uploads/segments.zip' in file:
+    #         uploaded_segments = True
+    #     if 'uploads/segments.geojson.zip' in file:
+    #         raw_segments = True
         # if 'opentrails/segments.zip' in file:
         #     segments_transformed = True
         # if 'opentrails/trailheads.zip' in file:
         #     trailheads_uploaded = True
 
-    if uploaded_stewards:
-        stewards_filepath = os.path.join(steward_id, 'uploads', 'stewards.csv')
-        datastore.download(stewards_filepath)
-        with open(stewards_filepath, 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                stewards_info = row
-
-    if raw_segments:
-        # Show a sample of what was uploaded
-        filepath = steward_id + '/uploads/segments.geojson.zip'
-        datastore.download(filepath)
-        zf = zipfile.ZipFile(filepath, 'r')
-        zf.extractall(os.path.split(filepath)[0])
-        raw_segments_data = open(steward_id + '/uploads/segments.geojson')
-        raw_segments_geojson = json.load(raw_segments_data)
-        sample_segment = {'type': 'FeatureCollection', 'features': []}
-        sample_segment['features'].append(raw_segments_geojson['features'][0])
+    # if raw_segments:
+    #     # Show a sample of what was uploaded
+    #     filepath = steward_id + '/uploads/segments.geojson.zip'
+    #     datastore.download(filepath)
+    #     zf = zipfile.ZipFile(filepath, 'r')
+    #     zf.extractall(os.path.split(filepath)[0])
+    #     raw_segments_data = open(steward_id + '/uploads/segments.geojson')
+    #     raw_segments_geojson = json.load(raw_segments_data)
+    #     sample_segment = {'type': 'FeatureCollection', 'features': []}
+    #     sample_segment['features'].append(raw_segments_geojson['features'][0])
 
     # if segments_transformed:
     #     datastore.download(steward_id + '/opentrails/segments.zip')
@@ -247,7 +253,7 @@ def existing_steward(steward_id):
     #     trailhead_data = open(steward_id + '/opentrails/trailheads.geojson')
     #     trailheads_geojson = json.load(trailhead_data)
 
-    return render_template('index.html', stewards_info = stewards_info, sample_segment = sample_segment)
+    return render_template('index.html', steward = steward)
     # return render_template('index.html', stewards_info = stewards_info, segments_geojson = sample_geojson, trailheads_geojson = trailheads_geojson)
 
 ### Engine Light - http://engine-light.codeforamerica.org/

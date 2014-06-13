@@ -42,7 +42,7 @@
 
 	</section>
 
-    {% if not stewards_info %}
+    {% if not steward %}
 	<section class="layout-semibreve slab-gray" id="steward-form">
 		<form id="stewards" action="/new-steward" method=post enctype=multipart/form-data>
 			<h3 class="h3">Create your Organization Profile</h3>
@@ -64,30 +64,26 @@
 	</section>
     {% endif %}
 
-    {% if stewards_info %}
+    {% if steward %}
     <section class="layout-semibreve slab-gray" id="steward">
-            <h3 class="h3">Your Organization Profile</h3>
-            <p>This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
-            <div class="layout-minim">
-                <!-- Steward name -->
-                <p>
-                    {{ stewards_info.name }}
-                </p>
-                <!-- Steward email -->
-                <p>
-
-                </p>
-            </div>
-            <div class="layout-minim">
-                <!-- Steward phone -->
-                <p>
-                    {{ stewards_info.phone}}
-                </p>
-                <!-- Steward url -->
-                <p>
-                    {{ stewards_info.url}}
-                </p>
-            </div>
+        <h3 class="h3">Your Organization Profile</h3>
+        <p>This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
+        <div class="layout-minim">
+            <p id="steward-name">
+                {{ steward.name }}
+            </p>
+            <p id="steward-email">
+                {{ steward.email }}
+            </p>
+        </div>
+        <div class="layout-minim">
+            <p id="steward-phone">
+                {{ steward.phone }}
+            </p>
+            <p id="steward-url">
+                {{ steward.url }}
+            </p>
+        </div>
 
     </section>
 
@@ -95,7 +91,7 @@
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trail data!!!!</h3>
             <p>Give it all to us!</p>
-            <form action="/stewards/{{ stewards_info.id }}/upload" method=post enctype=multipart/form-data>
+            <form action="/stewards/{{ steward.id }}/upload" method=post enctype=multipart/form-data>
                 <p>
                     <input type=file name=file>
                     <input type=hidden name="trailtype" value="segments">
@@ -118,7 +114,7 @@
         </table>
 
         <p>Which one is the ID column?</p>
-        <form action="/stewards/{{ stewards_info.id }}/which-id" method=post id="column-names">
+        <form action="/stewards/{{ steward.id }}/which-id" method=post id="column-names">
             <input type="submit">
         </form>
 
@@ -178,7 +174,7 @@
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trailheads!!!!</h3>
             <p>Give it all to us!</p>
-            <form action="/stewards/{{ stewards_info.id }}/upload" method=post enctype=multipart/form-data>
+            <form action="/stewards/{{ steward.id }}/upload" method=post enctype=multipart/form-data>
                 <p>
                     <input type=file name=file>
                     <input type=hidden name="trailtype" value="trailheads">
