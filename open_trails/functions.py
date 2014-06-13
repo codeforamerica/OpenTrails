@@ -132,3 +132,4 @@ def compress(input, output):
     '''
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
         myzip.write(input, os.path.split(input)[1])
+

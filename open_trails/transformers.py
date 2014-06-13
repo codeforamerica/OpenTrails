@@ -6,7 +6,7 @@ def shp2geojson(filename):
     in_file = filename
     out_file = '{0}.geojson'.format(filename)
 
-    args = 'ogr2ogr -t_srs EPSG:4326 -f GeoJSON ___ ___'.split()
+    args = 'ogr2ogr -t_srs EPSG:4326  -f GeoJSON ___ ___'.split()
     args[-2:] = out_file, in_file
     if os.path.exists(out_file):
         os.remove(out_file)

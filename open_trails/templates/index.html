@@ -27,10 +27,10 @@
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="../static/css/app.css" />
 
-    {% if segments_geojson %}
+    <!-- {% if segments_geojson %}
     <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
-    {% endif %}
+    {% endif %} -->
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
@@ -91,7 +91,7 @@
 
     </section>
 
-        {% if not segments_geojson %}
+        {% if not sample_segment %}
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trail data!!!!</h3>
             <p>Give it all to us!</p>
@@ -105,8 +105,46 @@
         </section>
         {% endif %}
 
-        {% if segments_geojson %}
-        <section class="layout-semibreve">
+        {% if sample_segment %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">Sample Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <p>Which one is the ID column?</p>
+        <form action="/stewards/{{ stewards_info.id }}/which-id" method=post id="column-names">
+            <input type="submit">
+        </form>
+
+        <script>
+            var geojson = {{ sample_segment | tojson | safe }}
+            // For each property make a column
+            $("tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("tbody").append("<td>"+key+"</td>")
+            })
+            $("tbody").append("</tr>")
+            $("tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("tbody").append("<td>"+property+"</td>")
+            })
+            $("tbody").append("</tr>")
+
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+            })
+            
+
+        </script>
+
+
+        <!-- <section class="layout-semibreve">
             <h3>Segments</h3>
             <div id="map"></div>
         </section>
@@ -115,23 +153,23 @@
             <h3>Named Trails</h3>
             <div id="named-trails">
             </div>
-        </section>
+        </section> -->
 
            <script>
-            var geojson = {{ segments_geojson | tojson | safe }}
-            var map = L.mapbox.map('map', 'codeforamerica.i7jo99nd')
-            geojsonLayer = L.geoJson(geojson, {
-                style: function (feature) {
-                    return {color: "red"};
-                }
-            })
-            geojsonLayer.addTo(map);
-            map.fitBounds(geojsonLayer.getBounds());
+            
+            // var map = L.mapbox.map('map', 'codeforamerica.i7jo99nd')
+            // geojsonLayer = L.geoJson(geojson, {
+            //     style: function (feature) {
+            //         return {color: "red"};
+            //     }
+            // })
+            // geojsonLayer.addTo(map);
+            // map.fitBounds(geojsonLayer.getBounds());
 
-            for (segment in geojson.features) {
-                var p = "<p>"+geojson.features[segment]['properties']['id']+"</p>";
-                $("#named-trails").append(p)
-            }
+            // for (segment in geojson.features) {
+            //     var p = "<p>"+geojson.features[segment]['properties']['id']+"</p>";
+            //     $("#named-trails").append(p)
+            // }
         </script>
 
         {% endif %}
