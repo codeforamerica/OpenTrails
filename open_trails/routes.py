@@ -1,6 +1,6 @@
 from open_trails import app
-from functions import make_datastore, clean_name, unzip, make_id_from_url, compress
-from transformers import transform_shapefile, portland_transform, sa_transform
+from functions import make_datastore, clean_name, unzip, make_id_from_url, compress, allowed_file
+from transformers import shapefile2geojson, portland_transform, sa_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time
 
@@ -41,76 +41,95 @@ def stewards():
     return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in set(['zip'])
-
 @app.route('/stewards/<steward_id>/upload', methods=['POST'])
 def upload_zip(steward_id):
     '''
-    Upload a zip of one shapefile
+    Upload a zip of one shapefile to datastore
     '''
     datastore = make_datastore(app.config['DATASTORE'])
 
     # Check that they uploaded a .zip file
     if request.files['file'] and allowed_file(request.files['file'].filename):
         
-        # Change the uploaded filename to segments.zip, trailheads.zip, etc
-        zip_filepath = os.path.join(steward_id, 'uploads', request.form['trailtype'] + '.zip')
-        
-        # Save segments.zip to disk
-        request.files['file'].save(zip_filepath)
+        # Save zip file to disk
+        # /examplesteward/uploads/mytrailsegments.zip
+        zipfilepath = os.path.join(steward_id, 'uploads', request.files['file'].filename)
+        request.files['file'].save(zipfilepath)
 
         # Upload original file to S3
-        datastore.upload(zip_filepath)
+        datastore.upload(zipfilepath)
 
-        # transform the shapefile
-        if request.form['trailtype'] == 'segments':
-            return redirect('/stewards/' + steward_id + '/transform/segments/shp2geojson')
-        # if request.form['trailtype'] == 'trailheads':
-        #     return redirect('/stewards/' + steward_id + '/transform/trailheads')
+        # Unzip orginal file
+        zf = zipfile.ZipFile(zipfilepath, 'r')
+        zf.extractall(os.path.split(zipfilepath)[0])
+
+        # Find shapefile in zip
+        for file in os.listdir(os.path.split(zipfilepath)[0]):
+            if '.shp' in file:
+                shapefilepath = os.path.join(os.path.split(zipfilepath)[0], file)
+
+        # Get geojson data from shapefile
+        geojson = shapefile2geojson(shapefilepath)
+
+        # clean up - delete uneeded shapefiles
+        dont_delete = ['csv','zip','geojson']
+        for file in os.listdir(steward_id + '/uploads'):
+            if file.split('.')[1] not in dont_delete: 
+                os.remove(steward_id + '/uploads/' + file)
+
+        # Write original geojson to file
+        geojsonfilepath = zipfilepath.replace('.zip', '.geojson')
+        geojsonfile = open(geojsonfilepath,'w')
+        geojsonfile.write(json.dumps(geojson, sort_keys=True))
+        geojsonfile.close()
+
+        # Upload .geojson file to datastore
+        datastore.upload(geojsonfilepath)
+
+        # Show sample data from original file
+        return redirect('/stewards/' + steward_id)
 
     else:
         return make_response("Only .zip files allowed", 403)
 
-@app.route("/stewards/<steward_id>/transform/<trailtype>/shp2geojson")
-def shp2geojson(steward_id, trailtype):
-    '''
-        Convert shapefile to geojson
-    '''
-    datastore = make_datastore(app.config['DATASTORE'])
-    for filename in datastore.filelist(steward_id):
+# @app.route("/stewards/<steward_id>/transform/<trailtype>/shp2geojson")
+# def shp2geojson(steward_id, trailtype):
+#     '''
+#         Convert shapefile to geojson
+#     '''
+#     datastore = make_datastore(app.config['DATASTORE'])
+#     for filename in datastore.filelist(steward_id):
         
-        # Look for segments.zip or trailheads.zip
-        if trailtype + '.zip' in filename:
+#         # Look for segments.zip or trailheads.zip
+#         if trailtype + '.zip' in filename:
 
-            # Check that it hasn't been shp2geojson'd yet
-            if filename.replace('.zip', '.geojson.zip') not in datastore.filelist(steward_id):
+#             # Check that it hasn't been shp2geojson'd yet
+#             if filename.replace('.zip', '.geojson.zip') not in datastore.filelist(steward_id):
                 
-                datastore.download(filename)
-                shapefile_path = unzip(filename)
+#                 datastore.download(filename)
+#                 shapefile_path = unzip(filename)
                 
-                # Transform the og shapefile
-                raw_geojson = transform_shapefile(shapefile_path)
+#                 # Transform the og shapefile
+#                 raw_geojson = transform_shapefile(shapefile_path)
 
-                # clean up - delete shapefiles
-                dont_delete = ['stewards.csv','segments.zip','namedtrails.csv','trailheads.zip','areas.zip']
-                for file in os.listdir(os.path.split(filename)[0]):
-                    if file not in dont_delete: 
-                        os.remove(os.path.split(filename)[0]+'/'+file)
+#                 # clean up - delete shapefiles
+#                 dont_delete = ['stewards.csv','segments.zip','namedtrails.csv','trailheads.zip','areas.zip']
+#                 for file in os.listdir(os.path.split(filename)[0]):
+#                     if file not in dont_delete: 
+#                         os.remove(os.path.split(filename)[0]+'/'+file)
 
-                # Write the raw geojson to a file
-                output = open(filename.replace('.zip', '.geojson'),'w')
-                output.write(json.dumps(raw_geojson, sort_keys=True))
-                output.close()
+#                 # Write the raw geojson to a file
+#                 output = open(filename.replace('.zip', '.geojson'),'w')
+#                 output.write(json.dumps(raw_geojson, sort_keys=True))
+#                 output.close()
 
-                # Compress big geojson
-                compress(filename.replace('.zip', '.geojson'), filename.replace('.zip', '.geojson.zip'))
+#                 # Compress big geojson
+#                 compress(filename.replace('.zip', '.geojson'), filename.replace('.zip', '.geojson.zip'))
 
-                # Upload raw geojson to /uploads
-                datastore.upload(filename.replace('.zip', '.geojson.zip'))
+#                 # Upload raw geojson to /uploads
+#                 datastore.upload(filename.replace('.zip', '.geojson.zip'))
 
-                return redirect('/stewards/' + steward_id)
+#                 return redirect('/stewards/' + steward_id)
 
 # @app.route('/stewards/<steward_id>/transform/<trailtype>')
 # def transform(steward_id, trailtype):

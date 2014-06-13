@@ -3,6 +3,10 @@ from werkzeug.utils import secure_filename
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 from boto.s3.key import Key
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in set(['zip'])
+
 def clean_name(name):
     '''
     Replace underscores with dashes in an steward_name for prettier urls

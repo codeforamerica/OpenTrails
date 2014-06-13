@@ -1,34 +1,19 @@
 import os, json, subprocess
 
-def shp2geojson(filename):
+def shapefile2geojson(shapefilepath):
     '''Converts a shapefile to a geojson file with spherical mercator.
     '''
-    in_file = filename
-    out_file = '{0}.geojson'.format(filename)
+    geojsonfilepath = '{0}.geojson'.format(shapefilepath)
 
     args = 'ogr2ogr -t_srs EPSG:4326  -f GeoJSON ___ ___'.split()
-    args[-2:] = out_file, in_file
-    if os.path.exists(out_file):
-        os.remove(out_file)
+    args[-2:] = geojsonfilepath, shapefilepath
+    if os.path.exists(geojsonfilepath):
+        os.remove(geojsonfilepath)
     subprocess.check_call(args)
-    return out_file
-
-def open_geojson(geojson_path):
-    '''Reads a geojson file. Returns a python obj.
-    '''
-    json_data=open(geojson_path)
-    data = json.load(json_data)
-    json_data.close()
-    return data
-
-def transform_shapefile(shapefile_path):
-    '''
-    Convert a shp file to a geojson file
-    Open geojson file and return it as a python obj.
-    '''
-    geojson_path = shp2geojson(shapefile_path)
-    data = open_geojson(geojson_path)
-    return data
+    geojson_data = open(geojsonfilepath)
+    geojson = json.load(geojson_data)
+    geojson_data.close()
+    return geojson
 
 def portland_transform(raw_geojson):
 
