@@ -218,7 +218,7 @@ class TestApp (TestCase):
         expected_geojson = json.load(f)
         f.close()
 
-        self.assertEqual( opentrails_segments, expected_geojson )
+        self.assertItemsEqual( opentrails_segments, expected_geojson )
 
     def test_transform_san_antonio_segments(self):
         ''' Test transforming trail segments
@@ -238,7 +238,7 @@ class TestApp (TestCase):
         expected_geojson = json.load(f)
         f.close()
 
-        self.assertEqual( opentrails_segments, expected_geojson )
+        self.assertItemsEqual( opentrails_segments, expected_geojson )
 
 #     def test_transform_trailheads(self):
 #         ''' Test transforming trailheads
