@@ -1,9 +1,9 @@
 from open_trails import app
 from models import Steward, make_datastore
-from functions import make_steward_from_datastore, clean_name, unzip, make_id_from_url, compress, allowed_file
+from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file
 from transformers import shapefile2geojson, portland_transform, sa_transform
 from flask import request, render_template, redirect, make_response
-import json, os, csv, zipfile, time
+import json, os, csv, zipfile, time, re
 
 @app.route('/')
 def index():
@@ -16,12 +16,15 @@ def new_steward():
     Create a unique url for this steward to work under
     Create a folder on S3 using this url
     '''
+
     # Get info from form
     name, url = request.form['name'], request.form['url']
     id = make_id_from_url(url)
 
     # Make a new steward object
-    steward = Steward(id=id, name=name, url=url, phone=None, address=None, publisher="yes")
+    steward_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
+    steward = Steward(steward_info)
+    steward.datastore = make_datastore(app.config['DATASTORE'])
     
     # Make local folders for steward
     try:
@@ -38,23 +41,12 @@ def new_steward():
         writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
     
     # Upload stewards.csv to datastore
-    datastore = make_datastore(app.config['DATASTORE'])
-    datastore.upload(stewards_info_filepath)
+    steward.datastore.upload(stewards_info_filepath)
     return redirect('/stewards/' + steward.id)
 
 
-@app.route('/stewards')
-def stewards():
-    '''
-    List out all the stewards that have used opentrails so far
-    '''
-    datastore = make_datastore(app.config['DATASTORE'])
-    stewards_list = datastore.stewards()
-    return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
-
-
 @app.route('/stewards/<steward_id>/upload', methods=['POST'])
-def upload_zip(steward_id):
+def upload(steward_id):
     '''
     Upload a zip of one shapefile to datastore
     '''
@@ -95,8 +87,11 @@ def upload_zip(steward_id):
         geojsonfile.write(json.dumps(geojson, sort_keys=True))
         geojsonfile.close()
 
-        # Upload .geojson file to datastore
-        datastore.upload(geojsonfilepath)
+        # Compress geojson file
+        compress(geojsonfilepath, geojsonfilepath + ".zip")
+
+        # Upload .geojson.zip file to datastore
+        datastore.upload(geojsonfilepath + ".zip")
 
         # Show sample data from original file
         return redirect('/stewards/' + steward_id)
@@ -104,96 +99,53 @@ def upload_zip(steward_id):
     else:
         return make_response("Only .zip files allowed", 403)
 
-# @app.route("/stewards/<steward_id>/transform/<trailtype>/shp2geojson")
-# def shp2geojson(steward_id, trailtype):
-#     '''
-#         Convert shapefile to geojson
-#     '''
-#     datastore = make_datastore(app.config['DATASTORE'])
-#     for filename in datastore.filelist(steward_id):
-        
-#         # Look for segments.zip or trailheads.zip
-#         if trailtype + '.zip' in filename:
 
-#             # Check that it hasn't been shp2geojson'd yet
-#             if filename.replace('.zip', '.geojson.zip') not in datastore.filelist(steward_id):
-                
-#                 datastore.download(filename)
-#                 shapefile_path = unzip(filename)
-                
-#                 # Transform the og shapefile
-#                 raw_geojson = transform_shapefile(shapefile_path)
+@app.route('/stewards/<id>/transform/<trailtype>')
+def transform(id, trailtype):
+    '''
+    Grab a zip file off of datastore
+    Unzip it
+    Transform into opentrails
+    Upload
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    steward = get_steward(datastore, id)
+    if not steward:
+        return make_response("No Steward Found", 404)
 
-#                 # clean up - delete shapefiles
-#                 dont_delete = ['stewards.csv','segments.zip','namedtrails.csv','trailheads.zip','areas.zip']
-#                 for file in os.listdir(os.path.split(filename)[0]):
-#                     if file not in dont_delete: 
-#                         os.remove(os.path.split(filename)[0]+'/'+file)
+    if trailtype == "segments":
+        # Download the original segments file
+        filelist = datastore.filelist(steward.id)
+        matching = [filename for filename in filelist if ".geojson.zip" in filename]
+        segments_zip = matching[0]
+        datastore.download(segments_zip)
 
-#                 # Write the raw geojson to a file
-#                 output = open(filename.replace('.zip', '.geojson'),'w')
-#                 output.write(json.dumps(raw_geojson, sort_keys=True))
-#                 output.close()
+        # Unzip it
+        zf = zipfile.ZipFile(segments_zip, 'r')
+        zf.extractall(os.path.split(segments_zip)[0])
 
-#                 # Compress big geojson
-#                 compress(filename.replace('.zip', '.geojson'), filename.replace('.zip', '.geojson.zip'))
+        # Find geojson file
+        for file in os.listdir(steward.id + "/uploads/"):
+            if file.endswith(".geojson"):
+                segmentsfile = open(steward.id + "/uploads/" + file)
+                original_segments = json.load(segmentsfile)
+                segmentsfile.close()
+                import pdb; pdb.set_trace()
+                opentrails_segments = segments_transform(original_segments, steward)
 
-#                 # Upload raw geojson to /uploads
-#                 datastore.upload(filename.replace('.zip', '.geojson.zip'))
+        # Write file from transformed segments
+        opentrails_segments_path = steward.id + "/opentrails/segments.geojson"
+        opentrails_segments_file = open(opentrails_segments_path ,'w')
+        opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
+        opentrails_segments_file.close()
 
-#                 return redirect('/stewards/' + steward_id)
+        # zip up transformed segments
+        compress(opentrails_segments_path, opentrails_segments_path + ".zip")
 
-# @app.route('/stewards/<steward_id>/transform/<trailtype>')
-# def transform(steward_id, trailtype):
-#     '''
-#     Grab a zip file off of datastore
-#     Unzip it
-#     Transform into opentrails
-#     Upload
-#     '''
-#     datastore = make_datastore(app.config['DATASTORE'])
-#     for filename in datastore.filelist(steward_id):
-        
-#         # Look for segments.zip or trailheads.zip
-#         if trailtype + '.zip' in filename:
-#             datastore.download(filename)
-#             shapefile_path = unzip(filename)
-            
-#             # Transform the og shapefile
-#             raw_geojson = transform_shapefile(shapefile_path)
-            
-#             # delete shapefiles
-#             dont_delete = ['stewards.csv','segments.zip','namedtrails.csv','trailheads.zip','areas.zip']
-#             for file in os.listdir(os.path.split(filename)[0]):
-#                 if file not in dont_delete: 
-#                     os.remove(os.path.split(filename)[0]+'/'+file)
+        # Upload transformed segments
+        datastore.upload(opentrails_segments_path + ".zip")
 
-#             # Transform geojson to opentrails
-#             if trailtype == 'segments':
-#                 # Only portland so far
-#                 opentrails_geojson = portland_transform(raw_geojson)
-#                 geojson_filename = steward_id + '/opentrails/segments.geojson'
-#                 zip_filename = geojson_filename.replace('.geojson', '.zip')
-            
-#             if trailtype == 'trailheads':
-#                 opentrails_geojson = sa_transform(raw_geojson, steward_id)
-#                 geojson_filename = steward_id + '/opentrails/trailheads.geojson'
-#                 zip_filename = geojson_filename.replace('.geojson', '.zip')
-
-#             try:
-#                 os.makedirs(os.path.join(steward_id, 'opentrails'))
-#             except OSError:
-#                 pass
-
-#             output = open(geojson_filename,'w')
-#             output.write(json.dumps(opentrails_geojson, sort_keys=True))
-#             output.close()
-
-#             # Zip files before uploading them
-#             compress(geojson_filename, zip_filename)
-#             datastore.upload(zip_filename)
-
-#     return redirect('/stewards/' + steward_id)
+        return redirect('/stewards/' + steward.id)
 
 @app.route('/stewards/<id>')
 def existing_steward(id):
@@ -201,60 +153,30 @@ def existing_steward(id):
     Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
 
-    # Init some variables
-    # stewards_info = False
-    # geojson = False
-    # uploaded_stewards = False
-    # uploaded_segments = False
-    # segments_transformed = False
-    # segments_geojson = False
-    # trailheads_uploaded = False
-    # trailheads_geojson = False
-    # sample_geojson = False
-    # raw_segments = False
-    # sample_segment = False
-
     datastore = make_datastore(app.config['DATASTORE'])
-    filelist = datastore.filelist(id)
+    steward = get_steward(datastore, id)
+    if not steward:
+        return make_response("No Steward Found", 404)
+    steward.get_status()
 
-    for filepath in filelist:
-        if 'uploads/stewards.csv' in filepath:
-            steward = make_steward_from_datastore(datastore, filepath)
-    #     if 'uploads/segments.zip' in file:
-    #         uploaded_segments = True
-    #     if 'uploads/segments.geojson.zip' in file:
-    #         raw_segments = True
-        # if 'opentrails/segments.zip' in file:
-        #     segments_transformed = True
-        # if 'opentrails/trailheads.zip' in file:
-        #     trailheads_uploaded = True
+    if steward.status == "has segments":
+        # transform segments
+        return redirect("/stewards/"+steward.id+"/transform/segments")
+    
+    if steward.status == "show segments":
+        # unzip segments
+        zf = zipfile.ZipFile(steward.id + "/opentrails/segments.geojson.zip", 'r')
+        zf.extractall(steward.id + "/opentrails")
 
-    # if raw_segments:
-    #     # Show a sample of what was uploaded
-    #     filepath = steward_id + '/uploads/segments.geojson.zip'
-    #     datastore.download(filepath)
-    #     zf = zipfile.ZipFile(filepath, 'r')
-    #     zf.extractall(os.path.split(filepath)[0])
-    #     raw_segments_data = open(steward_id + '/uploads/segments.geojson')
-    #     raw_segments_geojson = json.load(raw_segments_data)
-    #     sample_segment = {'type': 'FeatureCollection', 'features': []}
-    #     sample_segment['features'].append(raw_segments_geojson['features'][0])
+        # show segments on a map
+        opentrails_segments_file = open(steward.id + "/opentrails/segments.geojson","r")
+        opentrails_segments = json.load(opentrails_segments_file)
+        opentrails_segments_file.close() 
+    else:
+        opentrails_segments = False
 
-    # if segments_transformed:
-    #     datastore.download(steward_id + '/opentrails/segments.zip')
-    #     unzip(steward_id + '/opentrails/segments.zip')
-    #     segments_data = open(steward_id + '/opentrails/segments.geojson')
-    #     segments_geojson = json.load(segments_data)
-    #     sample_segment = {'type': 'FeatureCollection', 'features': [segments_geojson['features'][0]]}
+    return render_template('index.html', steward = steward, opentrails_segments = opentrails_segments)
 
-    # if trailheads_uploaded:
-    #     datastore.download(steward_id +'/opentrails/trailheads.zip')
-    #     unzip(steward_id +'/opentrails/trailheads.zip')
-    #     trailhead_data = open(steward_id + '/opentrails/trailheads.geojson')
-    #     trailheads_geojson = json.load(trailhead_data)
-
-    return render_template('index.html', steward = steward)
-    # return render_template('index.html', stewards_info = stewards_info, segments_geojson = sample_geojson, trailheads_geojson = trailheads_geojson)
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])

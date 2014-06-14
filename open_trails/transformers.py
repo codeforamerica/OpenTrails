@@ -15,6 +15,16 @@ def shapefile2geojson(shapefilepath):
     geojson_data.close()
     return geojson
 
+def segments_transform(raw_geosjon, steward):
+    try:
+        return portland_transform(raw_geojson)
+    except:
+        pass
+    try:
+        return sa_transform(raw_geojson, steward.id)
+    except:
+        pass
+
 def portland_transform(raw_geojson):
 
     opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
@@ -59,6 +69,7 @@ def portland_transform(raw_geojson):
     return opentrails_geojson
 
 def sa_transform(raw_geojson, steward_id):
+    import pdb; pdb.set_trace()
 
     opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
 

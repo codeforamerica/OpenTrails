@@ -3,17 +3,22 @@ from werkzeug.utils import secure_filename
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 from boto.s3.key import Key
 from models import Steward
+from flask import make_response
 
 
-def make_steward_from_datastore(datastore, filepath):
+def get_steward(datastore, id):
     '''
     Creates a steward object from the stewards.csv file
     '''
-    datastore.download(filepath)
-    with open(filepath, 'r') as csvfile:
+    try:
+        datastore.download(id + '/uploads/stewards.csv')
+    except AttributeError:
+        return None
+    with open(id + '/uploads/stewards.csv', 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            steward = Steward(row['id'], row['url'], row['name'], row['phone'], row['address'], row['publisher'])
+            steward = Steward(row)
+            steward.datastore = datastore
             return steward
 
 

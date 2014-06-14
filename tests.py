@@ -142,34 +142,41 @@ class TestApp (TestCase):
 #         self.assertTrue('newtesturl5' in response.data)
 #         self.assertTrue('newtesturl9' in response.data)
 
-#     def test_existing_steward_only_stewards_csv(self):
-#         ''' Test accessing a steward at the first step,
-#             with only a steward.csv file available
-#         '''
-#         #
-#         # Check that page shows test steward
-#         #
-#         response = self.app.get("/stewards/testurl")
-#         self.assertTrue('Test Steward' in response.data)
-#         self.assertTrue('testurl' in response.data)
-#         #
-#         # Check for a file upload field in the home page form.
-#         #
-#         soup = BeautifulSoup(response.data)
-#         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
-#         self.assertEqual("/stewards/testurl/upload", form['action'])
-#         self.assertTrue('multipart/form-data' in form['enctype'])
-#         self.assertTrue(form.find_all('input', attrs=dict(type='file')))
+    def test_existing_steward_only_stewards_csv(self):
+        ''' Test accessing a steward at the first step,
+            with only a steward.csv file available
+        '''
+        #
+        # Check that page shows test steward
+        #
+        response = self.app.get("/stewards/testurl")
+        self.assertEqual(response.status_code, 200)
+        
+        # Test that steward info shows up where its supposed to
+        soup = BeautifulSoup(response.data)
+        name = soup.find(id='steward-name')
+        self.assertTrue('Test Steward' in name.string)
+        url = soup.find(id='steward-url')
+        self.assertTrue('testurl' in url.string)
+        
+        #
+        # Check for a file upload field in the home page form.
+        #
+        form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertEqual("/stewards/testurl/upload", form['action'])
+        self.assertTrue('multipart/form-data' in form['enctype'])
+        self.assertTrue(form.find_all('input', attrs=dict(type='file')))
 
-#     def test_upload_zip(self):
-#         ''' Test uploading zips to the test steward
-#         '''
-#         for filepath in glob.glob(os.path.join(self.tmp, '*.zip')):
-#             filename = os.path.split(filepath)[1]
-#             file = open(filepath)
-#             uploaded = self.app.post("/stewards/testurl/upload", data={"file" : file}, follow_redirects=True)
-#             self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
-#             self.assertEqual(uploaded.status_code, 200)
+    def test_upload_zip(self):
+        ''' Test uploading zips to the test steward
+        '''
+        for filepath in glob.glob('*.zip'):
+            filename = os.path.split(filepath)[1]
+            file = open(filepath)
+            self.assertFalse( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+            uploaded = self.app.post("/stewards/testurl/upload", data={"file" : file}, follow_redirects=True)
+            self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+            self.assertEqual(uploaded.status_code, 200)
 
 #     def test_transform_segments(self):
 #         ''' Test transforming trail segments
