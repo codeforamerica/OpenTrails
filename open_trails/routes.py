@@ -1,6 +1,6 @@
 from open_trails import app
 from models import Steward, make_datastore
-from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file
+from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file, get_sample_of_original_segments
 from transformers import shapefile2geojson, segments_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time, re
@@ -77,7 +77,7 @@ def upload(steward_id):
 
         # Find shapefile in zip
         for file in os.listdir(os.path.split(zipfilepath)[0]):
-            if '.shp' in file:
+            if file.endswith(".shp"):
                 shapefilepath = os.path.join(os.path.split(zipfilepath)[0], file)
 
         # Get geojson data from shapefile
@@ -161,7 +161,7 @@ def existing_steward(id):
     '''
 
     # Init some variable
-    sample_segment, opentrails_segments = False, False
+    sample_segment, opentrails_sample_segment = False, False
 
     datastore = make_datastore(app.config['DATASTORE'])
     steward = get_steward(datastore, id)
@@ -169,43 +169,32 @@ def existing_steward(id):
         return make_response("No Steward Found", 404)
     steward.get_status()
 
-    if steward.status == "transform segments":
-        # transform segments
-        return redirect("/stewards/"+steward.id+"/transform/segments")
+    # if steward.status == "transform segments":
+    #     # transform segments
+    #     return redirect("/stewards/"+steward.id+"/transform/segments")
     
     if steward.status == "show uploaded segments":
-        # Get the .geojson.zip
-        # Download the original segments file
-        filelist = datastore.filelist(steward.id)
-        matching = [filename for filename in filelist if ".geojson.zip" in filename]
-        segments_zip = matching[0]
+        sample_segment = get_sample_of_original_segments(steward)
+
+    if steward.status == "show opentrails segments":
+        sample_segment = get_sample_of_original_segments(steward)
+
+        # Get the segments.geojson.zip
+        # Download the transformed segments file
+        segments_zip = steward.id + "/opentrails/segments.geojson.zip"
         datastore.download(segments_zip)
 
         # Unzip it
         zf = zipfile.ZipFile(segments_zip, 'r')
         zf.extractall(os.path.split(segments_zip)[0])
 
-        # Find geojson file
-        for file in os.listdir(steward.id + "/uploads/"):
-            if file.endswith(".geojson"):
-                segmentsfile = open(steward.id + "/uploads/" + file)
-                original_segments = json.load(segmentsfile)
-                segmentsfile.close()
-                sample_segment = {'type': 'FeatureCollection', 'features': []}
-                sample_segment['features'].append(original_segments['features'][0])
+        segmentsfile = open(steward.id + "/opentrails/segments.geojson")
+        trasformed_segments = json.load(segmentsfile)
+        segmentsfile.close()
+        opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
+        opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
 
-        # unzip segments
-        # zf = zipfile.ZipFile(steward.id + "/opentrails/segments.geojson.zip", 'r')
-        # zf.extractall(steward.id + "/opentrails")
-
-        # # show segments on a map
-        # opentrails_segments_file = open(steward.id + "/opentrails/segments.geojson","r")
-        # opentrails_segments = json.load(opentrails_segments_file)
-        # opentrails_segments_file.close() 
-    else:
-        opentrails_segments = False
-
-    return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_segments = opentrails_segments)
+    return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
 
 
 ### Engine Light - http://engine-light.codeforamerica.org/

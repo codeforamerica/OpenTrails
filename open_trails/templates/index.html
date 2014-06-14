@@ -101,30 +101,35 @@
         {% endif %}
 
         {% if sample_segment %}
-
-        <table class="layout-semibreve">
-            <thead>
-                <tr>
-                    <th colspan="2">Sample Segment Data</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <section class="layout-semibreve">
+            <table id="original-sample">
+                <thead>
+                    <tr>
+                        <th colspan="5">Sample Segment Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            {% if not opentrails_sample_segment %}
+            <img src="{{ url_for('static', filename = 'img/dark-helmet.jpg') }}">
+            <a href="/stewards/{{steward.id}}/transform/segments" class="button-alternative button-progress">Commence the transforming!</a>
+            {% endif %}
+        </section>
 
         <script>
             var geojson = {{ sample_segment | tojson | safe }}
             // For each property make a column
-            $("tbody").append("<tr>")
+            $("#original-sample tbody").append("<tr>")
             $.each(geojson['features'][0]['properties'], function(key, property){
-                $("tbody").append("<td>"+key+"</td>")
+                $("#original-sample tbody").append("<td>"+key+"</td>")
             })
-            $("tbody").append("</tr>")
-            $("tbody").append("<tr>")
+            $("#original-sample tbody").append("</tr>")
+            $("#original-sample tbody").append("<tr>")
             $.each(geojson['features'][0]['properties'], function(key, property){
-                $("tbody").append("<td>"+property+"</td>")
+                $("#original-sample tbody").append("<td>"+property+"</td>")
             })
-            $("tbody").append("</tr>")
+            $("#original-sample tbody").append("</tr>")
 
             // $.each(geojson['features'][0]['properties'], function(key, property){
             //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
@@ -134,34 +139,38 @@
 
         {% endif %}
 
-        {% if opentrails_segments %}
+        {% if opentrails_sample_segment %}
 
         <section class="layout-semibreve">
-            <h3>Segments</h3>
-            <div id="map"></div>
+            <table id="transformed-sample">
+                <thead>
+                    <tr>
+                        <th colspan="10">Sample Transformed Segment Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </section>
 
-        <section class="layout-semibreve">
-            <h3>Named Trails</h3>
-            <div id="named-trails">
-            </div>
-        </section>
-
-           <script>
-            var geojson = {{ opentrails_segments | tojson | safe }}
-            var map = L.mapbox.map('map', 'codeforamerica.i7jo99nd')
-            geojsonLayer = L.geoJson(geojson, {
-                style: function (feature) {
-                    return {color: "red"};
-                }
+        <script>
+            var geojson = {{ opentrails_sample_segment | tojson | safe }}
+            // For each property make a column
+            $("#transformed-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#transformed-sample tbody").append("<td>"+key+"</td>")
             })
-            geojsonLayer.addTo(map);
-            map.fitBounds(geojsonLayer.getBounds());
+            $("#transformed-sample tbody").append("</tr>")
+            $("#transformed-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#transformed-sample tbody").append("<td>"+property+"</td>")
+            })
+            $("#transformed-sample tbody").append("</tr>")
 
-            for (segment in geojson.features) {
-                var p = "<p>"+geojson.features[segment]['properties']['id']+"</p>";
-                $("#named-trails").append(p)
-            }
+            // $.each(geojson['features'][0]['properties'], function(key, property){
+            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+            // })
+            
         </script>
 
         {% endif %}

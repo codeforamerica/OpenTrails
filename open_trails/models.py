@@ -37,11 +37,11 @@ class Steward:
         # If the original segments file has been uploaded
         # But the transformed segments arent there
         if any(".geojson.zip" in filename for filename in filelist):
-            if not "/opentrails/segments.geojson.zip" in filelist:
+            if not self.id + "/opentrails/segments.geojson.zip" in filelist:
                 self.status = "show uploaded segments"
 
-        elif any("segments.geojson.zip" in filename for filename in filelist):
-            self.status = "show segments"
+        if self.id + "/opentrails/segments.geojson.zip" in filelist:
+            self.status = "show opentrails segments"
 
 class FilesystemDatastore:
 
@@ -112,7 +112,9 @@ class S3Datastore:
         if not os.path.isfile(filepath):
             key = self.bucket.get_key(filepath)
             try:
-                os.makedirs(os.path.dirname(filepath))
+                steward_id = filepath.split("/")[0]
+                os.makedirs(steward_id + "/uploads")
+                os.makedirs(steward_id + "/opentrails")
             except OSError:
                 pass
             key.get_contents_to_filename(filepath)

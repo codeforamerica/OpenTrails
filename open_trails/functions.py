@@ -55,3 +55,26 @@ def compress(input, output):
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
         myzip.write(input, os.path.split(input)[1])
 
+def get_sample_of_original_segments(steward):
+    # Get the .geojson.zip
+    # Download the original segments file
+    filelist = steward.datastore.filelist(steward.id)
+    matching = [filename for filename in filelist if ".geojson.zip" in filename]
+    segments_zip = matching[0]
+    steward.datastore.download(segments_zip)
+
+    # Unzip it
+    zf = zipfile.ZipFile(segments_zip, 'r')
+    zf.extractall(os.path.split(segments_zip)[0])
+
+    # Find geojson file
+    for file in os.listdir(steward.id + "/uploads/"):
+        if file.endswith(".geojson"):
+            segmentsfile = open(steward.id + "/uploads/" + file)
+            original_segments = json.load(segmentsfile)
+            segmentsfile.close()
+            sample_segment = {'type': 'FeatureCollection', 'features': []}
+            sample_segment['features'].append(original_segments['features'][0])
+
+    return sample_segment
+
