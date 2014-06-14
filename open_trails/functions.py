@@ -56,11 +56,12 @@ def compress(input, output):
         myzip.write(input, os.path.split(input)[1])
 
 def get_sample_of_original_segments(steward):
-    # Get the .geojson.zip
     # Download the original segments file
     filelist = steward.datastore.filelist(steward.id)
-    matching = [filename for filename in filelist if ".geojson.zip" in filename]
-    segments_zip = matching[0]
+    for file in filelist:
+        if "/uploads" in file and ".geojson.zip" in file:
+            segments_zip = file
+
     steward.datastore.download(segments_zip)
 
     # Unzip it
