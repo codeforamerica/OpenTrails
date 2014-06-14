@@ -83,9 +83,10 @@
                 {{ steward.url }}
             </p>
         </div>
+
     </section>
 
-        {% if steward.status == "need segments" %}
+        {% if steward.status == "needs segments" %}
         <section class="layout-semibreve">
             <h3 class="h3">Upload your trail data!!!!</h3>
             <p>Give it all to us!</p>
@@ -97,6 +98,40 @@
                 </p>
             </form>
         </section>
+        {% endif %}
+
+        {% if sample_segment %}
+
+        <table class="layout-semibreve">
+            <thead>
+                <tr>
+                    <th colspan="2">Sample Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <script>
+            var geojson = {{ sample_segment | tojson | safe }}
+            // For each property make a column
+            $("tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("tbody").append("<td>"+key+"</td>")
+            })
+            $("tbody").append("</tr>")
+            $("tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("tbody").append("<td>"+property+"</td>")
+            })
+            $("tbody").append("</tr>")
+
+            // $.each(geojson['features'][0]['properties'], function(key, property){
+            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+            // })
+            
+        </script>
+
         {% endif %}
 
         {% if opentrails_segments %}

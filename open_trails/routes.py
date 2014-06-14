@@ -1,7 +1,7 @@
 from open_trails import app
 from models import Steward, make_datastore
 from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file
-from transformers import shapefile2geojson, portland_transform, sa_transform
+from transformers import shapefile2geojson, segments_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time, re
 
@@ -9,6 +9,14 @@ import json, os, csv, zipfile, time, re
 def index():
     return render_template('index.html')
 
+@app.route('/stewards')
+def stewards():
+    '''
+    List out all the stewards that have used opentrails so far
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    stewards_list = datastore.stewards()
+    return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
 
 @app.route('/new-steward', methods=['POST'])
 def new_steward():
@@ -130,7 +138,6 @@ def transform(id, trailtype):
                 segmentsfile = open(steward.id + "/uploads/" + file)
                 original_segments = json.load(segmentsfile)
                 segmentsfile.close()
-                import pdb; pdb.set_trace()
                 opentrails_segments = segments_transform(original_segments, steward)
 
         # Write file from transformed segments
@@ -153,29 +160,52 @@ def existing_steward(id):
     Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
 
+    # Init some variable
+    sample_segment, opentrails_segments = False, False
+
     datastore = make_datastore(app.config['DATASTORE'])
     steward = get_steward(datastore, id)
     if not steward:
         return make_response("No Steward Found", 404)
     steward.get_status()
 
-    if steward.status == "has segments":
+    if steward.status == "transform segments":
         # transform segments
         return redirect("/stewards/"+steward.id+"/transform/segments")
     
-    if steward.status == "show segments":
-        # unzip segments
-        zf = zipfile.ZipFile(steward.id + "/opentrails/segments.geojson.zip", 'r')
-        zf.extractall(steward.id + "/opentrails")
+    if steward.status == "show uploaded segments":
+        # Get the .geojson.zip
+        # Download the original segments file
+        filelist = datastore.filelist(steward.id)
+        matching = [filename for filename in filelist if ".geojson.zip" in filename]
+        segments_zip = matching[0]
+        datastore.download(segments_zip)
 
-        # show segments on a map
-        opentrails_segments_file = open(steward.id + "/opentrails/segments.geojson","r")
-        opentrails_segments = json.load(opentrails_segments_file)
-        opentrails_segments_file.close() 
+        # Unzip it
+        zf = zipfile.ZipFile(segments_zip, 'r')
+        zf.extractall(os.path.split(segments_zip)[0])
+
+        # Find geojson file
+        for file in os.listdir(steward.id + "/uploads/"):
+            if file.endswith(".geojson"):
+                segmentsfile = open(steward.id + "/uploads/" + file)
+                original_segments = json.load(segmentsfile)
+                segmentsfile.close()
+                sample_segment = {'type': 'FeatureCollection', 'features': []}
+                sample_segment['features'].append(original_segments['features'][0])
+
+        # unzip segments
+        # zf = zipfile.ZipFile(steward.id + "/opentrails/segments.geojson.zip", 'r')
+        # zf.extractall(steward.id + "/opentrails")
+
+        # # show segments on a map
+        # opentrails_segments_file = open(steward.id + "/opentrails/segments.geojson","r")
+        # opentrails_segments = json.load(opentrails_segments_file)
+        # opentrails_segments_file.close() 
     else:
         opentrails_segments = False
 
-    return render_template('index.html', steward = steward, opentrails_segments = opentrails_segments)
+    return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_segments = opentrails_segments)
 
 
 ### Engine Light - http://engine-light.codeforamerica.org/
