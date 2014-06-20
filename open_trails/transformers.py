@@ -1,4 +1,4 @@
-import os, json, subprocess
+import os, json, subprocess, itertools
 
 def shapefile2geojson(shapefilepath):
     '''Converts a shapefile to a geojson file with spherical mercator.
@@ -16,6 +16,34 @@ def shapefile2geojson(shapefilepath):
     return geojson
 
 def segments_transform(raw_geojson, steward):
+    ''' Return a new GeoJSON structure, with standard fields guessed from properties.
+    '''
+    opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
+    id_counter = itertools.count(1)
+
+    for old_segment in raw_geojson['features']:
+        old_properties = old_segment['properties']
+    
+        new_segment = {
+         "type" : "Feature",
+         "geometry" : old_segment['geometry'],
+         "properties" : {
+             "id" : find_segment_id(old_properties) or id_counter.next(),
+             "stewardId" : None,
+             "name" : None,
+             "vehicles" : None,
+             "foot" : None,
+             "bicycle" : None,
+             "horse" : None,
+             "ski" : None,
+             "wheelchair" : None,
+             "osmTags" : None
+         }
+        }
+        opentrails_geojson['features'].append(new_segment)
+
+    return opentrails_geojson
+    
     try:
         return portland_transform(raw_geojson)
     except:

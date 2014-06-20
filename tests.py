@@ -75,6 +75,50 @@ class TestTransformers (TestCase):
         self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
         self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
 
+    def test_segments_conversion_Portland(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        converted_geojson = transformers.segments_transform(geojson, None)
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
+        self.assertEqual(converted_ids, expected_ids)
+    
+    def test_segments_conversion_San_Antonio(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        converted_geojson = transformers.segments_transform(geojson, None)
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = range(1, len(converted_ids) + 1)
+        self.assertEqual(converted_ids, expected_ids)
+    
+    def test_segments_conversion_GGNRA(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        converted_geojson = transformers.segments_transform(geojson, None)
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = range(1, len(converted_ids) + 1)
+        self.assertEqual(converted_ids, expected_ids)
+    
+    def test_segments_conversion_Santa_Clara(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        converted_geojson = transformers.segments_transform(geojson, None)
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
+        self.assertEqual(converted_ids, expected_ids)
+    
     def test_finding_segment_IDs_Portland(self):
         ''' Test search for trail segment IDs.
         
