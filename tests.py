@@ -75,6 +75,54 @@ class TestTransformers (TestCase):
         self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
         self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
 
+    def test_finding_segment_IDs_Portland(self):
+        ''' Test search for trail segment IDs.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/26
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_id, original_properties)
+        self.assertEqual(found_ids, [p['TRAILID'] for p in original_properties])
+
+    def test_finding_segment_IDs_San_Antonio(self):
+        ''' Test search for trail segment IDs.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/26
+        '''
+        path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_id, original_properties)
+        self.assertEqual(found_ids, [None for id in found_ids])
+
+    def test_finding_segment_IDs_GGNRA(self):
+        ''' Test search for trail segment IDs.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/26
+        '''
+        path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_id, original_properties)
+        self.assertEqual(found_ids, [None for id in found_ids])
+
+    def test_finding_segment_IDs_Santa_Clara(self):
+        ''' Test search for trail segment IDs.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/26
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_id, original_properties)
+        self.assertEqual(found_ids, [p['OBJECTID'] for p in original_properties])
+
 class TestApp (TestCase):
 
     def setUp(self):

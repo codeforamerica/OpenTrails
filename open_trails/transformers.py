@@ -25,6 +25,24 @@ def segments_transform(raw_geojson, steward):
     except:
         pass
 
+def find_segment_id(properties):
+    ''' Return the value of a unique segment identifier from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/26
+    '''
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    
+    if 'id' in keys:
+        return values[keys.index('id')]
+    
+    elif 'trailid' in keys:
+        return values[keys.index('trailid')]
+    
+    elif 'objectid' in keys:
+        return values[keys.index('objectid')]
+    
+    return None
+
 def portland_transform(raw_geojson):
 
     opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
