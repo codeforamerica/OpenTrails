@@ -1,4 +1,4 @@
-import os, json, subprocess, itertools
+import os, json, subprocess, itertools, re
 
 def shapefile2geojson(shapefilepath):
     '''Converts a shapefile to a geojson file with spherical mercator.
@@ -33,7 +33,7 @@ def segments_transform(raw_geojson, steward):
              "name" : None,
              "vehicles" : None,
              "foot" : find_segment_foot_use(old_properties),
-             "bicycle" : None,
+             "bicycle" : find_segment_bicycle_use(old_properties),
              "horse" : None,
              "ski" : None,
              "wheelchair" : None,
@@ -63,7 +63,7 @@ def find_segment_id(properties):
     return None
 
 def find_segment_foot_use(properties):
-    ''' Return the value of a unique segment identifier from feature properties.
+    ''' Return the value of a segment foot use flag from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/28
     '''
@@ -71,6 +71,7 @@ def find_segment_foot_use(properties):
     
     # Search for a hike column
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+
     if 'hike' in keys:
         return yes_nos.get(values[keys.index('hike')].lower(), None)
     if 'walk' in keys:
@@ -79,8 +80,8 @@ def find_segment_foot_use(properties):
         return yes_nos.get(values[keys.index('foot')].lower(), None)
 
     # Search for a use column and look for hiking inside
-    import re
     pattern = re.compile(r'\b(multi-use|hike|foot|hiking|walk|walking)\b', re.I)
+
     if 'use' in keys:
         if values[keys.index('use')] is None: return None
         return pattern.search(values[keys.index('use')]) and 'yes' or 'no'
@@ -90,6 +91,30 @@ def find_segment_foot_use(properties):
     if 'pubuse' in keys:
         if values[keys.index('pubuse')] is None: return None
         return pattern.search(values[keys.index('pubuse')]) and 'yes' or 'no'
+            
+    return None
+
+def find_segment_bicycle_use(properties):
+    ''' Return the value of a segment bicycle use flag from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/28
+    '''
+    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
+    
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+
+    # Search for a bicycle column
+    for bicycle in 'bike', 'roadbike', 'bikes', 'road bike', 'mtnbike':
+        if bicycle in keys:
+            return yes_nos.get(values[keys.index(bicycle)].lower(), None)
+
+    # Search for a use column and look for biking inside
+    pattern = re.compile(r'\b(multi-use|bike|roadbike|bicycling|bicycling)\b', re.I)
+    
+    for combined in 'use', 'use_type', 'pubuse':
+        if combined in keys:
+            if values[keys.index(combined)] is None: return None
+            return pattern.search(values[keys.index(combined)]) and 'yes' or 'no'
             
     return None
 
