@@ -32,7 +32,7 @@ def segments_transform(raw_geojson, steward):
              "stewardId" : None,
              "name" : None,
              "vehicles" : None,
-             "foot" : None,
+             "foot" : find_segment_foot_use(old_properties),
              "bicycle" : None,
              "horse" : None,
              "ski" : None,
@@ -43,15 +43,6 @@ def segments_transform(raw_geojson, steward):
         opentrails_geojson['features'].append(new_segment)
 
     return opentrails_geojson
-    
-    try:
-        return portland_transform(raw_geojson)
-    except:
-        pass
-    try:
-        return sa_transform(raw_geojson, steward.id)
-    except:
-        pass
 
 def find_segment_id(properties):
     ''' Return the value of a unique segment identifier from feature properties.
@@ -69,6 +60,37 @@ def find_segment_id(properties):
     elif 'objectid' in keys:
         return values[keys.index('objectid')]
     
+    return None
+
+def find_segment_foot_use(properties):
+    ''' Return the value of a unique segment identifier from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/28
+    '''
+    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
+    
+    # Search for a hike column
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    if 'hike' in keys:
+        return yes_nos.get(values[keys.index('hike')].lower(), None)
+    if 'walk' in keys:
+        return yes_nos.get(values[keys.index('walk')].lower(), None)
+    if 'foot' in keys:
+        return yes_nos.get(values[keys.index('foot')].lower(), None)
+
+    # Search for a use column and look for hiking inside
+    import re
+    pattern = re.compile(r'\b(multi-use|hike|foot|hiking|walk|walking)\b', re.I)
+    if 'use' in keys:
+        if values[keys.index('use')] is None: return None
+        return pattern.search(values[keys.index('use')]) and 'yes' or 'no'
+    if 'use_type' in keys:
+        if values[keys.index('use_type')] is None: return None
+        return pattern.search(values[keys.index('use_type')]) and 'yes' or 'no'
+    if 'pubuse' in keys:
+        if values[keys.index('pubuse')] is None: return None
+        return pattern.search(values[keys.index('pubuse')]) and 'yes' or 'no'
+            
     return None
 
 def portland_transform(raw_geojson):
