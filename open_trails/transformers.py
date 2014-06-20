@@ -34,7 +34,7 @@ def segments_transform(raw_geojson, steward):
              "vehicles" : None,
              "foot" : find_segment_foot_use(old_properties),
              "bicycle" : find_segment_bicycle_use(old_properties),
-             "horse" : None,
+             "horse" : find_segment_horse_use(old_properties),
              "ski" : None,
              "wheelchair" : None,
              "osmTags" : None
@@ -97,7 +97,7 @@ def find_segment_foot_use(properties):
 def find_segment_bicycle_use(properties):
     ''' Return the value of a segment bicycle use flag from feature properties.
     
-        Implements logic in https://github.com/codeforamerica/PLATS/issues/28
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/29
     '''
     yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
     
@@ -110,6 +110,30 @@ def find_segment_bicycle_use(properties):
 
     # Search for a use column and look for biking inside
     pattern = re.compile(r'\b(multi-use|bike|roadbike|bicycling|bicycling)\b', re.I)
+    
+    for combined in 'use', 'use_type', 'pubuse':
+        if combined in keys:
+            if values[keys.index(combined)] is None: return None
+            return pattern.search(values[keys.index(combined)]) and 'yes' or 'no'
+            
+    return None
+
+def find_segment_horse_use(properties):
+    ''' Return the value of a segment horse use flag from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/30
+    '''
+    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
+    
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+
+    # Search for a horse column
+    for horse in 'horse', 'horses', 'equestrian':
+        if horse in keys:
+            return yes_nos.get(values[keys.index(horse)].lower(), None)
+
+    # Search for a use column and look for biking inside
+    pattern = re.compile(r'\b(horse|horses|equestrian)\b', re.I)
     
     for combined in 'use', 'use_type', 'pubuse':
         if combined in keys:
