@@ -111,7 +111,7 @@ def find_segment_foot_use(properties):
 
     # Search for a use column and look for hiking inside
     fieldnames = 'use', 'use_type', 'pubuse'
-    pattern = re.compile(r'\b(multi-use|hike|foot|hiking|walk|walking)\b', re.I)
+    pattern = re.compile(r'\b(?<!no )(multi-use|hike|foot|hiking|walk|walking)\b', re.I)
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
@@ -131,7 +131,7 @@ def find_segment_bicycle_use(properties):
 
     # Search for a use column and look for biking inside
     fieldnames = 'use', 'use_type', 'pubuse'
-    pattern = re.compile(r'\b(multi-use|bike|roadbike|bicycling|bicycling)\b', re.I)
+    pattern = re.compile(r'\b(?<!no )(multi-use|bike|bikes|roadbike|road bike|bicycles|bicycling|bicycling)\b', re.I)
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
@@ -151,7 +151,7 @@ def find_segment_horse_use(properties):
 
     # Search for a use column and look for horsies inside
     fieldnames = 'use', 'use_type', 'pubuse'
-    pattern = re.compile(r'\b(horse|horses|equestrian)\b', re.I)
+    pattern = re.compile(r'\b(?<!no )(horse|horses|equestrian|horseback)\b', re.I)
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
