@@ -51,14 +51,50 @@ def find_segment_id(properties):
     '''
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
     
-    if 'id' in keys:
-        return values[keys.index('id')]
+    for field in ('id', 'trailid', 'objectid'):
+        if field in keys:
+            return values[keys.index(field)]
     
-    elif 'trailid' in keys:
-        return values[keys.index('trailid')]
+    return None
+
+def _has_listed_field(properties, fieldnames):
+    ''' Return true if properties has one of the case-insensitive field names.
+    '''
+    keys = [k.lower() for k in properties.keys()]
+
+    for field in fieldnames:
+        if field.lower() in keys:
+            return True
     
-    elif 'objectid' in keys:
-        return values[keys.index('objectid')]
+    return False
+
+def _get_value_yes_no(properties, fieldnames):
+    ''' Return yes/no value for one of the case-insensitive field names.
+    '''
+    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
+    
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+
+    for field in fieldnames:
+        if field.lower() in keys:
+            value = values[keys.index(field)]
+            return yes_nos.get(value.lower(), None)
+    
+    return None
+
+def _get_match_yes_no(properties, pattern, fieldnames):
+    ''' Return yes/no value for pattern match on one of the case-insensitive field names.
+    '''
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+
+    for field in fieldnames:
+        if field.lower() in keys:
+            value = values[keys.index(field)]
+            
+            if type(value) not in (str, unicode):
+                return None
+            
+            return pattern.search(value) and 'yes' or 'no'
     
     return None
 
@@ -67,30 +103,18 @@ def find_segment_foot_use(properties):
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/28
     '''
-    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
-    
     # Search for a hike column
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
-
-    if 'hike' in keys:
-        return yes_nos.get(values[keys.index('hike')].lower(), None)
-    if 'walk' in keys:
-        return yes_nos.get(values[keys.index('walk')].lower(), None)
-    if 'foot' in keys:
-        return yes_nos.get(values[keys.index('foot')].lower(), None)
+    fieldnames = 'hike', 'walk', 'foot'
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
     # Search for a use column and look for hiking inside
+    fieldnames = 'use', 'use_type', 'pubuse'
     pattern = re.compile(r'\b(multi-use|hike|foot|hiking|walk|walking)\b', re.I)
-
-    if 'use' in keys:
-        if values[keys.index('use')] is None: return None
-        return pattern.search(values[keys.index('use')]) and 'yes' or 'no'
-    if 'use_type' in keys:
-        if values[keys.index('use_type')] is None: return None
-        return pattern.search(values[keys.index('use_type')]) and 'yes' or 'no'
-    if 'pubuse' in keys:
-        if values[keys.index('pubuse')] is None: return None
-        return pattern.search(values[keys.index('pubuse')]) and 'yes' or 'no'
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_match_yes_no(properties, pattern, fieldnames)
             
     return None
 
@@ -99,22 +123,18 @@ def find_segment_bicycle_use(properties):
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/29
     '''
-    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
-    
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
-
     # Search for a bicycle column
-    for bicycle in 'bike', 'roadbike', 'bikes', 'road bike', 'mtnbike':
-        if bicycle in keys:
-            return yes_nos.get(values[keys.index(bicycle)].lower(), None)
+    fieldnames = 'bike', 'roadbike', 'bikes', 'road bike', 'mtnbike'
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
     # Search for a use column and look for biking inside
+    fieldnames = 'use', 'use_type', 'pubuse'
     pattern = re.compile(r'\b(multi-use|bike|roadbike|bicycling|bicycling)\b', re.I)
     
-    for combined in 'use', 'use_type', 'pubuse':
-        if combined in keys:
-            if values[keys.index(combined)] is None: return None
-            return pattern.search(values[keys.index(combined)]) and 'yes' or 'no'
+    if _has_listed_field(properties, fieldnames):
+        return _get_match_yes_no(properties, pattern, fieldnames)
             
     return None
 
@@ -123,22 +143,18 @@ def find_segment_horse_use(properties):
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/30
     '''
-    yes_nos = {'y': 'yes', 'yes': 'yes', 'n': 'no', 'no': 'no'}
-    
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
-
     # Search for a horse column
-    for horse in 'horse', 'horses', 'equestrian':
-        if horse in keys:
-            return yes_nos.get(values[keys.index(horse)].lower(), None)
+    fieldnames = 'horse', 'horses', 'equestrian'
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
-    # Search for a use column and look for biking inside
+    # Search for a use column and look for horsies inside
+    fieldnames = 'use', 'use_type', 'pubuse'
     pattern = re.compile(r'\b(horse|horses|equestrian)\b', re.I)
     
-    for combined in 'use', 'use_type', 'pubuse':
-        if combined in keys:
-            if values[keys.index(combined)] is None: return None
-            return pattern.search(values[keys.index(combined)]) and 'yes' or 'no'
+    if _has_listed_field(properties, fieldnames):
+        return _get_match_yes_no(properties, pattern, fieldnames)
             
     return None
 
