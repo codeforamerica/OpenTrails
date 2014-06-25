@@ -158,6 +158,26 @@ def find_segment_horse_use(properties):
             
     return None
 
+def find_segment_ski_use(properties):
+    ''' Return the value of a segment ski use flag from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/30
+    '''
+    # Search for a ski column
+    fieldnames = 'ski', 'XCntrySki', 'CROSSCSKI'
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
+
+    # Search for a use column and look for horsies inside
+    fieldnames = 'use', 'use_type', 'pubuse'
+    pattern = re.compile(r'\b(?<!no )(ski|xcntryski|skiing|countryski|crosscountryski|multi-use)\b', re.I)
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_match_yes_no(properties, pattern, fieldnames)
+            
+    return None
+
 def portland_transform(raw_geojson):
 
     opentrails_geojson = {'type': 'FeatureCollection', 'features': []}

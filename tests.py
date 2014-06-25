@@ -377,6 +377,42 @@ class TestTransformers (TestCase):
         uses = {'hiking': 'no', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
         self.assertEqual(found_ids, [uses.get(p['PUBUSE'], None) for p in original_properties])
 
+    def test_finding_segment_ski_use_Portland(self):
+        ''' Test search for trail ski use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/31
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_ski_use, original_properties)
+        self.assertEqual(found_ids, [None for p in original_properties])
+
+    def test_finding_segment_ski_use_GGNRA(self):
+        ''' Test search for trail ski use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/31
+        '''
+        path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        found_ids = map(transformers.find_segment_ski_use, original_properties)
+        self.assertEqual(found_ids, ['yes', 'no', 'yes', 'yes', None, 'yes'])
+
+    # def test_finding_segment_ski_use_Santa_Clara(self):
+    #     ''' Test search for trail ski use.
+        
+    #         See also https://github.com/codeforamerica/PLATS/issues/31
+    #     '''
+    #     path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
+    #     geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+    #     original_properties = [f['properties'] for f in geojson['features']]
+    #     found_ids = map(transformers.find_segment_ski_use, original_properties)
+    #     self.assertEqual(found_ids, ['yes', 'no', 'yes', 'yes', None, 'yes'])
+
 class TestApp (TestCase):
 
     def setUp(self):
