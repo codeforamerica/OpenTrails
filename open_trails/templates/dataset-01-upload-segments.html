@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6435252/678502/css/fonts.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/0/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/0/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="../static/css/app.css" />
+
+    {% if opentrails_segments %}
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
+    {% endif %}
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<body>
+	<section class="layout-semibreve layout-centered">
+
+	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
+
+	</section>
+
+        <section class="layout-semibreve">
+            <h3 class="h3">Upload your trail data!!!!</h3>
+            <p>Give it all to us!</p>
+            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+                <p>
+                    <input type=file name=file>
+                    <input type=hidden name="trailtype" value="segments">
+                    <input type=submit value=Upload>
+                </p>
+            </form>
+        </section>
+
+</html>

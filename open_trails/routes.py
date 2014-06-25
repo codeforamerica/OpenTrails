@@ -61,8 +61,8 @@ def new_dataset():
     return redirect('/datasets/' + dataset.id)
 
 
-@app.route('/stewards/<steward_id>/upload', methods=['POST'])
-def upload(steward_id):
+@app.route('/datasets/<dataset_id>/upload', methods=['POST'])
+def upload(dataset_id):
     '''
     Upload a zip of one shapefile to datastore
     '''
@@ -72,8 +72,8 @@ def upload(steward_id):
     if request.files['file'] and allowed_file(request.files['file'].filename):
         
         # Save zip file to disk
-        # /examplesteward/uploads/mytrailsegments.zip
-        zipfilepath = os.path.join(steward_id, 'uploads', request.files['file'].filename)
+        # /blahblahblah/uploads/mytrailsegments.zip
+        zipfilepath = os.path.join(dataset_id, 'uploads', os.path.basename(request.files['file'].filename))
         request.files['file'].save(zipfilepath)
 
         # Upload original file to S3
@@ -92,10 +92,10 @@ def upload(steward_id):
         geojson = shapefile2geojson(shapefilepath)
 
         # clean up - delete uneeded shapefiles
-        dont_delete = ['csv','zip','geojson']
-        for file in os.listdir(steward_id + '/uploads'):
-            if file.split('.')[1] not in dont_delete: 
-                os.remove(steward_id + '/uploads/' + file)
+        dont_delete = ['.csv','.zip','.geojson']
+        for file in os.listdir(dataset_id + '/uploads'):
+            if os.path.splitext(file)[1] not in dont_delete: 
+                os.remove(dataset_id + '/uploads/' + file)
 
         # Write original geojson to file
         geojsonfilepath = zipfilepath.replace('.zip', '.geojson')
@@ -110,11 +110,23 @@ def upload(steward_id):
         datastore.upload(geojsonfilepath + ".zip")
 
         # Show sample data from original file
-        return redirect('/stewards/' + steward_id)
+        return redirect('/datasets/' + dataset_id + "/sample-segment")
 
     else:
         return make_response("Only .zip files allowed", 403)
 
+@app.route('/datasets/<dataset_id>/sample-segment')
+def show_sample_segment(dataset_id):
+    '''
+    Show an example row of data
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+
+    sample_segment = get_sample_of_original_segments(dataset)
+    return render_template("dataset-02-show-sample-segment.html", dataset=dataset, sample_segment=sample_segment)
 
 @app.route('/stewards/<id>/transform/<trailtype>')
 def transform(id, trailtype):
@@ -203,7 +215,7 @@ def existing_dataset(id):
     #     opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
-    return render_template('index.html', )
+    return render_template('dataset-01-upload-segments.html', dataset=dataset)
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])

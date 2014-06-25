@@ -454,8 +454,9 @@ class TestApp (TestCase):
         rmtree(self.tmp)
         os.chdir(self.dir)
 
-    def test_new_dataset(self):
+    def test_everything(self):
         '''Test creating a new .valid
+            Test show a sample segment
         '''
 
         response = self.app.post('/new-dataset', follow_redirects=True)
@@ -466,6 +467,25 @@ class TestApp (TestCase):
         # Ensure there is exactly one file and that it's called ".valid"
         (filename, ) = datastore.filelist('')
         self.assertTrue(filename.endswith('/.valid'))
+
+        #
+        # Check for a file upload field in the home page form.
+        #
+        soup = BeautifulSoup(response.data)
+        form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/upload'))
+        self.assertTrue('multipart/form-data' in form['enctype'])
+        self.assertTrue(form.find_all('input', attrs=dict(type='file')))
+
+        # Upload a zipped shapefile
+        file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
+        uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('Tualatin' in uploaded.data)
+
+
+            # self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
+            # self.assertEqual(uploaded.status_code, 302)
 
         # # Test that steward info shows up where its supposed to
         # soup = BeautifulSoup(response.data)

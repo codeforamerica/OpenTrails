@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.typography.com/6435252/678502/css/fonts.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/0/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/0/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/0/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="../static/css/app.css" />
+
+    {% if opentrails_segments %}
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
+    {% endif %}
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<body>
+	<section class="layout-semibreve layout-centered">
+
+	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
+
+	</section>
+
+        <section class="layout-semibreve">
+            <table id="original-sample">
+                <thead>
+                    <tr>
+                        <th colspan="5">Sample Segment Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </section>
+
+        <script>
+            var geojson = {{ sample_segment | tojson | safe }}
+            // For each property make a column
+            $("#original-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<td>"+key+"</td>")
+            })
+            $("#original-sample tbody").append("</tr>")
+            $("#original-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<td>"+property+"</td>")
+            })
+            $("#original-sample tbody").append("</tr>")
+
+            // $.each(geojson['features'][0]['properties'], function(key, property){
+            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+            // })
+            
+        </script>
+
+</html>
