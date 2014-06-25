@@ -6,20 +6,19 @@ from models import Dataset
 from flask import make_response
 
 
-def get_steward(datastore, id):
+def get_dataset(datastore, id):
     '''
-    Creates a steward object from the stewards.csv file
+    Creates a dataset object from the .valid file
     '''
     try:
-        datastore.download(id + '/uploads/stewards.csv')
+        datastore.download(id + '/uploads/.valid')
     except AttributeError:
         return None
-    with open(id + '/uploads/stewards.csv', 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            steward = Steward(row)
-            steward.datastore = datastore
-            return steward
+    with open(id + '/uploads/.valid', 'r') as validfile:
+        if validfile.read() == id:
+            dataset = Dataset(id)
+            dataset.datastore = datastore
+            return dataset
 
 
 def allowed_file(filename):

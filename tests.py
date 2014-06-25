@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 from open_trails import app, transformers
 from open_trails.functions import unzip, compress
+from open_trails.models import make_datastore
 
 class FakeUpload:
     ''' Pretend to be a file upload in flask.
@@ -439,36 +440,39 @@ class TestApp (TestCase):
         os.chdir(self.tmp + '/working-dir')
 
         self.app = app.test_client()
+        self.config = app.config
 
         # Set up file structure of a fake steward
-        data = {
-            "name" : "Test Steward",
-            "url" : "http://testurl.com",
-            "phone" : "123456789"
-            }
-        self.app.post('/new-steward', data=data)
+        # data = {
+        #     "name" : "Test Steward",
+        #     "url" : "http://testurl.com",
+        #     "phone" : "123456789"
+        #     }
+        # self.app.post('/new-steward', data=data)
 
     def tearDown(self):
         rmtree(self.tmp)
         os.chdir(self.dir)
 
-    def test_new_steward(self):
-        '''Test creating a new stewards.csv
+    def test_new_dataset(self):
+        '''Test creating a new .valid
         '''
-        data = {
-            "name" : "New Test Steward",
-            "url" : "http://newtesturl.com"
-            }
 
-        response = self.app.post('/new-steward', data=data, follow_redirects=True)
+        response = self.app.post('/new-dataset', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
-        # Test that steward info shows up where its supposed to
-        soup = BeautifulSoup(response.data)
-        name = soup.find(id='steward-name')
-        self.assertTrue(data['name'] in name.string)
-        url = soup.find(id='steward-url')
-        self.assertTrue(data['url'] in url.string)
+        datastore = make_datastore(self.config['DATASTORE'])
+
+        # Ensure there is exactly one file and that it's called ".valid"
+        (filename, ) = datastore.filelist('')
+        self.assertTrue(filename.endswith('/.valid'))
+
+        # # Test that steward info shows up where its supposed to
+        # soup = BeautifulSoup(response.data)
+        # name = soup.find(id='steward-name')
+        # self.assertTrue(data['name'] in name.string)
+        # url = soup.find(id='steward-url')
+        # self.assertTrue(data['url'] in url.string)
 
 
     def test_stewards_list(self):

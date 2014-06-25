@@ -1,6 +1,6 @@
 from open_trails import app
 from models import Dataset, make_datastore
-from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file, get_sample_of_original_segments
+from functions import get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file, get_sample_of_original_segments
 from transformers import shapefile2geojson, segments_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time, re
@@ -45,6 +45,10 @@ def new_dataset():
     except OSError:
         pass
 
+    # Write a verifying file to prove we created these folders
+    with open(os.path.join(dataset.id, 'uploads', '.valid'), "w") as validfile:
+        validfile.write(dataset.id)
+
     # # Write a stewards.csv file
     # stewards_info_filepath = os.path.join(steward.id, 'uploads', 'stewards.csv')
     # with open(stewards_info_filepath, 'w') as csvfile:
@@ -52,8 +56,8 @@ def new_dataset():
     #     writer.writerow(["name","id","url","phone","address","publisher"])
     #     writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
     
-    # # Upload stewards.csv to datastore
-    # steward.datastore.upload(stewards_info_filepath)
+    # # Upload .valid to datastore
+    dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
     return redirect('/datasets/' + dataset.id)
 
 
@@ -167,10 +171,10 @@ def existing_dataset(id):
     # Init some variable
     # sample_segment, opentrails_sample_segment = False, False
 
-    # datastore = make_datastore(app.config['DATASTORE'])
-    # steward = get_steward(datastore, id)
-    # if not steward:
-    #     return make_response("No Steward Found", 404)
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
     # steward.get_status()
 
     # # if steward.status == "transform segments":
@@ -199,7 +203,7 @@ def existing_dataset(id):
     #     opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
-    return render_template('index.html')
+    return render_template('index.html', )
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])
