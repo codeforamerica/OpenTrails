@@ -1,5 +1,5 @@
 from open_trails import app
-from models import Steward, make_datastore
+from models import Dataset, make_datastore
 from functions import get_steward, clean_name, unzip, make_id_from_url, compress, allowed_file, get_sample_of_original_segments
 from transformers import shapefile2geojson, segments_transform
 from flask import request, render_template, redirect, make_response
@@ -18,39 +18,43 @@ def stewards():
     stewards_list = datastore.stewards()
     return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
 
-@app.route('/new-steward', methods=['POST'])
-def new_steward():
+@app.route('/new-dataset', methods=['POST'])
+def new_dataset():
     '''
-    Create a unique url for this steward to work under
+    Create a unique url for this dataset to work under
     Create a folder on S3 using this url
     '''
 
     # Get info from form
-    name, url = request.form['name'], request.form['url']
-    id = make_id_from_url(url)
+    # name, url = request.form['name'], request.form['url']
+    # id = make_id_from_url(url)
+
+    # Create uuid
+    import uuid
+    id = str(uuid.uuid4())
 
     # Make a new steward object
-    steward_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
-    steward = Steward(steward_info)
-    steward.datastore = make_datastore(app.config['DATASTORE'])
+    # steward_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
+    dataset = Dataset(id)
+    dataset.datastore = make_datastore(app.config['DATASTORE'])
     
     # Make local folders for steward
     try:
-        os.makedirs(steward.id + "/uploads")
-        os.makedirs(steward.id + "/opentrails")
+        os.makedirs(dataset.id + "/uploads")
+        os.makedirs(dataset.id + "/opentrails")
     except OSError:
         pass
 
-    # Write a stewards.csv file
-    stewards_info_filepath = os.path.join(steward.id, 'uploads', 'stewards.csv')
-    with open(stewards_info_filepath, 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["name","id","url","phone","address","publisher"])
-        writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
+    # # Write a stewards.csv file
+    # stewards_info_filepath = os.path.join(steward.id, 'uploads', 'stewards.csv')
+    # with open(stewards_info_filepath, 'w') as csvfile:
+    #     writer = csv.writer(csvfile)
+    #     writer.writerow(["name","id","url","phone","address","publisher"])
+    #     writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
     
-    # Upload stewards.csv to datastore
-    steward.datastore.upload(stewards_info_filepath)
-    return redirect('/stewards/' + steward.id)
+    # # Upload stewards.csv to datastore
+    # steward.datastore.upload(stewards_info_filepath)
+    return redirect('/datasets/' + dataset.id)
 
 
 @app.route('/stewards/<steward_id>/upload', methods=['POST'])
@@ -154,48 +158,48 @@ def transform(id, trailtype):
 
         return redirect('/stewards/' + steward.id)
 
-@app.route('/stewards/<id>')
-def existing_steward(id):
+@app.route('/datasets/<id>')
+def existing_dataset(id):
     '''
     Reads available files on S3 to figure out how far a steward has gotten in the process
     '''
 
     # Init some variable
-    sample_segment, opentrails_sample_segment = False, False
+    # sample_segment, opentrails_sample_segment = False, False
 
-    datastore = make_datastore(app.config['DATASTORE'])
-    steward = get_steward(datastore, id)
-    if not steward:
-        return make_response("No Steward Found", 404)
-    steward.get_status()
+    # datastore = make_datastore(app.config['DATASTORE'])
+    # steward = get_steward(datastore, id)
+    # if not steward:
+    #     return make_response("No Steward Found", 404)
+    # steward.get_status()
 
-    # if steward.status == "transform segments":
-    #     # transform segments
-    #     return redirect("/stewards/"+steward.id+"/transform/segments")
+    # # if steward.status == "transform segments":
+    # #     # transform segments
+    # #     return redirect("/stewards/"+steward.id+"/transform/segments")
     
-    if steward.status == "show uploaded segments":
-        sample_segment = get_sample_of_original_segments(steward)
+    # if steward.status == "show uploaded segments":
+    #     sample_segment = get_sample_of_original_segments(steward)
 
-    if steward.status == "show opentrails segments":
-        sample_segment = get_sample_of_original_segments(steward)
+    # if steward.status == "show opentrails segments":
+    #     sample_segment = get_sample_of_original_segments(steward)
 
-        # Get the segments.geojson.zip
-        # Download the transformed segments file
-        segments_zip = steward.id + "/opentrails/segments.geojson.zip"
-        datastore.download(segments_zip)
+    #     # Get the segments.geojson.zip
+    #     # Download the transformed segments file
+    #     segments_zip = steward.id + "/opentrails/segments.geojson.zip"
+    #     datastore.download(segments_zip)
 
-        # Unzip it
-        zf = zipfile.ZipFile(segments_zip, 'r')
-        zf.extractall(os.path.split(segments_zip)[0])
+    #     # Unzip it
+    #     zf = zipfile.ZipFile(segments_zip, 'r')
+    #     zf.extractall(os.path.split(segments_zip)[0])
 
-        segmentsfile = open(steward.id + "/opentrails/segments.geojson")
-        trasformed_segments = json.load(segmentsfile)
-        segmentsfile.close()
-        opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
-        opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
+    #     segmentsfile = open(steward.id + "/opentrails/segments.geojson")
+    #     trasformed_segments = json.load(segmentsfile)
+    #     segmentsfile.close()
+    #     opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
+    #     opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
 
-    return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
-
+    # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
+    return render_template('index.html')
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])

@@ -42,7 +42,11 @@
 	</section>
 
     {% if not steward %}
-	<section class="layout-semibreve slab-gray" id="steward-form">
+    GET STARTED!
+    <form id="start" action="/new-dataset" method=post>
+    <button>YO</button>
+    </form>
+	<!-- <section class="layout-semibreve slab-gray" id="steward-form">
 		<form id="stewards" action="/new-steward" method=post enctype=multipart/form-data>
 			<h3 class="h3">Create your Organization Profile</h3>
 			<p>Tell us about your organization. This information helps data consumers understand where this data came from, and who to get in touch with if needed. This same information is used by visitors who may need assistance while visiting your lands or trails.</p>
@@ -60,7 +64,7 @@
         <input type=submit id="steward-form-submit-btn" class="button">
       </ul>
 		</form>
-	</section>
+	</section> -->
     {% endif %}
 
     {% if steward %}

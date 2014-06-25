@@ -2,13 +2,13 @@ from open_trails import app
 import urlparse, os, urllib, boto, glob
 from boto.s3.key import Key
 
-class Steward:
+class Dataset:
 
-    def __init__(self, initial_data):
+    def __init__(self, id):
         '''
-        Basic info about a steward
+        Basic info about a dataset
         '''
-        # self.id = id
+        self.id = id
         # self.name = name
         # self.url = url
         # self.phone = phone
@@ -16,10 +16,10 @@ class Steward:
         # self.publisher = publisher
         # self.datastore = datastore
         self.datastore = None
-        self.status = None
+        # self.status = None
         
-        for key in initial_data:
-            setattr(self, key, initial_data[key])
+        # for key in initial_data:
+        #     setattr(self, key, initial_data[key])
         
 
     def get_status(self):

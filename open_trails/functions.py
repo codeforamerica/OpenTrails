@@ -2,7 +2,7 @@ from open_trails import app
 from werkzeug.utils import secure_filename
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 from boto.s3.key import Key
-from models import Steward
+from models import Dataset
 from flask import make_response
 
 
