@@ -155,19 +155,24 @@ def transform_segments(dataset_id):
             segmentsfile = open(dataset.id + "/uploads/" + file)
             original_segments = json.load(segmentsfile)
             segmentsfile.close()
-            opentrails_segments = segments_transform(original_segments, dataset)
+            messages, opentrails_segments = segments_transform(original_segments, dataset)
 
-    # Write file from transformed segments
+    # Write files from transformed segments
     opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
     opentrails_segments_file = open(opentrails_segments_path ,'w')
     opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
     opentrails_segments_file.close()
+    
+    transform_messages_path = dataset.id + "/opentrails/segments-messages.json"
+    with open(transform_messages_path, 'w') as file:
+        json.dump(messages, file)
 
     # zip up transformed segments
     compress(opentrails_segments_path, opentrails_segments_path + ".zip")
 
-    # Upload transformed segments
+    # Upload transformed segments and messages
     datastore.upload(opentrails_segments_path + ".zip")
+    datastore.upload(transform_messages_path)
 
     return redirect('/datasets/' + dataset.id + '/transformed-segments')
         
@@ -209,8 +214,15 @@ def transformed_segments(dataset_id):
             transformed_segments = json.load(segmentsfile)
             opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
             opentrails_sample_segment['features'].append(transformed_segments['features'][0])
+    
+    # Download the transformed segments messages file
+    transformed_segments_messages = dataset.id + '/opentrails/segments-messages.json'
+    datastore.download(transformed_segments_messages)
+    
+    with open(transformed_segments_messages) as f:
+        messages = json.load(f)
             
-    return render_template('dataset-03-transformed-segments.html', dataset=dataset, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
+    return render_template('dataset-03-transformed-segments.html', dataset=dataset, messages=messages, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     
 
 

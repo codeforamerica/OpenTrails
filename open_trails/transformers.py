@@ -16,8 +16,11 @@ def shapefile2geojson(shapefilepath):
     return geojson
 
 def segments_transform(raw_geojson, dataset):
-    ''' Return a new GeoJSON structure, with standard fields guessed from properties.
+    ''' Return progress messages and a new GeoJSON structure.
+    
+        Guess standard fields from properties.
     '''
+    messages = []
     opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
     id_counter = itertools.count(1)
 
@@ -28,13 +31,13 @@ def segments_transform(raw_geojson, dataset):
          "type" : "Feature",
          "geometry" : old_segment['geometry'],
          "properties" : {
-             "id" : find_segment_id(old_properties) or id_counter.next(),
+             "id" : find_segment_id(messages, old_properties) or id_counter.next(),
              "stewardId" : None,
              "name" : None,
              "vehicles" : None,
-             "foot" : find_segment_foot_use(old_properties),
-             "bicycle" : find_segment_bicycle_use(old_properties),
-             "horse" : find_segment_horse_use(old_properties),
+             "foot" : find_segment_foot_use(messages, old_properties),
+             "bicycle" : find_segment_bicycle_use(messages, old_properties),
+             "horse" : find_segment_horse_use(messages, old_properties),
              "ski" : None,
              "wheelchair" : None,
              "osmTags" : None
@@ -42,18 +45,28 @@ def segments_transform(raw_geojson, dataset):
         }
         opentrails_geojson['features'].append(new_segment)
 
-    return opentrails_geojson
+    deduped_messages = []
+    
+    for message in messages:
+        if message not in deduped_messages:
+            deduped_messages.append(message)
+    
+    return deduped_messages, opentrails_geojson
 
-def find_segment_id(properties):
+def find_segment_id(messages, properties):
     ''' Return the value of a unique segment identifier from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/26
+        
+        Gather messages along the way about potential problems.
     '''
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
     
-    for field in ('id', 'trailid', 'objectid'):
+    for field in ('id', 'trailid', 'objectid', 'trail id', 'object id'):
         if field in keys:
             return values[keys.index(field)]
+    
+    messages.append(('warning', 'No column found for trail ID, such as "id" or "trailid". A new numeric ID was created.'))
     
     return None
 
@@ -98,10 +111,12 @@ def _get_match_yes_no(properties, pattern, fieldnames):
     
     return None
 
-def find_segment_foot_use(properties):
+def find_segment_foot_use(messages, properties):
     ''' Return the value of a segment foot use flag from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/28
+        
+        Gather messages along the way about potential problems.
     '''
     # Search for a hike column
     fieldnames = 'hike', 'walk', 'foot'
@@ -116,12 +131,16 @@ def find_segment_foot_use(properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
+    messages.append(('warning', 'No column found for foot use, such as "hike" or "walk". Leaving "foot" blank.'))
+    
     return None
 
-def find_segment_bicycle_use(properties):
+def find_segment_bicycle_use(messages, properties):
     ''' Return the value of a segment bicycle use flag from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/29
+        
+        Gather messages along the way about potential problems.
     '''
     # Search for a bicycle column
     fieldnames = 'bike', 'roadbike', 'bikes', 'road bike', 'mtnbike'
@@ -136,12 +155,16 @@ def find_segment_bicycle_use(properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
+    messages.append(('warning', 'No column found for bicycle use, such as "bikes" or "road bike". Leaving "bicycle" blank.'))
+            
     return None
 
-def find_segment_horse_use(properties):
+def find_segment_horse_use(messages, properties):
     ''' Return the value of a segment horse use flag from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/30
+        
+        Gather messages along the way about potential problems.
     '''
     # Search for a horse column
     fieldnames = 'horse', 'horses', 'equestrian'
@@ -156,12 +179,16 @@ def find_segment_horse_use(properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
+    messages.append(('warning', 'No column found for horse use, such as "horses", "equestrian", etc. Leaving "horse" blank.'))
+            
     return None
 
-def find_segment_ski_use(properties):
+def find_segment_ski_use(messages, properties):
     ''' Return the value of a segment ski use flag from feature properties.
     
         Implements logic in https://github.com/codeforamerica/PLATS/issues/30
+        
+        Gather messages along the way about potential problems.
     '''
     # Search for a ski column
     fieldnames = 'ski', 'XCntrySki', 'CROSSCSKI'
@@ -175,5 +202,7 @@ def find_segment_ski_use(properties):
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
+            
+    messages.append(('warning', 'No column found for ski use, such as "skiing" or "cross country ski". Leaving "ski" blank.'))
             
     return None
