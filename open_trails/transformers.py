@@ -45,7 +45,13 @@ def segments_transform(raw_geojson, dataset):
         }
         opentrails_geojson['features'].append(new_segment)
 
-    return messages, opentrails_geojson
+    deduped_messages = []
+    
+    for message in messages:
+        if message not in deduped_messages:
+            deduped_messages.append(message)
+    
+    return deduped_messages, opentrails_geojson
 
 def find_segment_id(messages, properties):
     ''' Return the value of a unique segment identifier from feature properties.
@@ -56,9 +62,11 @@ def find_segment_id(messages, properties):
     '''
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
     
-    for field in ('id', 'trailid', 'objectid'):
+    for field in ('id', 'trailid', 'objectid', 'trail id', 'object id'):
         if field in keys:
             return values[keys.index(field)]
+    
+    messages.append(('warning', 'No column found for trail ID, such as "id", "trailid", etc.'))
     
     return None
 
@@ -123,6 +131,8 @@ def find_segment_foot_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
+    messages.append(('warning', 'No column found for foot use, such as "hike", "walk", etc.'))
+    
     return None
 
 def find_segment_bicycle_use(messages, properties):
@@ -144,6 +154,8 @@ def find_segment_bicycle_use(messages, properties):
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
+            
+    messages.append(('warning', 'No column found for bicycle use, such as "bikes", "road bike", etc.'))
             
     return None
 
@@ -167,6 +179,8 @@ def find_segment_horse_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
+    messages.append(('warning', 'No column found for horse use, such as "horses", "equestrian", etc.'))
+            
     return None
 
 def find_segment_ski_use(messages, properties):
@@ -188,5 +202,7 @@ def find_segment_ski_use(messages, properties):
     
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
+            
+    messages.append(('warning', 'No column found for ski use, such as "skiing", "cross country ski", etc.'))
             
     return None

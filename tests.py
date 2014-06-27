@@ -86,6 +86,7 @@ class TestTransformers (TestCase):
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
+        self.assertEqual(len(m), 0)
     
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = ['yes' for f in geojson['features']]
@@ -109,6 +110,7 @@ class TestTransformers (TestCase):
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
+        self.assertEqual(len(m), 4)
     
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [None for f in geojson['features']]
