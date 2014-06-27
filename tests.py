@@ -82,7 +82,7 @@ class TestTransformers (TestCase):
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
-        converted_geojson = transformers.segments_transform(geojson, None)
+        m, converted_geojson = transformers.segments_transform(geojson, None)
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
@@ -105,7 +105,7 @@ class TestTransformers (TestCase):
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
-        converted_geojson = transformers.segments_transform(geojson, None)
+        m, converted_geojson = transformers.segments_transform(geojson, None)
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
@@ -128,7 +128,7 @@ class TestTransformers (TestCase):
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
-        converted_geojson = transformers.segments_transform(geojson, None)
+        m, converted_geojson = transformers.segments_transform(geojson, None)
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
@@ -154,7 +154,7 @@ class TestTransformers (TestCase):
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
-        converted_geojson = transformers.segments_transform(geojson, None)
+        m, converted_geojson = transformers.segments_transform(geojson, None)
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
@@ -181,10 +181,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_id, original_properties)
-        self.assertEqual(found_ids, [p['TRAILID'] for p in original_properties])
+        founds = [transformers.find_segment_id(m, p) for p in original_properties]
+        self.assertEqual(founds, [p['TRAILID'] for p in original_properties])
 
     def test_finding_segment_IDs_San_Antonio(self):
         ''' Test search for trail segment IDs.
@@ -193,10 +194,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_id, original_properties)
-        self.assertEqual(found_ids, [None for id in found_ids])
+        founds = [transformers.find_segment_id(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
     def test_finding_segment_IDs_GGNRA(self):
         ''' Test search for trail segment IDs.
@@ -205,10 +207,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_id, original_properties)
-        self.assertEqual(found_ids, [None for id in found_ids])
+        founds = [transformers.find_segment_id(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
     def test_finding_segment_IDs_Santa_Clara(self):
         ''' Test search for trail segment IDs.
@@ -217,10 +220,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_id, original_properties)
-        self.assertEqual(found_ids, [p['OBJECTID'] for p in original_properties])
+        founds = [transformers.find_segment_id(m, p) for p in original_properties]
+        self.assertEqual(founds, [p['OBJECTID'] for p in original_properties])
     
     def test_finding_segment_foot_use_Portland(self):
         ''' Test search for trail foot use.
@@ -229,10 +233,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_foot_use, original_properties)
-        self.assertEqual(found_ids, ['yes' for id in found_ids])
+        founds = [transformers.find_segment_foot_use(m, p) for p in original_properties]
+        self.assertEqual(founds, ['yes' for id in founds])
 
     def test_finding_segment_foot_use_San_Antonio(self):
         ''' Test search for trail foot use.
@@ -241,10 +246,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_foot_use, original_properties)
-        self.assertEqual(found_ids, [None for id in found_ids])
+        founds = [transformers.find_segment_foot_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
     def test_finding_segment_foot_use_GGNRA(self):
         ''' Test search for trail foot use.
@@ -253,12 +259,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_foot_use, original_properties)
+        founds = [transformers.find_segment_foot_use(m, p) for p in original_properties]
         
         uses = {'Multi-Use': 'yes', 'Hiking': 'yes', 'Hiking and Horses': 'yes'}
-        self.assertEqual(found_ids, [uses.get(p['use_type'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['use_type'], None) for p in original_properties])
 
     def test_finding_segment_foot_use_Santa_Clara(self):
         ''' Test search for trail foot use.
@@ -267,12 +274,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_foot_use, original_properties)
+        founds = [transformers.find_segment_foot_use(m, p) for p in original_properties]
         
         uses = {'hiking': 'yes', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
-        self.assertEqual(found_ids, [uses.get(p['PUBUSE'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['PUBUSE'], None) for p in original_properties])
 
     def test_finding_segment_bicycle_use_Portland(self):
         ''' Test search for trail bicycle use.
@@ -281,10 +289,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_bicycle_use, original_properties)
-        self.assertEqual(found_ids, [p['ROADBIKE'].lower() for p in original_properties])
+        founds = [transformers.find_segment_bicycle_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [p['ROADBIKE'].lower() for p in original_properties])
 
     def test_finding_segment_bicycle_use_San_Antonio(self):
         ''' Test search for trail bicycle use.
@@ -293,10 +302,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_bicycle_use, original_properties)
-        self.assertEqual(found_ids, [None for id in found_ids])
+        founds = [transformers.find_segment_bicycle_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
     def test_finding_segment_bicycle_use_GGNRA(self):
         ''' Test search for trail bicycle use.
@@ -305,12 +315,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_bicycle_use, original_properties)
+        founds = [transformers.find_segment_bicycle_use(m, p) for p in original_properties]
         
         uses = {'Multi-Use': 'yes', 'Hiking': 'no'}
-        self.assertEqual(found_ids, [uses.get(p['use_type'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['use_type'], None) for p in original_properties])
 
     def test_finding_segment_bicycle_use_Santa_Clara(self):
         ''' Test search for trail bicycle use.
@@ -319,12 +330,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_bicycle_use, original_properties)
+        founds = [transformers.find_segment_bicycle_use(m, p) for p in original_properties]
         
         uses = {'hiking': 'no', 'hiking/equestrian': 'no', 'hiking/equestrian/bicycling': 'yes'}
-        self.assertEqual(found_ids, [uses.get(p['PUBUSE'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['PUBUSE'], None) for p in original_properties])
 
     def test_finding_segment_horse_use_Portland(self):
         ''' Test search for trail horse use.
@@ -333,10 +345,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_horse_use, original_properties)
-        self.assertEqual(found_ids, [None for p in original_properties])
+        founds = [transformers.find_segment_horse_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for p in original_properties])
 
     def test_finding_segment_horse_use_San_Antonio(self):
         ''' Test search for trail horse use.
@@ -345,10 +358,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_horse_use, original_properties)
-        self.assertEqual(found_ids, [None for id in found_ids])
+        founds = [transformers.find_segment_horse_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
     def test_finding_segment_horse_use_GGNRA(self):
         ''' Test search for trail horse use.
@@ -357,12 +371,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_horse_use, original_properties)
+        founds = [transformers.find_segment_horse_use(m, p) for p in original_properties]
         
         uses = {'Multi-Use': 'no', 'Hiking': 'no'}
-        self.assertEqual(found_ids, [uses.get(p['use_type'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['use_type'], None) for p in original_properties])
 
     def test_finding_segment_horse_use_Santa_Clara(self):
         ''' Test search for trail horse use.
@@ -371,12 +386,13 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_horse_use, original_properties)
+        founds = [transformers.find_segment_horse_use(m, p) for p in original_properties]
         
         uses = {'hiking': 'no', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
-        self.assertEqual(found_ids, [uses.get(p['PUBUSE'], None) for p in original_properties])
+        self.assertEqual(founds, [uses.get(p['PUBUSE'], None) for p in original_properties])
 
     def test_finding_segment_ski_use_Portland(self):
         ''' Test search for trail ski use.
@@ -385,10 +401,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_ski_use, original_properties)
-        self.assertEqual(found_ids, [None for p in original_properties])
+        founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for p in original_properties])
 
     def test_finding_segment_ski_use_GGNRA(self):
         ''' Test search for trail ski use.
@@ -397,10 +414,11 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
         
         original_properties = [f['properties'] for f in geojson['features']]
-        found_ids = map(transformers.find_segment_ski_use, original_properties)
-        self.assertEqual(found_ids, ['yes', 'no', 'yes', 'yes', None, 'yes'])
+        founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
+        self.assertEqual(founds, ['yes', 'no', 'yes', 'yes', None, 'yes'])
 
     # def test_finding_segment_ski_use_Santa_Clara(self):
     #     ''' Test search for trail ski use.
@@ -411,8 +429,8 @@ class TestTransformers (TestCase):
     #     geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
     #     original_properties = [f['properties'] for f in geojson['features']]
-    #     found_ids = map(transformers.find_segment_ski_use, original_properties)
-    #     self.assertEqual(found_ids, ['yes', 'no', 'yes', 'yes', None, 'yes'])
+    #     founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
+    #     self.assertEqual(founds, ['yes', 'no', 'yes', 'yes', None, 'yes'])
 
 class TestApp (TestCase):
 

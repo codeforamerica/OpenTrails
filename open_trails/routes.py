@@ -155,7 +155,7 @@ def transform_segments(dataset_id):
             segmentsfile = open(dataset.id + "/uploads/" + file)
             original_segments = json.load(segmentsfile)
             segmentsfile.close()
-            opentrails_segments = segments_transform(original_segments, dataset)
+            messages, opentrails_segments = segments_transform(original_segments, dataset)
 
     # Write file from transformed segments
     opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
