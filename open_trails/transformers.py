@@ -66,7 +66,7 @@ def find_segment_id(messages, properties):
         if field in keys:
             return values[keys.index(field)]
     
-    messages.append(('warning', 'No column found for trail ID, such as "id", "trailid", etc.'))
+    messages.append(('warning', 'No column found for trail ID, such as "id" or "trailid". A new numeric ID was created.'))
     
     return None
 
@@ -131,7 +131,7 @@ def find_segment_foot_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for foot use, such as "hike", "walk", etc.'))
+    messages.append(('warning', 'No column found for foot use, such as "hike" or "walk". Leaving "foot" blank.'))
     
     return None
 
@@ -155,7 +155,7 @@ def find_segment_bicycle_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for bicycle use, such as "bikes", "road bike", etc.'))
+    messages.append(('warning', 'No column found for bicycle use, such as "bikes" or "road bike". Leaving "bicycle" blank.'))
             
     return None
 
@@ -179,7 +179,7 @@ def find_segment_horse_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for horse use, such as "horses", "equestrian", etc.'))
+    messages.append(('warning', 'No column found for horse use, such as "horses", "equestrian", etc. Leaving "horse" blank.'))
             
     return None
 
@@ -203,6 +203,6 @@ def find_segment_ski_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for ski use, such as "skiing", "cross country ski", etc.'))
+    messages.append(('warning', 'No column found for ski use, such as "skiing" or "cross country ski". Leaving "ski" blank.'))
             
     return None

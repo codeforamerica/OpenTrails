@@ -42,45 +42,13 @@
 	</section>
 
         <section class="layout-semibreve">
-            <table id="original-sample">
-                <thead>
-                    <tr>
-                        <th colspan="5">Sample Segment Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
-            <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
-                <p>
-                    <button>Transform</button>
-                </p>
-            </form>
+            <h3>Notes</h3>
+            <ul>
+                {% for (level, words) in messages %}
+                <li class="alert">{{ words }}</li>
+                {% endfor %}
+            </ul>
 
-        </section>
-
-        <script>
-            var geojson = {{ sample_segment | tojson | safe }}
-            // For each property make a column
-            $("#original-sample tbody").append("<tr>")
-            $.each(geojson['features'][0]['properties'], function(key, property){
-                $("#original-sample tbody").append("<td>"+key+"</td>")
-            })
-            $("#original-sample tbody").append("</tr>")
-            $("#original-sample tbody").append("<tr>")
-            $.each(geojson['features'][0]['properties'], function(key, property){
-                $("#original-sample tbody").append("<td>"+property+"</td>")
-            })
-            $("#original-sample tbody").append("</tr>")
-
-            // $.each(geojson['features'][0]['properties'], function(key, property){
-            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
-            // })
-            
-        </script>
-        
-        <section class="layout-semibreve">
             <table id="transformed-sample">
                 <thead>
                     <tr>
@@ -112,4 +80,37 @@
             
         </script>
 
+        <section class="layout-semibreve">
+            <table id="original-sample">
+                <thead>
+                    <tr>
+                        <th colspan="5">Sample Segment Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </section>
+
+        <script>
+            var geojson = {{ sample_segment | tojson | safe }}
+            // For each property make a column
+            $("#original-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<td>"+key+"</td>")
+            })
+            $("#original-sample tbody").append("</tr>")
+            $("#original-sample tbody").append("<tr>")
+            $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<td>"+property+"</td>")
+            })
+            $("#original-sample tbody").append("</tr>")
+
+            // $.each(geojson['features'][0]['properties'], function(key, property){
+            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+            // })
+            
+        </script>
+        
 </html>
