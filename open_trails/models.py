@@ -25,7 +25,7 @@ class Dataset:
     def get_status(self):
         '''
         Use the filelist from datastore to figure out how far along
-        this steward is in the process.
+        this dataset is in the process.
         '''
 
         filelist = self.datastore.filelist(self.id)
@@ -57,7 +57,7 @@ class FilesystemDatastore:
         except OSError:
             pass
         with open(filepath, 'r') as input:
-            # filepath example: "steward/uploads/file.csv"
+            # filepath example: "dataset/uploads/file.csv"
             with open(destination, 'w') as output:
                 output.write(input.read())
 
@@ -83,8 +83,8 @@ class FilesystemDatastore:
 
         return names
 
-    def stewards(self):
-        ''' Retrieve a list of stewards based on directory names.
+    def datasets(self):
+        ''' Retrieve a list of datasets based on directory names.
         '''
         return list(os.listdir(self.dirpath))
 
@@ -112,9 +112,9 @@ class S3Datastore:
         if not os.path.isfile(filepath):
             key = self.bucket.get_key(filepath)
             try:
-                steward_id = filepath.split("/")[0]
-                os.makedirs(steward_id + "/uploads")
-                os.makedirs(steward_id + "/opentrails")
+                dataset_id = filepath.split("/")[0]
+                os.makedirs(dataset_id + "/uploads")
+                os.makedirs(dataset_id + "/opentrails")
             except OSError:
                 pass
             key.get_contents_to_filename(filepath)
@@ -124,10 +124,10 @@ class S3Datastore:
         '''
         return [file.name for file in self.bucket.list(prefix)]
 
-    def stewards(self):
-        ''' Retrieve a list of stewards based on directory names.
+    def datasets(self):
+        ''' Retrieve a list of datasets based on directory names.
         '''
-        return [steward.name.replace('/', '') for steward in self.bucket.list('', '/')]
+        return [dataset.name.replace('/', '') for dataset in self.bucket.list('', '/')]
 
 def make_datastore(config):
     ''' Returns an object with an upload method.

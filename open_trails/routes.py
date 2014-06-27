@@ -9,14 +9,14 @@ import json, os, csv, zipfile, time, re
 def index():
     return render_template('index.html')
 
-@app.route('/stewards')
-def stewards():
+@app.route('/datasets')
+def datasets():
     '''
-    List out all the stewards that have used opentrails so far
+    List out all the datasets that have used opentrails so far
     '''
     datastore = make_datastore(app.config['DATASTORE'])
-    stewards_list = datastore.stewards()
-    return render_template('stewards_list.html', stewards_list=stewards_list, server_url=request.url_root)
+    datasets_list = datastore.datasets()
+    return render_template('datasets_list.html', datasets_list=datasets_list, server_url=request.url_root)
 
 @app.route('/new-dataset', methods=['POST'])
 def new_dataset():
@@ -33,12 +33,12 @@ def new_dataset():
     import uuid
     id = str(uuid.uuid4())
 
-    # Make a new steward object
-    # steward_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
+    # Make a new dataset object
+    # dataset_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
     dataset = Dataset(id)
     dataset.datastore = make_datastore(app.config['DATASTORE'])
     
-    # Make local folders for steward
+    # Make local folders for dataset
     try:
         os.makedirs(dataset.id + "/uploads")
         os.makedirs(dataset.id + "/opentrails")
@@ -141,36 +141,35 @@ def transform_segments(dataset_id):
     if not dataset:
         return make_response("No Dataset Found", 404)
 
-    if True:
-        # Download the original segments file
-        segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
-        datastore.download(segments_zip)
+    # Download the original segments file
+    segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
+    datastore.download(segments_zip)
 
-        # Unzip it
-        zf = zipfile.ZipFile(segments_zip, 'r')
-        zf.extractall(os.path.split(segments_zip)[0])
+    # Unzip it
+    zf = zipfile.ZipFile(segments_zip, 'r')
+    zf.extractall(os.path.split(segments_zip)[0])
 
-        # Find geojson file
-        for file in os.listdir(dataset.id + "/uploads/"):
-            if file.endswith(".geojson"):
-                segmentsfile = open(dataset.id + "/uploads/" + file)
-                original_segments = json.load(segmentsfile)
-                segmentsfile.close()
-                opentrails_segments = segments_transform(original_segments, dataset)
+    # Find geojson file
+    for file in os.listdir(dataset.id + "/uploads/"):
+        if file.endswith(".geojson"):
+            segmentsfile = open(dataset.id + "/uploads/" + file)
+            original_segments = json.load(segmentsfile)
+            segmentsfile.close()
+            opentrails_segments = segments_transform(original_segments, dataset)
 
-        # Write file from transformed segments
-        opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
-        opentrails_segments_file = open(opentrails_segments_path ,'w')
-        opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
-        opentrails_segments_file.close()
+    # Write file from transformed segments
+    opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
+    opentrails_segments_file = open(opentrails_segments_path ,'w')
+    opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
+    opentrails_segments_file.close()
 
-        # zip up transformed segments
-        compress(opentrails_segments_path, opentrails_segments_path + ".zip")
+    # zip up transformed segments
+    compress(opentrails_segments_path, opentrails_segments_path + ".zip")
 
-        # Upload transformed segments
-        datastore.upload(opentrails_segments_path + ".zip")
+    # Upload transformed segments
+    datastore.upload(opentrails_segments_path + ".zip")
 
-        return redirect('/datasets/' + dataset.id + '/transformed-segments')
+    return redirect('/datasets/' + dataset.id + '/transformed-segments')
         
 @app.route('/datasets/<dataset_id>/transformed-segments')
 def transformed_segments(dataset_id):
@@ -218,7 +217,7 @@ def transformed_segments(dataset_id):
 @app.route('/datasets/<id>')
 def existing_dataset(id):
     '''
-    Reads available files on S3 to figure out how far a steward has gotten in the process
+    Reads available files on S3 to figure out how far a dataset has gotten in the process
     '''
 
     # Init some variable
