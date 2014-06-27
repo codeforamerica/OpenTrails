@@ -72,8 +72,8 @@ def upload(dataset_id):
     if request.files['file'] and allowed_file(request.files['file'].filename):
         
         # Save zip file to disk
-        # /blahblahblah/uploads/mytrailsegments.zip
-        zipfilepath = os.path.join(dataset_id, 'uploads', os.path.basename(request.files['file'].filename))
+        # /blahblahblah/uploads/trail-segments.zip
+        zipfilepath = os.path.join(dataset_id, 'uploads/trail-segments.zip')
         request.files['file'].save(zipfilepath)
 
         # Upload original file to S3
@@ -127,6 +127,17 @@ def show_sample_segment(dataset_id):
 
     sample_segment = get_sample_of_original_segments(dataset)
     return render_template("dataset-02-show-sample-segment.html", dataset=dataset, sample_segment=sample_segment)
+
+@app.route('/datasets/<dataset_id>/transform-segments', methods=['POST'])
+def transform_segments(dataset_id):
+    '''
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+    
+    return 'Yay'
 
 @app.route('/stewards/<id>/transform/<trailtype>')
 def transform(id, trailtype):
