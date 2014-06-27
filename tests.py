@@ -479,18 +479,16 @@ class TestApp (TestCase):
         # Upload a zipped shapefile
         file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
         uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('Tualatin' in uploaded.data)
+        self.assertTrue('"TRAILID": "714115"' in uploaded.data)
 
-            # self.assertTrue( filename in os.listdir(self.tmp+'/datastore/testurl/uploads'))
-            # self.assertEqual(uploaded.status_code, 302)
+        soup = BeautifulSoup(uploaded.data)
+        form = soup.find('button').find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/transform-segments'))
 
-        # # Test that steward info shows up where its supposed to
-        # soup = BeautifulSoup(response.data)
-        # name = soup.find(id='steward-name')
-        # self.assertTrue(data['name'] in name.string)
-        # url = soup.find(id='steward-url')
-        # self.assertTrue(data['url'] in url.string)
-
+        # Do the transforming
+        transformed = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('"id": "714115"' in transformed.data)
 
     def do_not_test_stewards_list(self):
         ''' Test that /stewards returns a list of stewards

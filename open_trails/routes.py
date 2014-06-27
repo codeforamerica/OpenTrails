@@ -131,32 +131,19 @@ def show_sample_segment(dataset_id):
 @app.route('/datasets/<dataset_id>/transform-segments', methods=['POST'])
 def transform_segments(dataset_id):
     '''
-    '''
-    datastore = make_datastore(app.config['DATASTORE'])
-    dataset = get_dataset(datastore, dataset_id)
-    if not dataset:
-        return make_response("No dataset Found", 404)
-    
-    return 'Yay'
-
-@app.route('/stewards/<id>/transform/<trailtype>')
-def transform(id, trailtype):
-    '''
     Grab a zip file off of datastore
     Unzip it
     Transform into opentrails
     Upload
     '''
     datastore = make_datastore(app.config['DATASTORE'])
-    steward = get_steward(datastore, id)
-    if not steward:
-        return make_response("No Steward Found", 404)
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
 
-    if trailtype == "segments":
+    if True:
         # Download the original segments file
-        filelist = datastore.filelist(steward.id)
-        matching = [filename for filename in filelist if ".geojson.zip" in filename]
-        segments_zip = matching[0]
+        segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
         datastore.download(segments_zip)
 
         # Unzip it
@@ -164,15 +151,15 @@ def transform(id, trailtype):
         zf.extractall(os.path.split(segments_zip)[0])
 
         # Find geojson file
-        for file in os.listdir(steward.id + "/uploads/"):
+        for file in os.listdir(dataset.id + "/uploads/"):
             if file.endswith(".geojson"):
-                segmentsfile = open(steward.id + "/uploads/" + file)
+                segmentsfile = open(dataset.id + "/uploads/" + file)
                 original_segments = json.load(segmentsfile)
                 segmentsfile.close()
-                opentrails_segments = segments_transform(original_segments, steward)
+                opentrails_segments = segments_transform(original_segments, dataset)
 
         # Write file from transformed segments
-        opentrails_segments_path = steward.id + "/opentrails/segments.geojson"
+        opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
         opentrails_segments_file = open(opentrails_segments_path ,'w')
         opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
         opentrails_segments_file.close()
@@ -183,7 +170,50 @@ def transform(id, trailtype):
         # Upload transformed segments
         datastore.upload(opentrails_segments_path + ".zip")
 
-        return redirect('/stewards/' + steward.id)
+        return redirect('/datasets/' + dataset.id + '/transformed-segments')
+        
+@app.route('/datasets/<dataset_id>/transformed-segments')
+def transformed_segments(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    # Download the original segments file
+    original_segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
+    datastore.download(original_segments_zip)
+
+    # Unzip it
+    zf = zipfile.ZipFile(original_segments_zip, 'r')
+    zf.extractall(os.path.split(original_segments_zip)[0])
+    
+    # Find geojson file
+    for file in os.listdir(dataset.id + "/uploads/"):
+        if file.endswith(".geojson"):
+            segmentsfile = open(dataset.id + "/uploads/" + file)
+            original_segments = json.load(segmentsfile)
+            sample_segment = {'type': 'FeatureCollection', 'features': []}
+            sample_segment['features'].append(original_segments['features'][0])
+    
+    # Download the transformed segments file
+    transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
+    datastore.download(transformed_segments_zip)
+
+    # Unzip it
+    zf = zipfile.ZipFile(transformed_segments_zip, 'r')
+    zf.extractall(os.path.split(transformed_segments_zip)[0])
+    
+    # Find geojson file
+    for file in os.listdir(dataset.id + "/opentrails/"):
+        if file.endswith(".geojson"):
+            segmentsfile = open(dataset.id + "/opentrails/" + file)
+            transformed_segments = json.load(segmentsfile)
+            opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
+            opentrails_sample_segment['features'].append(transformed_segments['features'][0])
+            
+    return render_template('dataset-03-transformed-segments.html', dataset=dataset, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
+    
+
 
 @app.route('/datasets/<id>')
 def existing_dataset(id):
