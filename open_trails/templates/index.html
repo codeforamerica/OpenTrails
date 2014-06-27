@@ -25,7 +25,7 @@
     <![endif]-->
 
 	<!-- CUSTOM STYLES -->
-	<link rel="stylesheet" href="../static/css/app.css" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
@@ -35,8 +35,6 @@
 	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
 
 	</section>
-
-    {% if not steward %}
     GET STARTED!
     <form id="start" action="/new-dataset" method=post>
     <button>YO</button>
