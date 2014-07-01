@@ -33,14 +33,13 @@ def segments_transform(raw_geojson, dataset):
          "properties" : {
              "id" : find_segment_id(messages, old_properties) or id_counter.next(),
              "stewardId" : None,
-             "name" : None,
-             "vehicles" : None,
+             "name" : find_segment_name(messages, old_properties),
+             "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
              "foot" : find_segment_foot_use(messages, old_properties),
              "bicycle" : find_segment_bicycle_use(messages, old_properties),
              "horse" : find_segment_horse_use(messages, old_properties),
              "ski" : find_segment_ski_use(messages, old_properties),
              "wheelchair" : find_segment_wheelchair_use(messages, old_properties),
-             "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
              "osmTags" : None
          }
         }
@@ -68,6 +67,23 @@ def find_segment_id(messages, properties):
             return values[keys.index(field)]
     
     messages.append(('warning', 'No column found for trail ID, such as "id" or "trailid". A new numeric ID was created.'))
+    
+    return None
+
+def find_segment_name(messages, properties):
+    ''' Return the value of a segment name from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/35
+        
+        Gather messages along the way about potential problems.
+    '''
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    
+    for field in ('name', 'trail', 'trailname', 'trail name', 'trail_name'):
+        if field in keys:
+            return values[keys.index(field)]
+    
+    messages.append(('error', 'No column found for trail name, such as "name" or "trail".'))
     
     return None
 

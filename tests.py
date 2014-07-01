@@ -89,6 +89,10 @@ class TestTransformers (TestCase):
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
     
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['TRAILNAME'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
+    
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = ['yes' for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
@@ -126,6 +130,10 @@ class TestTransformers (TestCase):
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
     
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['Name'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
+    
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [None for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
@@ -162,6 +170,10 @@ class TestTransformers (TestCase):
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
+    
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['trail_name'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
         
         uses = {'Multi-Use': 'yes', 'Hiking': 'yes', 'Hiking and Horses': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
@@ -202,6 +214,10 @@ class TestTransformers (TestCase):
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
+    
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['NAME'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
         
         uses = {'hiking': 'yes', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
