@@ -105,6 +105,10 @@ class TestTransformers (TestCase):
         expected_skis = [None for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
     
+        converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
+        expected_wheelchairs = [None for f in geojson['features']]
+        self.assertEqual(converted_wheelchairs, expected_wheelchairs)
+    
     def test_segments_conversion_San_Antonio(self):
         ''' Test overall segments conversion.
         '''
@@ -112,7 +116,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 5)
+        self.assertEqual(len(m), 6)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
@@ -133,6 +137,10 @@ class TestTransformers (TestCase):
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = [None for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
+    
+        converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
+        expected_wheelchairs = [None for f in geojson['features']]
+        self.assertEqual(converted_wheelchairs, expected_wheelchairs)
     
     def test_segments_conversion_GGNRA(self):
         ''' Test overall segments conversion.
@@ -166,6 +174,10 @@ class TestTransformers (TestCase):
         expected_skis = ['yes', 'no', 'yes', 'yes', None, 'yes']
         self.assertEqual(converted_skis, expected_skis)
     
+        converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
+        expected_wheelchairs = [None] * 6
+        self.assertEqual(converted_wheelchairs, expected_wheelchairs)
+    
     def test_segments_conversion_Santa_Clara(self):
         ''' Test overall segments conversion.
         '''
@@ -173,7 +185,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 0)
+        self.assertEqual(len(m), 1)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
@@ -197,6 +209,10 @@ class TestTransformers (TestCase):
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = ['no' for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
+    
+        converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
+        expected_wheelchairs = [None for f in geojson['features']]
+        self.assertEqual(converted_wheelchairs, expected_wheelchairs)
     
     def test_finding_segment_IDs_Portland(self):
         ''' Test search for trail segment IDs.
@@ -434,7 +450,7 @@ class TestTransformers (TestCase):
     def test_finding_segment_ski_use_San_Antonio(self):
         ''' Test search for trail ski use.
         
-            See also https://github.com/codeforamerica/PLATS/issues/30
+            See also https://github.com/codeforamerica/PLATS/issues/31
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
@@ -469,6 +485,58 @@ class TestTransformers (TestCase):
         original_properties = [f['properties'] for f in geojson['features']]
         founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
         self.assertEqual(founds, ['no' for id in founds])
+
+    def test_finding_segment_wheelchair_use_Portland(self):
+        ''' Test search for trail wheelchair use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/32
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_wheelchair_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for p in original_properties])
+
+    def test_finding_segment_wheelchair_use_San_Antonio(self):
+        ''' Test search for trail wheelchair use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/32
+        '''
+        path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_wheelchair_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
+
+    def test_finding_segment_wheelchair_use_GGNRA(self):
+        ''' Test search for trail wheelchair use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/32
+        '''
+        path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_wheelchair_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
+
+    def test_finding_segment_wheelchair_use_Santa_Clara(self):
+        ''' Test search for trail wheelchair use.
+      
+            See also https://github.com/codeforamerica/PLATS/issues/32
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+      
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_wheelchair_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
 
 class TestApp (TestCase):
 

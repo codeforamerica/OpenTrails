@@ -39,7 +39,7 @@ def segments_transform(raw_geojson, dataset):
              "bicycle" : find_segment_bicycle_use(messages, old_properties),
              "horse" : find_segment_horse_use(messages, old_properties),
              "ski" : find_segment_ski_use(messages, old_properties),
-             "wheelchair" : None,
+             "wheelchair" : find_segment_wheelchair_use(messages, old_properties),
              "osmTags" : None
          }
         }
@@ -91,7 +91,7 @@ def _get_value_yes_no(properties, fieldnames):
     for field in fieldnames:
         if field.lower() in keys:
             value = values[keys.index(field)]
-            return yes_nos.get(value.lower(), None)
+            return value and yes_nos.get(value.lower(), None)
     
     return None
 
@@ -186,7 +186,7 @@ def find_segment_horse_use(messages, properties):
 def find_segment_ski_use(messages, properties):
     ''' Return the value of a segment ski use flag from feature properties.
     
-        Implements logic in https://github.com/codeforamerica/PLATS/issues/30
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/31
         
         Gather messages along the way about potential problems.
     '''
@@ -196,7 +196,7 @@ def find_segment_ski_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
 
-    # Search for a use column and look for horsies inside
+    # Search for a use column and look for skis inside
     fieldnames = 'use', 'use_type', 'pubuse'
     pattern = re.compile(r'\b(?<!no )(ski|xcntryski|skiing|countryski|crosscountryski|multi-use)\b', re.I)
     
@@ -204,5 +204,22 @@ def find_segment_ski_use(messages, properties):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
     messages.append(('warning', 'No column found for ski use, such as "skiing" or "cross country ski". Leaving "ski" blank.'))
+            
+    return None
+
+def find_segment_wheelchair_use(messages, properties):
+    ''' Return the value of a segment wheelchair use flag from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/32
+        
+        Gather messages along the way about potential problems.
+    '''
+    # Search for a wheelchair column
+    fieldnames = 'wheelchair', "accessible", "adaaccess", "accesibil", "ada"
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
+            
+    messages.append(('warning', 'No column found for wheelchair accessibility, such as "accessible" or "ADA". Leaving "wheelchair" blank.'))
             
     return None
