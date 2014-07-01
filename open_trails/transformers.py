@@ -40,6 +40,7 @@ def segments_transform(raw_geojson, dataset):
              "horse" : find_segment_horse_use(messages, old_properties),
              "ski" : find_segment_ski_use(messages, old_properties),
              "wheelchair" : find_segment_wheelchair_use(messages, old_properties),
+             "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
              "osmTags" : None
          }
         }
@@ -221,5 +222,22 @@ def find_segment_wheelchair_use(messages, properties):
         return _get_value_yes_no(properties, fieldnames)
             
     messages.append(('warning', 'No column found for wheelchair accessibility, such as "accessible" or "ADA". Leaving "wheelchair" blank.'))
+            
+    return None
+
+def find_segment_motor_vehicles_use(messages, properties):
+    ''' Return the value of a segment motor_vehicles use flag from feature properties.
+    
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/33
+        
+        Gather messages along the way about potential problems.
+    '''
+    # Search for a motor_vehicles column
+    fieldnames = "MOTORBIKE", "ALLTERVEH", "ATV", "FOURWD", "4WD", "Motorcycle", "Snowmobile"
+    
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
+            
+    messages.append(('warning', 'No column found for motor vehicle use, such as "motorbike" or "ATV". Leaving "motor_vehicles" blank.'))
             
     return None

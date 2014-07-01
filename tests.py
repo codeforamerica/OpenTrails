@@ -83,7 +83,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 1)
+        self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
@@ -109,6 +109,10 @@ class TestTransformers (TestCase):
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
     
+        converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
+        expected_motor_vehicles = [None for f in geojson['features']]
+        self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
+    
     def test_segments_conversion_San_Antonio(self):
         ''' Test overall segments conversion.
         '''
@@ -116,7 +120,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 6)
+        self.assertEqual(len(m), 7)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
@@ -142,6 +146,10 @@ class TestTransformers (TestCase):
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
     
+        converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
+        expected_motor_vehicles = [None for f in geojson['features']]
+        self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
+    
     def test_segments_conversion_GGNRA(self):
         ''' Test overall segments conversion.
         '''
@@ -149,7 +157,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 1)
+        self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
@@ -178,6 +186,10 @@ class TestTransformers (TestCase):
         expected_wheelchairs = [None] * 6
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
     
+        converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
+        expected_motor_vehicles = [None for f in geojson['features']]
+        self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
+    
     def test_segments_conversion_Santa_Clara(self):
         ''' Test overall segments conversion.
         '''
@@ -185,7 +197,7 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
-        self.assertEqual(len(m), 1)
+        self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
@@ -213,6 +225,10 @@ class TestTransformers (TestCase):
         converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
+    
+        converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
+        expected_motor_vehicles = [None for f in geojson['features']]
+        self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
     
     def test_finding_segment_IDs_Portland(self):
         ''' Test search for trail segment IDs.
