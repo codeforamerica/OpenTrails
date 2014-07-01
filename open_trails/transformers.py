@@ -38,7 +38,7 @@ def segments_transform(raw_geojson, dataset):
              "foot" : find_segment_foot_use(messages, old_properties),
              "bicycle" : find_segment_bicycle_use(messages, old_properties),
              "horse" : find_segment_horse_use(messages, old_properties),
-             "ski" : None,
+             "ski" : find_segment_ski_use(messages, old_properties),
              "wheelchair" : None,
              "osmTags" : None
          }

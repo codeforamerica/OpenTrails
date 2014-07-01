@@ -83,10 +83,11 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
+        self.assertEqual(len(m), 1)
+
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
-        self.assertEqual(len(m), 0)
     
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = ['yes' for f in geojson['features']]
@@ -100,6 +101,10 @@ class TestTransformers (TestCase):
         expected_horses = [None for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
     
+        converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
+        expected_skis = [None for f in geojson['features']]
+        self.assertEqual(converted_skis, expected_skis)
+    
     def test_segments_conversion_San_Antonio(self):
         ''' Test overall segments conversion.
         '''
@@ -107,10 +112,11 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
+        self.assertEqual(len(m), 5)
+
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
-        self.assertEqual(len(m), 4)
     
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [None for f in geojson['features']]
@@ -124,6 +130,10 @@ class TestTransformers (TestCase):
         expected_horses = [None for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
     
+        converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
+        expected_skis = [None for f in geojson['features']]
+        self.assertEqual(converted_skis, expected_skis)
+    
     def test_segments_conversion_GGNRA(self):
         ''' Test overall segments conversion.
         '''
@@ -131,10 +141,11 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
+        self.assertEqual(len(m), 1)
+
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = range(1, len(converted_ids) + 1)
         self.assertEqual(converted_ids, expected_ids)
-        self.assertEqual(len(m), 1)
         
         uses = {'Multi-Use': 'yes', 'Hiking': 'yes', 'Hiking and Horses': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
@@ -151,6 +162,10 @@ class TestTransformers (TestCase):
         expected_horses = [uses.get(f['properties']['use_type'], None) for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
     
+        converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
+        expected_skis = ['yes', 'no', 'yes', 'yes', None, 'yes']
+        self.assertEqual(converted_skis, expected_skis)
+    
     def test_segments_conversion_Santa_Clara(self):
         ''' Test overall segments conversion.
         '''
@@ -158,10 +173,11 @@ class TestTransformers (TestCase):
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
+        self.assertEqual(len(m), 0)
+
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
-        self.assertEqual(len(m), 0)
         
         uses = {'hiking': 'yes', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
@@ -177,6 +193,10 @@ class TestTransformers (TestCase):
         converted_horses = [f['properties']['horse'] for f in converted_geojson['features']]
         expected_horses = [uses.get(f['properties']['PUBUSE'], None) for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
+    
+        converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
+        expected_skis = ['no' for f in geojson['features']]
+        self.assertEqual(converted_skis, expected_skis)
     
     def test_finding_segment_IDs_Portland(self):
         ''' Test search for trail segment IDs.
@@ -411,6 +431,19 @@ class TestTransformers (TestCase):
         founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
         self.assertEqual(founds, [None for p in original_properties])
 
+    def test_finding_segment_ski_use_San_Antonio(self):
+        ''' Test search for trail ski use.
+        
+            See also https://github.com/codeforamerica/PLATS/issues/30
+        '''
+        path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+        
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
+        self.assertEqual(founds, [None for id in founds])
+
     def test_finding_segment_ski_use_GGNRA(self):
         ''' Test search for trail ski use.
         
@@ -424,17 +457,18 @@ class TestTransformers (TestCase):
         founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
         self.assertEqual(founds, ['yes', 'no', 'yes', 'yes', None, 'yes'])
 
-    # def test_finding_segment_ski_use_Santa_Clara(self):
-    #     ''' Test search for trail ski use.
-        
-    #         See also https://github.com/codeforamerica/PLATS/issues/31
-    #     '''
-    #     path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
-    #     geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
-    #     original_properties = [f['properties'] for f in geojson['features']]
-    #     founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
-    #     self.assertEqual(founds, ['yes', 'no', 'yes', 'yes', None, 'yes'])
+    def test_finding_segment_ski_use_Santa_Clara(self):
+        ''' Test search for trail ski use.
+      
+            See also https://github.com/codeforamerica/PLATS/issues/31
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        m = []
+      
+        original_properties = [f['properties'] for f in geojson['features']]
+        founds = [transformers.find_segment_ski_use(m, p) for p in original_properties]
+        self.assertEqual(founds, ['no' for id in founds])
 
 class TestApp (TestCase):
 
