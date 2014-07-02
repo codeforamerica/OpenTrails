@@ -40,7 +40,13 @@
             <h3>Notes</h3>
             <ul>
                 {% for (level, words) in messages %}
-                <li class="alert">{{ words }}</li>
+                    {% if level == 'warning' %}
+                        <li class="alert-info">{{ words }}</li>
+                    {% elif level == 'error' %}
+                        <li class="alert-failure">{{ words }}</li>
+                    {% else %}
+                        <li class="alert">{{ words }}</li>
+                    {% endif %}
                 {% endfor %}
             </ul>
 
