@@ -32,7 +32,8 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-GGNRA.zip',
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
-                 'test-files/lake-man-Portland.zip')
+                 'test-files/lake-man-Portland.zip',
+                 'test-files/lake-man-Nested.zip')
         for name in names:
             copy(name, self.tmp)
 
@@ -246,6 +247,15 @@ class TestTransformers (TestCase):
         expected_motor_vehicles = [None for f in geojson['features']]
         self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
 
+    def test_segments_conversion_Nested(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-man-Nested.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        m, converted_geojson = transformers.segments_transform(geojson, None)
+        self.assertEqual(len(m), 2)
+    
 class TestApp (TestCase):
 
     def setUp(self):

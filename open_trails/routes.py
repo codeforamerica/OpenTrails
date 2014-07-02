@@ -80,13 +80,7 @@ def upload(dataset_id):
         datastore.upload(zipfilepath)
 
         # Unzip orginal file
-        zf = zipfile.ZipFile(zipfilepath, 'r')
-        zf.extractall(os.path.split(zipfilepath)[0])
-
-        # Find shapefile in zip
-        for file in os.listdir(os.path.split(zipfilepath)[0]):
-            if file.endswith(".shp"):
-                shapefilepath = os.path.join(os.path.split(zipfilepath)[0], file)
+        shapefilepath = unzip(zipfilepath)
 
         # Get geojson data from shapefile
         geojson = shapefile2geojson(shapefilepath)
