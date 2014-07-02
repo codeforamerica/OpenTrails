@@ -140,16 +140,9 @@ def transform_segments(dataset_id):
     datastore.download(segments_zip)
 
     # Unzip it
-    zf = zipfile.ZipFile(segments_zip, 'r')
-    zf.extractall(os.path.split(segments_zip)[0])
-
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/uploads/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/uploads/" + file)
-            original_segments = json.load(segmentsfile)
-            segmentsfile.close()
-            messages, opentrails_segments = segments_transform(original_segments, dataset)
+    segments_path = unzip(segments_zip, '.geojson', [])
+    original_segments = json.load(open(segments_path))
+    messages, opentrails_segments = segments_transform(original_segments, dataset)
 
     # Write files from transformed segments
     opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
@@ -182,32 +175,20 @@ def transformed_segments(dataset_id):
     datastore.download(original_segments_zip)
 
     # Unzip it
-    zf = zipfile.ZipFile(original_segments_zip, 'r')
-    zf.extractall(os.path.split(original_segments_zip)[0])
-    
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/uploads/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/uploads/" + file)
-            original_segments = json.load(segmentsfile)
-            sample_segment = {'type': 'FeatureCollection', 'features': []}
-            sample_segment['features'].append(original_segments['features'][0])
+    segments_path = unzip(original_segments_zip, '.geojson', [])
+    original_segments = json.load(open(segments_path))
+    sample_segment = {'type': 'FeatureCollection', 'features': []}
+    sample_segment['features'].append(original_segments['features'][0])
     
     # Download the transformed segments file
     transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
     datastore.download(transformed_segments_zip)
 
     # Unzip it
-    zf = zipfile.ZipFile(transformed_segments_zip, 'r')
-    zf.extractall(os.path.split(transformed_segments_zip)[0])
-    
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/opentrails/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/opentrails/" + file)
-            transformed_segments = json.load(segmentsfile)
-            opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
-            opentrails_sample_segment['features'].append(transformed_segments['features'][0])
+    segments_path = unzip(transformed_segments_zip, '.geojson', [])
+    transformed_segments = json.load(open(segments_path))
+    opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
+    opentrails_sample_segment['features'].append(transformed_segments['features'][0])
     
     # Download the transformed segments messages file
     transformed_segments_messages = dataset.id + '/opentrails/segments-messages.json'

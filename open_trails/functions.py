@@ -39,7 +39,7 @@ def make_id_from_url(url):
     return secure_filename(steward_id).lower().replace("_","-")
 
 
-def unzip(zipfile_path):
+def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
     ''' Unzip and return the path of a shapefile.
     '''
     zf = zipfile.ZipFile(zipfile_path, 'r')
@@ -49,13 +49,13 @@ def unzip(zipfile_path):
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
         
-        if ext in ('.shp', '.dbf', '.prj', '.shx'):
+        if ext in [search_ext] + list(other_exts):
             unzipped_path = os.path.join(dirname, base)
             
             with open(unzipped_path, 'w') as f:
                 f.write(zf.open(name).read())
             
-            if ext == '.shp':
+            if ext == search_ext:
                 shapefile_path = unzipped_path
     
     return shapefile_path
