@@ -59,6 +59,13 @@
                 <tbody>
                 </tbody>
             </table>
+            {% if transform_succeeded %}
+            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
+                <p>
+                    <button>Name Trails</button>
+                </p>
+            </form>
+            {% endif %}
         </section>
 
         <script>

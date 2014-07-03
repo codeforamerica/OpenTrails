@@ -161,7 +161,7 @@ def transform_segments(dataset_id):
     datastore.upload(opentrails_segments_path + ".zip")
     datastore.upload(transform_messages_path)
 
-    return redirect('/datasets/' + dataset.id + '/transformed-segments')
+    return redirect('/datasets/' + dataset.id + '/transformed-segments', code=303)
         
 @app.route('/datasets/<dataset_id>/transformed-segments')
 def transformed_segments(dataset_id):
@@ -196,6 +196,36 @@ def transformed_segments(dataset_id):
     
     with open(transformed_segments_messages) as f:
         messages = json.load(f)
+    
+    message_types = [type for (type, message) in messages]
+    
+    vars = dict(
+        dataset = dataset,
+        messages = messages,
+        sample_segment = sample_segment,
+        opentrails_sample_segment = opentrails_sample_segment,
+        transform_succeeded = bool('error' not in message_types)
+        )
+            
+    return render_template('dataset-03-transformed-segments.html', **vars)
+        
+@app.route('/datasets/<dataset_id>/name-trails', methods=['POST'])
+def name_trails(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    # Download the transformed segments file
+    transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
+    datastore.download(transformed_segments_zip)
+
+    # Unzip it
+    segments_path = unzip(transformed_segments_zip, '.geojson', [])
+    transformed_segments = json.load(open(segments_path))
+    
+    from flask import jsonify
+    return jsonify(transformed_segments)
             
     return render_template('dataset-03-transformed-segments.html', dataset=dataset, messages=messages, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     
