@@ -2,10 +2,12 @@
 from shutil import rmtree, copy
 from unittest import TestCase, main
 from os.path import join, dirname
-import os, glob, json
+import os, glob, json, re
 from urlparse import urljoin
 from tempfile import mkdtemp
 from bs4 import BeautifulSoup
+from zipfile import ZipFile
+from StringIO import StringIO
 
 from open_trails import app, transformers
 from open_trails.functions import unzip, compress
@@ -331,6 +333,24 @@ class TestApp (TestCase):
         # Do the transforming
         transformed = self.app.post(form['action'], follow_redirects=True)
         self.assertTrue('"id": "714115"' in transformed.data)
+        
+        soup = BeautifulSoup(transformed.data)
+        form = soup.find('button').find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/name-trails'))
+        
+        # Ask to name the trails
+        named = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('open-trails.zip' in named.data)
+
+        soup = BeautifulSoup(named.data)
+        link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
+        
+        zipfile = self.app.get(link['href'])
+        zipfile = ZipFile(StringIO(zipfile.data))
+        
+        self.assertTrue('trail_segments.geojson' in zipfile.namelist())
+        self.assertTrue('named_trails.csv' in zipfile.namelist())
 
     def do_not_test_stewards_list(self):
         ''' Test that /stewards returns a list of stewards
