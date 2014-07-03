@@ -2,6 +2,7 @@ from open_trails import app
 from werkzeug.utils import secure_filename
 from itertools import groupby, count
 from operator import itemgetter
+from StringIO import StringIO
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 
 from boto.s3.key import Key
@@ -115,3 +116,27 @@ def make_name_trails(segment_features):
                  name=name, segment_ids=ids,
                  description=None, part_of=None)
             for (name, ids) in name_ids]
+
+def package_opentrails_archive(dataset):
+    '''
+    '''
+    buffer = StringIO()
+    zf = zipfile.ZipFile(buffer, 'w')
+    
+    # Download the transformed segments file
+    transformed_segments_zip = os.path.join(dataset.id, 'opentrails/segments.geojson.zip')
+    dataset.datastore.download(transformed_segments_zip)
+
+    # Unzip it and re-zip it.
+    segments_path = unzip(transformed_segments_zip, '.geojson', [])
+    zf.write(segments_path, 'trail_segments.geojson')
+    
+    # Download the named trails file
+    named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
+    dataset.datastore.download(named_trails_path)
+    zf.write(named_trails_path, 'named_trails.csv')
+    
+    zf.close()
+    buffer.seek(0)
+    
+    return buffer

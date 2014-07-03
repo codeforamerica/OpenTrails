@@ -2,10 +2,10 @@ from open_trails import app
 from models import Dataset, make_datastore
 from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
-    get_sample_of_original_segments, make_name_trails
+    get_sample_of_original_segments, make_name_trails, package_opentrails_archive
     )
 from transformers import shapefile2geojson, segments_transform
-from flask import request, render_template, redirect, make_response
+from flask import request, render_template, redirect, make_response, send_file
 import json, os, csv, zipfile, time, re
 
 @app.route('/')
@@ -256,6 +256,19 @@ def named_trails(dataset_id):
         return make_response("No Dataset Found", 404)
 
     return render_template('dataset-04-named-trails.html', dataset=dataset)
+
+@app.route('/datasets/<dataset_id>/open-trails.zip')
+def download_opentrails_data(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    buffer = package_opentrails_archive(dataset)
+    
+    return send_file(buffer, 'application/zip')
+    
+    return 'poop'
 
 @app.route('/datasets/<id>')
 def existing_dataset(id):
