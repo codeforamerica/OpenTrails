@@ -1,6 +1,9 @@
 from open_trails import app
 from models import Dataset, make_datastore
-from functions import get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file, get_sample_of_original_segments
+from functions import (
+    get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
+    get_sample_of_original_segments, make_name_trails
+    )
 from transformers import shapefile2geojson, segments_transform
 from flask import request, render_template, redirect, make_response
 import json, os, csv, zipfile, time, re
@@ -224,8 +227,22 @@ def name_trails(dataset_id):
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     transformed_segments = json.load(open(segments_path))
     
+    # Generate a list of (name, ids) tuples
+    named_trails = make_name_trails(transformed_segments['features'])
+    
+    named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
+
+    with open(named_trails_path, 'w') as named_trails_file:
+        cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
+        writer = csv.writer(named_trails_file)
+        writer.writerow(cols)
+        for row in named_trails:
+            writer.writerow([row[c] for c in cols])
+    
+    datastore.upload(named_trails_path)
+    
     from flask import jsonify
-    return jsonify(transformed_segments)
+    return jsonify(dict(n=list(named_trails)))
             
     return render_template('dataset-03-transformed-segments.html', dataset=dataset, messages=messages, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     

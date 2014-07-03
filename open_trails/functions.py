@@ -1,10 +1,12 @@
 from open_trails import app
 from werkzeug.utils import secure_filename
+from itertools import groupby, count
+from operator import itemgetter
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
+
 from boto.s3.key import Key
 from models import Dataset
 from flask import make_response
-
 
 def get_dataset(datastore, id):
     '''
@@ -86,3 +88,25 @@ def get_sample_of_original_segments(dataset):
 
     return sample_segment
 
+def encode_list(items):
+    '''
+    '''
+    return '; '.join(items)
+
+def make_name_trails(segment_features):
+    '''
+    '''
+    names = [(f['properties']['name'], f['properties']['id'])
+             for f in segment_features]
+    
+    # Generate a list of (name, ids) tuples
+    groups = groupby(names, itemgetter(0))
+    name_ids = [(name, encode_list(map(itemgetter(1), names_ids)))
+                for (name, names_ids) in groups]
+    
+    id_counter = count(1)
+
+    return [dict(id=str(id_counter.next()),
+                 name=name, segment_ids=ids,
+                 description=None, part_of=None)
+            for (name, ids) in name_ids]
