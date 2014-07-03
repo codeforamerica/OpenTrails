@@ -240,13 +240,17 @@ def name_trails(dataset_id):
             writer.writerow([row[c] for c in cols])
     
     datastore.upload(named_trails_path)
-    
-    from flask import jsonify
-    return jsonify(dict(n=list(named_trails)))
-            
-    return render_template('dataset-03-transformed-segments.html', dataset=dataset, messages=messages, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
-    
 
+    return redirect('/datasets/' + dataset.id + '/named-trails', code=303)
+            
+@app.route('/datasets/<dataset_id>/named-trails')
+def named_trails(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    return render_template('dataset-04-named-trails.html', dataset=dataset)
 
 @app.route('/datasets/<id>')
 def existing_dataset(id):
