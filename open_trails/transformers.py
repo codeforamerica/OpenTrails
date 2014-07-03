@@ -31,7 +31,7 @@ def segments_transform(raw_geojson, dataset):
          "type" : "Feature",
          "geometry" : old_segment['geometry'],
          "properties" : {
-             "id" : find_segment_id(messages, old_properties) or id_counter.next(),
+             "id" : find_segment_id(messages, old_properties) or str(id_counter.next()),
              "stewardId" : None,
              "name" : find_segment_name(messages, old_properties),
              "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
