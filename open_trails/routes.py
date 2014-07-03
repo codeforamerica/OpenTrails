@@ -21,6 +21,37 @@ def datasets():
     datasets_list = datastore.datasets()
     return render_template('datasets_list.html', datasets_list=datasets_list, server_url=request.url_root)
 
+@app.route('/check-dataset', methods=['POST'])
+def check_dataset():
+    '''
+    '''
+    '''
+    Create a unique url for this dataset to work under
+    Create a folder on S3 using this url
+    '''
+    # Create uuid
+    import uuid
+    id = str(uuid.uuid4())
+
+    # Make a new dataset object
+    dataset = Dataset(id)
+    dataset.datastore = make_datastore(app.config['DATASTORE'])
+    
+    # Make local folders for dataset
+    try:
+        os.makedirs(dataset.id + "/uploads")
+        os.makedirs(dataset.id + "/opentrails")
+    except OSError:
+        pass
+
+    # Write a verifying file to prove we created these folders
+    with open(os.path.join(dataset.id, 'uploads', '.valid'), "w") as validfile:
+        validfile.write(dataset.id)
+
+    # # Upload .valid to datastore
+    dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
+    return redirect('/checks/' + dataset.id)
+
 @app.route('/new-dataset', methods=['POST'])
 def new_dataset():
     '''
@@ -312,6 +343,41 @@ def existing_dataset(id):
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
+
+@app.route('/checks/<id>')
+def existing_validation(id):
+    '''
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+
+    return render_template('check-01-upload-opentrails.html', dataset=dataset)
+
+@app.route('/checks/<dataset_id>/upload', methods=['POST'])
+def validate_upload(dataset_id):
+    '''
+    Upload a zip of one shapefile to datastore
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+
+    # Check that they uploaded a .zip file
+    if not request.files['file'] or not allowed_file(request.files['file'].filename):
+        return make_response("Only .zip files allowed", 403)
+        
+    # Save zip file to disk
+    # /blahblahblah/uploads/trail-segments.zip
+    zipfilepath = os.path.join(dataset_id, 'uploads/open-trails.zip')
+    request.files['file'].save(zipfilepath)
+
+    # Upload original file to S3
+    datastore.upload(zipfilepath)
+
+    raise NotImplementedError('Need to actually peek inside the zip file here')
+
+    # Show sample data from original file
+    return redirect('/checks/' + dataset_id + "/results", code=303)
 
 @app.route('/errors/<error_id>')
 def get_error(error_id):

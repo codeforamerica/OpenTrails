@@ -35,13 +35,16 @@
 	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
 
 	</section>
-    GET STARTED!
-    <form id="start" action="/new-dataset" method=post>
-    <button>Convert Data</button>
-    </form>
-    <form id="start" action="/check-dataset" method=post>
-    <button>Validate Data</button>
-    </form>
 
+        <section class="layout-semibreve">
+            <h3 class="h3">Upload your open trails data!</h3>
+            <p>Give it all to us!</p>
+            <form action="/checks/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+                <p>
+                    <input type=file name=file>
+                    <input type=submit value=Upload>
+                </p>
+            </form>
+        </section>
 </body>
 </html>
