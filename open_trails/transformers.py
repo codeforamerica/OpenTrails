@@ -66,7 +66,7 @@ def find_segment_id(messages, properties):
         if field in keys:
             return values[keys.index(field)]
     
-    messages.append(('warning', 'No column found for trail ID, such as "id" or "trailid". A new numeric ID was created.'))
+    messages.append(('warning', 'missing-segment-id', 'No column found for trail ID, such as "id" or "trailid". A new numeric ID was created.'))
     
     return None
 
@@ -83,7 +83,7 @@ def find_segment_name(messages, properties):
         if field in keys:
             return values[keys.index(field)]
     
-    messages.append(('error', 'No column found for trail name, such as "name" or "trail".'))
+    messages.append(('error', 'missing-segment-name', 'No column found for trail name, such as "name" or "trail".'))
     
     return None
 
@@ -148,7 +148,7 @@ def find_segment_foot_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for foot use, such as "hike" or "walk". Leaving "foot" blank.'))
+    messages.append(('warning', 'missing-segment-foot', 'No column found for foot use, such as "hike" or "walk". Leaving "foot" blank.'))
     
     return None
 
@@ -172,7 +172,7 @@ def find_segment_bicycle_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for bicycle use, such as "bikes" or "road bike". Leaving "bicycle" blank.'))
+    messages.append(('warning', 'missing-segment-bicycle', 'No column found for bicycle use, such as "bikes" or "road bike". Leaving "bicycle" blank.'))
             
     return None
 
@@ -196,7 +196,7 @@ def find_segment_horse_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for horse use, such as "horses", "equestrian", etc. Leaving "horse" blank.'))
+    messages.append(('warning', 'missing-segment-horse', 'No column found for horse use, such as "horses", "equestrian", etc. Leaving "horse" blank.'))
             
     return None
 
@@ -220,7 +220,7 @@ def find_segment_ski_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_match_yes_no(properties, pattern, fieldnames)
             
-    messages.append(('warning', 'No column found for ski use, such as "skiing" or "cross country ski". Leaving "ski" blank.'))
+    messages.append(('warning', 'missing-segment-ski', 'No column found for ski use, such as "skiing" or "cross country ski". Leaving "ski" blank.'))
             
     return None
 
@@ -237,7 +237,7 @@ def find_segment_wheelchair_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
             
-    messages.append(('warning', 'No column found for wheelchair accessibility, such as "accessible" or "ADA". Leaving "wheelchair" blank.'))
+    messages.append(('warning', 'missing-segment-wheelchair', 'No column found for wheelchair accessibility, such as "accessible" or "ADA". Leaving "wheelchair" blank.'))
             
     return None
 
@@ -254,6 +254,6 @@ def find_segment_motor_vehicles_use(messages, properties):
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
             
-    messages.append(('warning', 'No column found for motor vehicle use, such as "motorbike" or "ATV". Leaving "motor_vehicles" blank.'))
+    messages.append(('warning', 'missing-segment-motor-vehicles', 'No column found for motor vehicle use, such as "motorbike" or "ATV". Leaving "motor_vehicles" blank.'))
             
     return None

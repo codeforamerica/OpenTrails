@@ -198,9 +198,14 @@ def transformed_segments(dataset_id):
     datastore.download(transformed_segments_messages)
     
     with open(transformed_segments_messages) as f:
-        messages = json.load(f)
+        data = json.load(f)
+        try:
+            messages = [(type, id, words) for (type, id, words) in data]
+        except ValueError:
+            # Old stored format.
+            messages = [(type, None, words) for (type, words) in data]
     
-    message_types = [type for (type, message) in messages]
+    message_types = [message[0] for message in messages]
     
     vars = dict(
         dataset = dataset,
@@ -294,6 +299,10 @@ def existing_dataset(id):
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
+
+@app.route('/errors/<error_id>')
+def get_error(error_id):
+    return render_template('error-{0}.html'.format(error_id))
 
 ### Engine Light - http://engine-light.codeforamerica.org/
 @app.route('/.well-known/status', methods=['GET'])
