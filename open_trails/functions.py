@@ -97,7 +97,12 @@ def make_name_trails(segment_features):
     '''
     '''
     names = [(f['properties']['name'], f['properties']['id'])
-             for f in segment_features]
+             for f in segment_features
+             if f['properties']['name']]
+    
+    # Cut to the chase if there's no name.
+    if not names:
+        return []
     
     # Generate a list of (name, ids) tuples
     groups = groupby(names, itemgetter(0))
