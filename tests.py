@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from zipfile import ZipFile
 from StringIO import StringIO
 
-from open_trails import app, transformers
+from open_trails import app, transformers, validators
 from open_trails.functions import unzip, compress
 from open_trails.models import make_datastore
 
@@ -23,6 +23,37 @@ class FakeUpload:
     def save(self, path):
         with open(path, 'w') as file:
             file.write(self._file.read())
+
+class TestValidators (TestCase):
+
+    def setUp(self):
+        self.dir = os.getcwd()
+        self.tmp = mkdtemp(prefix='plats-')
+
+        names = ('test-files/open-trails-GGNRA.zip',)
+        for name in names:
+            copy(name, self.tmp)
+
+    def tearDown(self):
+        rmtree(self.tmp)
+    
+    def test_validate_GGNRA(self):
+        '''
+        '''
+        unzip(join(self.tmp, 'open-trails-GGNRA.zip'), None, ('.geojson', '.csv'))
+        
+        files = (join(self.tmp, 'trail_segments.geojson'),
+                 join(self.tmp, 'named_trails.csv'),
+                 join(self.tmp, 'trailheads.geojson'),
+                 join(self.tmp, 'stewards.csv'),
+                 join(self.tmp, 'areas.geojson')
+                 )
+        
+        messages, result = validators.check_open_trails(*files)
+        
+        self.assertTrue(result)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0][:2], ('warning', 'missing-file-areas'))
 
 class TestTransformers (TestCase):
 
