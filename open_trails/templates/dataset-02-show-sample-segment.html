@@ -35,8 +35,13 @@
     {% include "step-tracker-placeholder.html" %}
 
     <section class="layout-semibreve">
-        <h4>Review & Initiate</h4>
-        <p>Well done! You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below to make sure it looks right.</p>
+        <h4>Upload Successful.</h4>
+        <p>You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, and a sample value.</p>
+        <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
+            <p>
+                <button>Transform</button>
+            </p>
+        </form>
     </section>
 
     <section class="layout-semibreve">
@@ -54,11 +59,6 @@
                 </tr>
             </tbody>
         </table>
-        <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
-            <p>
-                <button>Transform</button>
-            </p>
-        </form>
 
     </section>
 
