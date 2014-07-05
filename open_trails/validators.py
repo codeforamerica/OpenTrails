@@ -4,7 +4,7 @@ from json import load
 
 from shapely.geometry import shape
 
-class ValidationError (Exception):
+class _VE (Exception):
 
     def __init__(self, type, message):
         self.type = type
@@ -13,37 +13,42 @@ class ValidationError (Exception):
 def check_open_trails(ts_path, nt_path, th_path, s_path, a_path):
     '''
     '''
-    messages = []
+    msgs = []
     
-    if not exists(ts_path):
-        messages.append(('error', 'missing-file-trail-segments', 'Could not find required file trail_segments.geojson.'))
+    if exists(ts_path):
+        check_trail_segments(msgs, ts_path)
     else:
-        check_trail_segments(messages, ts_path)
+        msgs.append(('error', 'missing-file-trail-segments',
+                     'Could not find required file trail_segments.geojson.'))
     
-    if not exists(nt_path):
-        messages.append(('error', 'missing-file-named-trails', 'Could not find required file named_trails.csv.'))
+    if exists(nt_path):
+        check_named_trails(msgs, nt_path)
     else:
-        check_named_trails(messages, nt_path)
+        msgs.append(('error', 'missing-file-named-trails',
+                     'Could not find required file named_trails.csv.'))
     
-    if not exists(th_path):
-        messages.append(('error', 'missing-file-trailheads', 'Could not find required file trailheads.geojson.'))
+    if exists(th_path):
+        check_trailheads(msgs, th_path)
     else:
-        check_trailheads(messages, th_path)
+        msgs.append(('error', 'missing-file-trailheads',
+                     'Could not find required file trailheads.geojson.'))
     
-    if not exists(s_path):
-        messages.append(('error', 'missing-file-stewards', 'Could not find required file stewards.csv.'))
+    if exists(s_path):
+        check_stewards(msgs, s_path)
     else:
-        check_stewards(messages, s_path)
+        msgs.append(('error', 'missing-file-stewards',
+                     'Could not find required file stewards.csv.'))
     
-    if not exists(a_path):
-        messages.append(('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'))
+    if exists(a_path):
+        check_areas(msgs, a_path)
     else:
-        check_areas(messages, a_path)
+        msgs.append(('warning', 'missing-file-areas',
+                     'Could not find optional file areas.geojson.'))
     
     deduped_messages = []
     passed_validation = True
     
-    for message in messages:
+    for message in msgs:
         if message not in deduped_messages:
             deduped_messages.append(message)
         
@@ -57,55 +62,53 @@ _geojson_geometry_types = 'Point', 'LineString', 'MultiLineString', 'Polygon', '
 def check_geojson_structure(path, allowed_geometry_types=_geojson_geometry_types):
     ''' Verify core GeoJSON syntax of a file.
     
-        Return features list if everything checks out, or raise a ValidationError.
+        Return features list if everything checks out, or raise a validation error.
     '''
     name = basename(path)
+    t = 'incorrect-geojson-file'
     
     try:
         data = load(open(path))
     except:
-        raise ValidationError('incorrect-geojson-file', 'Could not load required file "{0}".'.format(name))
+        raise _VE(t, 'Could not load required file {0}.'.format(name))
     
     if data.get('type', None) != 'FeatureCollection':
-        raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON type in {0}.'.format(name))
+        raise _VE(t, 'Incorrect GeoJSON type in {0}.'.format(name))
     
     if type(data.get('features', None)) is not list:
-        raise ValidationError('incorrect-geojson-file', 'Bad features list in {0}.'.format(name))
+        raise _VE(t, 'Bad features list in {0}.'.format(name))
     
     for feature in data['features']:
         if feature.get('type', None) != 'Feature':
-            raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON feature type in {0}.'.format(name))
+            raise _VE(t, 'Incorrect GeoJSON feature type in {0}.'.format(name))
 
         if type(feature.get('properties', None)) is not dict:
-            raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON properties type in {0}.'.format(name))
+            raise _VE(t, 'Incorrect GeoJSON properties type in {0}.'.format(name))
 
         if type(feature.get('geometry', None)) is not dict:
-            raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON geometry type in {0}.'.format(name))
+            raise _VE(t, 'Incorrect GeoJSON geometry type in {0}.'.format(name))
         
         if feature['geometry'].get('type', None) not in allowed_geometry_types:
-            raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON geometry type in {0}.'.format(name))
-        
-        if type(feature['geometry'].get('coordinates', None)) is not list:
-            raise ValidationError('incorrect-geojson-file', 'Incorrect GeoJSON geometry coordinates in {0}.'.format(name))
+            raise _VE(t, 'Incorrect GeoJSON geometry type in {0}.'.format(name))
         
         try:
             shape(feature['geometry'])
         except ValueError, e:
-            raise ValidationError('incorrect-geojson-file', 'Unrecognizeable GeoJSON geometry in {0}.'.format(name))
+            raise _VE(t, 'Unrecognizeable GeoJSON geometry in {0}.'.format(name))
     
     return data['features']
 
 def check_csv_structure(path):
     ''' Verify core CSV syntax of a file.
     
-        Return rows list if everything checks out, or raise a ValidationError.
+        Return rows list if everything checks out, or raise a validation error.
     '''
     name = basename(path)
     
     try:
         rows = list(DictReader(open(path)))
     except:
-        raise ValidationError('incorrect-csv-file', 'Could not load required file "{0}".'.format(name))
+        raise _VE('incorrect-csv-file', 'Could not load required file "{0}".'.format(name))
     
     return rows
 
@@ -169,33 +172,35 @@ def _check_optional_boolean_field(messages, field, dictionary, table_name):
         message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
         messages.append(('error', message_type, message_text))
 
-def check_trail_segments(messages, path):
+def check_trail_segments(msgs, path):
     '''
     '''
     try:
         features = check_geojson_structure(path, ('LineString', 'MultiLineString'))
-    except ValidationError, e:
-        messages.append(('error', e.type, e.message))
+    except _VE, e:
+        msgs.append(('error', e.type, e.message))
+        return
     
     for feature in features:
         properties = feature['properties']
         
-        for field in ('id', 'steward_id'):
-            _check_required_string_field(messages, field, properties, 'trail segments')
+        for f in ('id', 'steward_id'):
+            _check_required_string_field(msgs, f, properties, 'trail segments')
 
-        for field in ('osm_tags', ):
-            _check_optional_string_field(messages, field, properties, 'trail segments')
+        for f in ('osm_tags', ):
+            _check_optional_string_field(msgs, f, properties, 'trail segments')
         
-        for field in ('motor_vehicles', 'foot', 'bicycle', 'horse', 'ski', 'wheelchair'):
-            _check_optional_boolean_field(messages, field, properties, 'trail segments')
+        for f in ('motor_vehicles', 'foot', 'bicycle', 'horse', 'ski', 'wheelchair'):
+            _check_optional_boolean_field(msgs, f, properties, 'trail segments')
 
 def check_named_trails(messages, path):
     '''
     '''
     try:
         rows = check_csv_structure(path)
-    except ValidationError, e:
+    except _VE, e:
         messages.append(('error', e.type, e.message))
+        return
     
     for row in rows:
         for field in ('name', 'segment_ids', 'id', 'description'):
@@ -204,33 +209,35 @@ def check_named_trails(messages, path):
         for field in ('part_of', ):
             _check_optional_string_field(messages, field, row, 'named trails')
 
-def check_trailheads(messages, path):
+def check_trailheads(msgs, path):
     '''
     '''
     try:
         features = check_geojson_structure(path, ('Point', ))
-    except ValidationError, e:
-        messages.append(('error', e.type, e.message))
+    except _VE, e:
+        msgs.append(('error', e.type, e.message))
+        return
     
     for feature in features:
         properties = feature['properties']
         
         for field in ('name', 'trail_ids', 'steward_ids'):
-            _check_required_string_field(messages, field, properties, 'trailheads')
+            _check_required_string_field(msgs, field, properties, 'trailheads')
 
         for field in ('address', 'area_id'):
-            _check_optional_string_field(messages, field, properties, 'trailheads')
+            _check_optional_string_field(msgs, field, properties, 'trailheads')
         
         for field in ('parking', 'drinkwater', 'restrooms', 'kiosk', 'osm_tags'):
-            _check_optional_boolean_field(messages, field, properties, 'trailheads')
+            _check_optional_boolean_field(msgs, field, properties, 'trailheads')
 
 def check_stewards(messages, path):
     '''
     '''
     try:
         rows = check_csv_structure(path)
-    except ValidationError, e:
+    except _VE, e:
         messages.append(('error', e.type, e.message))
+        return
     
     for row in rows:
         for field in ('name', 'id', 'url', 'phone', 'address', 'license'):
@@ -244,8 +251,9 @@ def check_areas(messages, path):
     '''
     try:
         features = check_geojson_structure(path, ('Polygon', 'MultiPolygon'))
-    except ValidationError, e:
+    except _VE, e:
         messages.append(('error', e.type, e.message))
+        return
     
     for feature in features:
         properties = feature['properties']
