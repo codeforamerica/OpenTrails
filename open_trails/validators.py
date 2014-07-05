@@ -93,6 +93,51 @@ def check_geojson_structure(path, allowed_geometry_types=_geojson_geometry_types
     
     return data['features']
 
+def _check_required_string_field(messages, field, properties, table_name):
+    ''' Find and note missing or badly-typed required string fields.
+    '''
+    message_type = 'bad-data-' + table_name.replace(' ', '-')
+    title_name = table_name[0].upper() + table_name[1:]
+    
+    if field not in properties:
+        message_text = 'Required {0} field "{1}" is missing.'.format(table_name, field)
+        messages.append(('error', message_type, message_text))
+
+    elif type(properties[field]) not in (str, unicode):
+        found_type = type(properties[field])
+        message_text = '{0} "{1}" field is the wrong type: {2}.'.format(title_name, field, repr(found_type))
+        messages.append(('error', message_type, message_text))
+
+def _check_optional_string_field(messages, field, properties, table_name):
+    ''' Find and note missing or badly-typed optional string fields.
+    '''
+    message_type = 'bad-data-' + table_name.replace(' ', '-')
+    title_name = table_name[0].upper() + table_name[1:]
+    
+    if field not in properties:
+        message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
+        messages.append(('warning', message_type, message_text))
+
+    elif type(properties[field]) not in (str, unicode, type(None)):
+        found_type = type(properties[field])
+        message_text = '{0} "{1}" field is the wrong type: {2}.'.format(title_name, field, repr(found_type))
+        messages.append(('error', message_type, message_text))
+
+def _check_optional_boolean_field(messages, field, properties, table_name):
+    ''' Find and note missing or badly-typed optional boolean fields.
+    '''
+    message_type = 'bad-data-' + table_name.replace(' ', '-')
+    title_name = table_name[0].upper() + table_name[1:]
+    
+    if field not in properties:
+        message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
+        messages.append(('warning', message_type, message_text))
+
+    elif properties[field] not in ('yes', 'no', None):
+        found_value = properties[field]
+        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
+        messages.append(('error', message_type, message_text))
+
 def check_trail_segments(messages, path):
     '''
     '''
@@ -100,6 +145,17 @@ def check_trail_segments(messages, path):
         features = check_geojson_structure(path, ('LineString', 'MultiLineString'))
     except ValidationError, e:
         messages.append(('error', e.type, e.message))
+    
+    for feature in features:
+        properties = feature['properties']
+        
+        for field in ('id', 'steward_id'):
+            _check_required_string_field(messages, field, properties, 'trail segments')
+
+        _check_optional_string_field(messages, 'name', properties, 'trail segments')
+        
+        for field in ('motor_vehicles', 'foot', 'bicycle', 'horse', 'ski', 'wheelchair'):
+            _check_optional_boolean_field(messages, field, properties, 'trail segments')
 
 def check_named_trails(messages, path):
     '''
@@ -113,6 +169,18 @@ def check_trailheads(messages, path):
         features = check_geojson_structure(path, ('Point', ))
     except ValidationError, e:
         messages.append(('error', e.type, e.message))
+    
+    for feature in features:
+        properties = feature['properties']
+        
+        for field in ('name', 'trail_ids', 'steward_ids'):
+            _check_required_string_field(messages, field, properties, 'trailheads')
+
+        for field in ('address', ):
+            _check_optional_string_field(messages, field, properties, 'trailheads')
+        
+        for field in ('parking', 'drinkwater', 'restrooms', 'kiosk'):
+            _check_optional_boolean_field(messages, field, properties, 'trailheads')
 
 def check_stewards(messages, path):
     '''
@@ -126,3 +194,12 @@ def check_areas(messages, path):
         features = check_geojson_structure(path, ('Polygon', 'MultiPolygon'))
     except ValidationError, e:
         messages.append(('error', e.type, e.message))
+    
+    for feature in features:
+        properties = feature['properties']
+        
+        for field in ('name', 'id', 'steward_id'):
+            _check_required_string_field(messages, field, properties, 'areas')
+
+        for field in ('url', ):
+            _check_optional_string_field(messages, field, properties, 'areas')
