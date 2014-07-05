@@ -1,6 +1,8 @@
 from os.path import exists, basename
-from shapely.geometry import shape
+from csv import DictReader
 from json import load
+
+from shapely.geometry import shape
 
 class ValidationError (Exception):
 
@@ -93,48 +95,62 @@ def check_geojson_structure(path, allowed_geometry_types=_geojson_geometry_types
     
     return data['features']
 
-def _check_required_string_field(messages, field, properties, table_name):
+def check_csv_structure(path):
+    ''' Verify core CSV syntax of a file.
+    
+        Return rows list if everything checks out, or raise a ValidationError.
+    '''
+    name = basename(path)
+    
+    try:
+        rows = list(DictReader(open(path)))
+    except:
+        raise ValidationError('incorrect-csv-file', 'Could not load required file "{0}".'.format(name))
+    
+    return rows
+
+def _check_required_string_field(messages, field, dictionary, table_name):
     ''' Find and note missing or badly-typed required string fields.
     '''
     message_type = 'bad-data-' + table_name.replace(' ', '-')
     title_name = table_name[0].upper() + table_name[1:]
     
-    if field not in properties:
+    if field not in dictionary:
         message_text = 'Required {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('error', message_type, message_text))
 
-    elif type(properties[field]) not in (str, unicode):
-        found_type = type(properties[field])
+    elif type(dictionary[field]) not in (str, unicode):
+        found_type = type(dictionary[field])
         message_text = '{0} "{1}" field is the wrong type: {2}.'.format(title_name, field, repr(found_type))
         messages.append(('error', message_type, message_text))
 
-def _check_optional_string_field(messages, field, properties, table_name):
+def _check_optional_string_field(messages, field, dictionary, table_name):
     ''' Find and note missing or badly-typed optional string fields.
     '''
     message_type = 'bad-data-' + table_name.replace(' ', '-')
     title_name = table_name[0].upper() + table_name[1:]
     
-    if field not in properties:
+    if field not in dictionary:
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('warning', message_type, message_text))
 
-    elif type(properties[field]) not in (str, unicode, type(None)):
-        found_type = type(properties[field])
+    elif type(dictionary[field]) not in (str, unicode, type(None)):
+        found_type = type(dictionary[field])
         message_text = '{0} "{1}" field is the wrong type: {2}.'.format(title_name, field, repr(found_type))
         messages.append(('error', message_type, message_text))
 
-def _check_optional_boolean_field(messages, field, properties, table_name):
+def _check_optional_boolean_field(messages, field, dictionary, table_name):
     ''' Find and note missing or badly-typed optional boolean fields.
     '''
     message_type = 'bad-data-' + table_name.replace(' ', '-')
     title_name = table_name[0].upper() + table_name[1:]
     
-    if field not in properties:
+    if field not in dictionary:
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('warning', message_type, message_text))
 
-    elif properties[field] not in ('yes', 'no', None):
-        found_value = properties[field]
+    elif dictionary[field] not in ('yes', 'no', None):
+        found_value = dictionary[field]
         message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
         messages.append(('error', message_type, message_text))
 
@@ -160,7 +176,17 @@ def check_trail_segments(messages, path):
 def check_named_trails(messages, path):
     '''
     '''
-    pass
+    try:
+        rows = check_csv_structure(path)
+    except ValidationError, e:
+        messages.append(('error', e.type, e.message))
+    
+    for row in rows:
+        for field in ('name', 'segment_ids', 'id', 'description'):
+            _check_required_string_field(messages, field, row, 'named trails')
+
+        for field in ('part_of', ):
+            _check_optional_string_field(messages, field, row, 'named trails')
 
 def check_trailheads(messages, path):
     '''
@@ -185,7 +211,14 @@ def check_trailheads(messages, path):
 def check_stewards(messages, path):
     '''
     '''
-    pass
+    try:
+        rows = check_csv_structure(path)
+    except ValidationError, e:
+        messages.append(('error', e.type, e.message))
+    
+    for row in rows:
+        for field in ('name', 'id', 'url', 'phone', 'address', 'publisher'):
+            _check_required_string_field(messages, field, row, 'named trails')
 
 def check_areas(messages, path):
     '''
