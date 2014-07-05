@@ -51,9 +51,18 @@ class TestValidators (TestCase):
         
         messages, result = validators.check_open_trails(*files)
         
-        self.assertTrue(result)
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(messages[0][:2], ('warning', 'missing-file-areas'))
+        self.assertFalse(result)
+        
+        expected_messages = [
+            ('error', 'bad-data-named-trails', 'Required named trails field "license" is missing.'),
+            ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
+            ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
+            ]
+        
+        self.assertEqual(len(messages), len(expected_messages))
+        
+        for expected in expected_messages:
+            self.assertTrue(expected in messages)
 
 class TestTransformers (TestCase):
 

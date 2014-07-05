@@ -139,6 +139,21 @@ def _check_optional_string_field(messages, field, dictionary, table_name):
         message_text = '{0} "{1}" field is the wrong type: {2}.'.format(title_name, field, repr(found_type))
         messages.append(('error', message_type, message_text))
 
+def _check_required_boolean_field(messages, field, dictionary, table_name):
+    ''' Find and note missing or badly-typed required boolean fields.
+    '''
+    message_type = 'bad-data-' + table_name.replace(' ', '-')
+    title_name = table_name[0].upper() + table_name[1:]
+    
+    if field not in dictionary:
+        message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
+        messages.append(('error', message_type, message_text))
+
+    elif dictionary[field] not in ('yes', 'no', None):
+        found_value = dictionary[field]
+        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
+        messages.append(('error', message_type, message_text))
+
 def _check_optional_boolean_field(messages, field, dictionary, table_name):
     ''' Find and note missing or badly-typed optional boolean fields.
     '''
@@ -168,7 +183,8 @@ def check_trail_segments(messages, path):
         for field in ('id', 'steward_id'):
             _check_required_string_field(messages, field, properties, 'trail segments')
 
-        _check_optional_string_field(messages, 'name', properties, 'trail segments')
+        for field in ('osm_tags', ):
+            _check_optional_string_field(messages, field, properties, 'trail segments')
         
         for field in ('motor_vehicles', 'foot', 'bicycle', 'horse', 'ski', 'wheelchair'):
             _check_optional_boolean_field(messages, field, properties, 'trail segments')
@@ -202,10 +218,10 @@ def check_trailheads(messages, path):
         for field in ('name', 'trail_ids', 'steward_ids'):
             _check_required_string_field(messages, field, properties, 'trailheads')
 
-        for field in ('address', ):
+        for field in ('address', 'area_id'):
             _check_optional_string_field(messages, field, properties, 'trailheads')
         
-        for field in ('parking', 'drinkwater', 'restrooms', 'kiosk'):
+        for field in ('parking', 'drinkwater', 'restrooms', 'kiosk', 'osm_tags'):
             _check_optional_boolean_field(messages, field, properties, 'trailheads')
 
 def check_stewards(messages, path):
@@ -217,8 +233,11 @@ def check_stewards(messages, path):
         messages.append(('error', e.type, e.message))
     
     for row in rows:
-        for field in ('name', 'id', 'url', 'phone', 'address', 'publisher'):
+        for field in ('name', 'id', 'url', 'phone', 'address', 'license'):
             _check_required_string_field(messages, field, row, 'named trails')
+
+        for field in ('publisher', ):
+            _check_required_boolean_field(messages, field, row, 'named trails')
 
 def check_areas(messages, path):
     '''
@@ -234,5 +253,5 @@ def check_areas(messages, path):
         for field in ('name', 'id', 'steward_id'):
             _check_required_string_field(messages, field, properties, 'areas')
 
-        for field in ('url', ):
+        for field in ('url', 'osm_tags'):
             _check_optional_string_field(messages, field, properties, 'areas')
