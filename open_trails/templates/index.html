@@ -30,15 +30,29 @@
 </head>
 
 <body>
-	<section class="layout-semibreve layout-centered">
-
-	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
-
-	</section>
-    GET STARTED!
-    <form id="start" action="/new-dataset" method=post>
-    <button>YO</button>
-    </form>
-
+    {% include "headline.html" %}
+    <section>
+        <div class="alert">
+            <p>This tool is under active development. At the moment, this converter converts only <b>trail segments</b> (polylines). Functionality performing conversion of trailheads (points) and areas (polygons) is coming soon.</p>
+        </div>
+        <div class="layout-semibreve">
+            <h4>Understand</h4>
+            <p>This tool will help you convert Shapefiles to OpenTrails, a GeoJSON open data format ideal for web and mobile applications.</p>
+            <p>OpenTrails consists of the following files:</p>
+            <ul>
+                <li>trail_segments.geojson</li>
+                <li>named_trails.csv</li>
+                <li>trailheads.geojson</li>
+                <li>areas.geojson</li>
+                <li>stewards.csv</li>
+            </ul>
+        </div>
+        <div class="layout-semibreve">
+            <h4>Get Started</h4>
+            <form id="start" action="/new-dataset" method=post>
+                <button>YO</button>
+            </form>
+        </div>
+    </section>
 </body>
 </html>

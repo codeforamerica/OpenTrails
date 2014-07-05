@@ -18,6 +18,76 @@
 
 /* Custom Styles */
 
+/* Progress Tracker */
+.steps-tracker {
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* We need to specify the width for different numbers of steps*/
+
+.steps-tracker[data-steps="4"] li { width: 24%; }
+.steps-tracker[data-steps="5"] li { width: 19%; }
+.steps-tracker[data-steps="6"] li { width: 16%; }
+
+.steps-tracker li {
+  display: inline;
+  list-style: none;
+  display: inline-block;
+  text-align: center;
+  line-height: 3em;
+}
+
+.steps-tracker .step-done {
+    /* $color-blue in CfA style guide*/
+    border-bottom: 1em solid #399fd3;
+}
+
+.steps-tracker .step-active {
+    /* $color-red in CfA style guide*/
+    border-bottom: 1em solid #cf1b41;
+}
+
+.steps-tracker .step-todo {
+    /* $color-light-gray in CfA style guide*/
+    border-bottom: 1em solid #e5e5e5;
+}
+
+
+/* Checkbox icons for progress bar */
+
+.steps-tracker li:after {
+    content: "\00a0\00a0";
+}
+.steps-tracker li:before {
+    position: relative;
+    bottom: -2.5em;
+    float: left;
+    left: 50%;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    border: none;
+    border-radius: 2em;
+}
+.steps-tracker li.step-done:before {
+    content: "\2219";
+    color: white;
+    background-color: #399fd3;
+}
+.steps-tracker li.step-active:before {
+    content: "\2219";
+    color: white;
+    background-color: #cf1b41;
+}
+
+.steps-tracker li.step-todo:before {
+    content: "\2219";
+    color: white;
+    background-color: #e5e5e5;
+}
+
 /* Form widths for stewardanization Section */
 
 body {

@@ -30,49 +30,49 @@
 </head>
 
 <body>
-	<section class="layout-semibreve layout-centered">
+    {% include 'headline.html' %}
 
-	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
+    <section class="layout-semibreve">
+        <h4>Review & Initiate</h4>
+        <p>Well done! You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below to make sure it looks right.</p>
+    </section>
 
-	</section>
+    <section class="layout-semibreve">
+        <table id="original-sample">
+            <thead>
+                <tr>
+                    <th colspan="5">A Sample of Your Data</th>
+                </tr>
 
-        <section class="layout-semibreve">
-            <table id="original-sample">
-                <thead>
-                    <tr>
-                        <th colspan="5">Sample Segment Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
-            <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
-                <p>
-                    <button>Transform</button>
-                </p>
-            </form>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Field Name</b></td>
+                    <td><b>Sample Value</b></td>
+                </tr>
+            </tbody>
+        </table>
+        <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
+            <p>
+                <button>Transform</button>
+            </p>
+        </form>
 
-        </section>
+    </section>
 
         <script>
             var geojson = {{ sample_segment | tojson | safe }}
             // For each property make a column
-            $("#original-sample tbody").append("<tr>")
             $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<tr>")
                 $("#original-sample tbody").append("<td>"+key+"</td>")
-            })
-            $("#original-sample tbody").append("</tr>")
-            $("#original-sample tbody").append("<tr>")
-            $.each(geojson['features'][0]['properties'], function(key, property){
                 $("#original-sample tbody").append("<td>"+property+"</td>")
+                $("#original-sample tbody").append("</tr>")
             })
-            $("#original-sample tbody").append("</tr>")
 
             // $.each(geojson['features'][0]['properties'], function(key, property){
             //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
             // })
-            
         </script>
 
     {% include "script-olark.html" %}

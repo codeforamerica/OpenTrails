@@ -30,22 +30,36 @@
 </head>
 
 <body>
-	<section class="layout-semibreve layout-centered">
+    {% include "headline.html" %}
+<!-- When the CSS is right, we will include a step-tracker here -->
+    <section class="layout-semibreve">
+        <h3 class="h3">Upload your trail data</h3>
+        <h4 class="h4">Prepare a single ZIP file containing the data you would like to convert, and upload it here.</h4>
+        <p>Upload a <b>zipped</b> shapefile that describes your trail network. This data should be a 'polyline' file that represents the actual paths a trail takes. Most often, many individual features or "segments" are used to described the entirety of a "named trail".</p>
+        <ul>
+            <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+            <li>.shp</li>
+            <li>.shx</li>
+            <li>.dbf</li>
+            <li>.prj</li>
+        </ul>
+        <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=hidden name="trailtype" value="segments">
+                <input type=submit value=Upload>
+            </p>
+        </form>
+    </section>
 
-	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
-
-	</section>
-
-        <section class="layout-semibreve">
-            <h3 class="h3">Upload your trail data!!!!</h3>
-            <p>Give it all to us!</p>
-            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
-                <p>
-                    <input type=file name=file>
-                    <input type=hidden name="trailtype" value="segments">
-                    <input type=submit value=Upload>
-                </p>
-            </form>
-        </section>
+    <!-- Step Tracker Script -->
+    <script>
+        $(window).load(function(){
+            $("ol.steps-tracker").each(function(){
+                $(this).attr("data-steps",
+                    $(this).children("li").length);
+            });
+        })
+    </script>
 </body>
 </html>
