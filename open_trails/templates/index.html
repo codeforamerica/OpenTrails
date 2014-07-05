@@ -30,29 +30,48 @@
 </head>
 
 <body>
-    {% include "headline.html" %}
-    <section>
-        <div class="alert">
-            <p>This tool is under active development. At the moment, this converter converts only <b>trail segments</b> (polylines). Functionality performing conversion of trailheads (points) and areas (polygons) is coming soon.</p>
-        </div>
-        <div class="layout-semibreve">
-            <h4>Understand</h4>
-            <p>This tool will help you convert Shapefiles to OpenTrails, a GeoJSON open data format ideal for web and mobile applications.</p>
-            <p>OpenTrails consists of the following files:</p>
-            <ul>
-                <li>trail_segments.geojson</li>
-                <li>named_trails.csv</li>
-                <li>trailheads.geojson</li>
-                <li>areas.geojson</li>
-                <li>stewards.csv</li>
-            </ul>
-        </div>
-        <div class="layout-semibreve">
-            <h4>Get Started</h4>
-            <form id="start" action="/new-dataset" method=post>
-                <button>YO</button>
-            </form>
-        </div>
-    </section>
+    {% include "headline-home.html" %}
+    {% include "under-development.html" %}
+    <div class="layout-semibreve">
+        <h4>About OpenTrails</h4>
+
+        <p>The Open Trail System Specification (OpenTrails) provides a uniform “exchange format” for publishing machine readable data on the extent, attributes, and use of our nation’s trail systems.</p>
+
+        <p>OpenTrails is designed for park agencies that want to get reliable trail maps into the hands of their visitors. OpenTrails data is ideal for use on agency websites, in mobile apps, and for consumption by third-parties that offer trail maps at scale. OpenTrails is GeoJSON and CSV open data format ideal for web and mobile applications.</p>
+
+        <p>You can learn more about OpenTrails, its primary use-cases, the ecosystem of services, and more on the <a href="http://codeforamerica.org/specifications/trails">OpenTrails home page.</a></p>
+
+
+        <h4>Convert Your Data</h4>
+
+        <p>OpenTrails is designed with park and public land manager in mind. Thus, this converter is designed to accept GIS data maintained in shapefile formats. Currently, the tool only supports conversion of trail segment data, i.e. the polyline features that describe the alignment of trails. In the future, we will support the conversion of trailhead (point) and area (polygon) files as well.</p>
+
+        <p>This tool will help you <b>convert Shapefiles to OpenTrails</b>.
+        <p>OpenTrails consists of the following files:</p>
+        <ul>
+            <li>trail_segments.geojson</li>
+            <li>named_trails.csv</li>
+            <li>trailheads.geojson</li>
+            <li>areas.geojson (optional)</li>
+            <li>stewards.csv</li>
+        </ul>
+
+        <p>We will take you step by step through the conversion process, giving you the opportunity to review the data you've uploaded. We provide warnings and error messages that will help you rectify your data if need be, or to understand how the data could be made more complete in the future.</p>
+
+        <p><b>Currently, this tool only performs conversion on trails themselves. Conversion for trailheads and areas are coming soon.</b></p>
+
+        <h4>Help is Available</h4>
+
+        <p>By initating the process, we will create a unique URL for your conversion effort. If you run into any issues, you can revisit that URL, or share it with your colleagues</p>
+
+        <p>Moreoever, the Code for America team is available to provide assistance if you run into any problems. Once you begin the conversion process, a feedback form will appear in the bottom-right hand side of your screen.</p>
+
+    </div>
+    <div class="layout-semibreve">
+        <h4>Ready?</h4>
+        <form id="start" action="/new-dataset" method=post>
+            <button>Get Started</button>
+        </form>
+    </div>
 </body>
 </html>

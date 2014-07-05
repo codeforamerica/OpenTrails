@@ -30,14 +30,24 @@
 </head>
 
 <body>
-	<section class="layout-semibreve layout-centered">
 
-	        <h3 class="h3">Parks and trails are a cornerstone of public health and quality of life. The Public Land and Trail Specification helps citizens get outdoors to enjoy them.</h3>
+    {% include "headline.html" %}
+    {% include "under-development.html" %}
+    {% include "step-tracker-placeholder.html" %}
 
-	</section>
-
+    <section class="layout-semibreve">
+        {% if transform_succeeded %}
+        <h3>Success!</h3>
+        <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+        <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
+            <p>
+                <button>Create "Named Trails" (named_trails.csv)</button>
+            </p>
+        </form>
+        {% endif %}
+    </section>
         <section class="layout-semibreve">
-            <h3>Notes</h3>
+            <h3>Notes on Conversion</h3>
             <ul>
                 {% for (level, id, words) in messages %}
                     {% if level == 'warning' %}
@@ -59,28 +69,17 @@
                 <tbody>
                 </tbody>
             </table>
-            {% if transform_succeeded %}
-            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
-                <p>
-                    <button>Name Trails</button>
-                </p>
-            </form>
-            {% endif %}
         </section>
 
         <script>
             var geojson = {{ opentrails_sample_segment | tojson | safe }}
             // For each property make a column
-            $("#transformed-sample tbody").append("<tr>")
             $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#transformed-sample tbody").append("<tr>")
                 $("#transformed-sample tbody").append("<td>"+key+"</td>")
-            })
-            $("#transformed-sample tbody").append("</tr>")
-            $("#transformed-sample tbody").append("<tr>")
-            $.each(geojson['features'][0]['properties'], function(key, property){
                 $("#transformed-sample tbody").append("<td>"+property+"</td>")
+                $("#transformed-sample tbody").append("</tr>")
             })
-            $("#transformed-sample tbody").append("</tr>")
 
             // $.each(geojson['features'][0]['properties'], function(key, property){
             //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
@@ -104,16 +103,12 @@
         <script>
             var geojson = {{ sample_segment | tojson | safe }}
             // For each property make a column
-            $("#original-sample tbody").append("<tr>")
             $.each(geojson['features'][0]['properties'], function(key, property){
+                $("#original-sample tbody").append("<tr>")
                 $("#original-sample tbody").append("<td>"+key+"</td>")
-            })
-            $("#original-sample tbody").append("</tr>")
-            $("#original-sample tbody").append("<tr>")
-            $.each(geojson['features'][0]['properties'], function(key, property){
                 $("#original-sample tbody").append("<td>"+property+"</td>")
+                $("#original-sample tbody").append("<tr>")
             })
-            $("#original-sample tbody").append("</tr>")
 
             // $.each(geojson['features'][0]['properties'], function(key, property){
             //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
