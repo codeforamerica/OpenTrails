@@ -241,10 +241,10 @@ def check_stewards(messages, path):
     
     for row in rows:
         for field in ('name', 'id', 'url', 'phone', 'address', 'license'):
-            _check_required_string_field(messages, field, row, 'named trails')
+            _check_required_string_field(messages, field, row, 'stewards')
 
         for field in ('publisher', ):
-            _check_required_boolean_field(messages, field, row, 'named trails')
+            _check_required_boolean_field(messages, field, row, 'stewards')
 
 def check_areas(messages, path):
     '''

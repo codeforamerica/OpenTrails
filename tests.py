@@ -54,7 +54,7 @@ class TestValidators (TestCase):
         self.assertFalse(result)
         
         expected_messages = [
-            ('error', 'bad-data-named-trails', 'Required named trails field "license" is missing.'),
+            ('error', 'bad-data-stewards', 'Required stewards field "license" is missing.'),
             ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
             ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
             ]
