@@ -18,6 +18,26 @@
 
 /* Custom Styles */
 
+/* Alert & Badge heading fix */
+
+.alert-fix {
+  margin: 0;
+  padding: 0;
+}
+
+.badge-heading-fix {
+  border: none;
+}
+
+.badge-heading-layout-fix {
+  padding-top: 1.5em;
+  padding-bottom: .5em;
+}
+
+.badge-heading-h4-fix {
+  padding-top: .5em;
+}
+
 /* Progress Tracker */
 .steps-tracker {
   margin: 0 auto;

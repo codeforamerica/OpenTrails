@@ -34,25 +34,31 @@
     {% include "under-development.html" %}
     {% include "step-tracker.html" %}
 
-    <section class="layout-semibreve">
-        <h3 class="h3">Upload your trail data</h3>
-        <h4 class="h4">Prepare a single ZIP file containing the data you would like to convert, and upload it here.</h4>
-        <p>Upload a <b>zipped</b> shapefile that describes your trail network. This data should be a 'polyline' file that represents the actual paths a trail takes. Most often, many individual features or "segments" are used to described the entirety of a "named trail".</p>
-        <ul>
-            <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
-            <li>.shp</li>
-            <li>.shx</li>
-            <li>.dbf</li>
-            <li>.prj</li>
-        </ul>
-        <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
-            <p>
-                <input type=file name=file>
-                <input type=hidden name="trailtype" value="segments">
-                <input type=submit value=Upload>
-            </p>
-        </form>
-    </section>
+    <div class="slab-gray">
+        <section class="layout-semibreve">
+            <h3 class="h3">1. Upload your trail data</h3>
+            <h4 class="h4">Prepare a single ZIP file containing the data you would like to convert, and upload it here.</h4>
+            <p>Upload a <b>zipped</b> shapefile that describes your trail network. This data should be a 'polyline' file that represents the actual paths a trail takes. Most often, many individual features or "segments" are used to described the entirety of a "named trail".</p>
+            <div class="layout-minim">
+                <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+                    <p>
+                        <input type=file name=file>
+                        <input type=hidden name="trailtype" value="segments">
+                        <input type=submit value=Upload>
+                    </p>
+                </form>
+            </div>
+            <div class="layout-minim">
+                <ul>
+                    <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+                    <li>.shp</li>
+                    <li>.shx</li>
+                    <li>.dbf</li>
+                    <li>.prj</li>
+                </ul>
+            </div>
+        </section>
+    </div>
 
     <!-- Step Tracker Script -->
     <script>
