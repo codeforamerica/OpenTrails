@@ -18,6 +18,22 @@
 
 /* Custom Styles */
 
+/* Converter title */
+
+.converter-title {
+  text-decoration: none;
+  color: white;
+}
+
+/* Bottom border for primary content on each page */
+
+.primary-content-line {
+  height: 5px;
+  width: 100%;
+  border-bottom: 1px solid;
+  border-color: #e5e5e5;
+}
+
 /* Alert & Badge heading fix */
 
 .alert-fix {
@@ -38,6 +54,10 @@
   padding-top: .5em;
 }
 
+.badge-heading-h3-fix {
+  padding-top: .25em;
+}
+
 /* Progress Tracker */
 .steps-tracker {
   margin: 0 auto;
@@ -47,8 +67,8 @@
 
 /* We need to specify the width for different numbers of steps*/
 
-.steps-tracker[data-steps="4"] li { width: 24%; }
-.steps-tracker[data-steps="5"] li { width: 19%; }
+.steps-tracker[data-steps="4"] li { width: 25%; }
+.steps-tracker[data-steps="5"] li { width: 20%; }
 .steps-tracker[data-steps="6"] li { width: 16%; }
 
 .steps-tracker li {
@@ -58,18 +78,18 @@
   text-align: center;
   line-height: 3em;
   padding-top: 1em;
-  min-width: ;
-  height: 5em;
+  margin-top: 5em;
+  height: 3em;
 }
 
 .steps-tracker .step-done {
-    /* $color-blue in CfA style guide*/
-    border-top: 1em solid #399fd3;
+    /* $color-dark-blue in CfA style guide*/
+    border-top: 1em solid #004b6a;
 }
 
 .steps-tracker .step-active {
-    /* $color-red in CfA style guide*/
-    border-top: 1em solid #cf1b41;
+    /* $color-blue in CfA style guide*/
+    border-top: 1em solid #399fd3;
 }
 
 .steps-tracker .step-todo {
@@ -80,9 +100,9 @@
 
 /* Checkbox icons for progress bar */
 
-.steps-tracker li:after {
+/*.steps-tracker li:after {
     content: "\00a0\00a0";
-}
+}*/
 .steps-tracker li:before {
     position: relative;
     top: -2.5em;
@@ -97,14 +117,13 @@
 }
 .steps-tracker li.step-done:before {
 /* icon-checkmark instead of content*/
-/*    content: "\2219";*/
     color: white;
-    background-color: #399fd3;
+    background-color: #004b6a;
 }
 .steps-tracker li.step-active:before {
     content: "\2219";
-    color:  #cf1b41;
-    background-color: #cf1b41;
+    color:  #399fd3;
+    background-color: #399fd3;
 }
 
 .steps-tracker li.step-todo:before {

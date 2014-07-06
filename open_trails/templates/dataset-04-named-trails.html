@@ -32,10 +32,51 @@
 <body>
     {% include "headline.html" %}
     {% include "under-development.html" %}
-    {% include "step-tracker.html" %}
+
+<!-- Step Tracker  -->
+    <ol class="steps-tracker" data-steps="4">
+        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+        </li><!--
+     --><li id="step2" class="step-done icon-checkmark h6">Review & Convert
+        </li><!--
+     --><li id="step3" class="step-done icon-checkmark h6">Extract Named Trails</li><!--
+     --><li id="step4" class="step-active h6">Download OpenTrails</li>
+    </ol>
 
     <section class="layout-semibreve">
-        <p>Download <a href="/datasets/{{ dataset.id }}/open-trails.zip">open-trails.zip</a> so far.</p>
+        <div class="badge-heading">
+            <h3 class="badge-heading-h3-fix">Extraction Successful!</h3>
+        </div>
+        <div class="layout-minim">
+            <h4>One Last Step</h4>
+            <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
+            <form>
+                <ul class="list-form">
+                    <li class="form-field">
+                        <label for="steward-name">Your Organization's Name</label>
+                        <input id="steward-name" class="input" type="text" />
+                    </li>
+                    <li class="form-field">
+                        <label for="steward-url">Your Organization's URL</label>
+                        <input id="steward-url" class="input" type="text" />
+                    </li>
+                    <li class="form-field">
+                        <label for="steward-phone">Phone Contact for Visitors</label>
+                        <input id="steward-phone" class="input" type="text" />
+                    </li>
+                    <li class="form-field">
+                        <label for="steward-address">HQ or Visitor Center Address</label>
+                        <input id="steward-address" class="input" type="text" />
+                    </li>
+                    <li class="form-field">
+                        <label for="steward-license">A link to your data license</label>
+                        <input id="steward-license" class="input" type="text" />
+                    </li>
+                    <br>
+                    <a href="#" class="button">Create stewards.csv</a>
+                </ul>
+            </form>
+        </div>
     </section>
 
     {% include "script-olark.html" %}

@@ -33,88 +33,110 @@
 
     {% include "headline.html" %}
     {% include "under-development.html" %}
-    {% include "step-tracker.html" %}
+
+<!-- Step Tracker  -->
+    <ol class="steps-tracker" data-steps="4">
+        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+        </li><!--
+     --><li id="step2" class="step-done icon-checkmark h6">Review & Convert
+        </li><!--
+     --><li id="step3" class="step-active h6">Extract Named Trails</li><!--
+     --><li id="step4" class="step-todo h6">Download OpenTrails</li>
+    </ol>
 
     <section class="layout-semibreve">
         {% if transform_succeeded %}
-        <h3>Success!</h3>
-        <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
-        <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
-            <p>
-                <button>Create "Named Trails" (named_trails.csv)</button>
-            </p>
-        </form>
+        <div class="badge-heading">
+            <h3 class="badge-heading-h3-fix">Conversion Successful!</h3>
+        </div>
+        <div class="layout-minim">
+            <h4>Review what's changed.</h4>
+            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+        </div>
+        <div class="layout-minim">
+            <h4>Ready? Let's Create the Named Trails file.</h4>
+            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
+                <p>
+                    <button>Create "Named Trails" (named_trails.csv)</button>
+                </p>
+            </form>
+        </div>
         {% endif %}
     </section>
-        <section class="layout-semibreve">
-            <h3>Notes on Conversion</h3>
-            <ul>
-                {% for (level, id, words) in messages %}
-                    {% if level == 'warning' %}
-                        <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% elif level == 'error' %}
-                        <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% else %}
-                        <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
 
-            <table id="transformed-sample">
-                <thead>
-                    <tr>
-                        <th colspan="10">Sample Transformed Segment Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
+    <div class="primary-content-line"></div>
 
-        <script>
-            var geojson = {{ opentrails_sample_segment | tojson | safe }}
-            // For each property make a column
-            $.each(geojson['features'][0]['properties'], function(key, property){
-                $("#transformed-sample tbody").append("<tr>")
-                $("#transformed-sample tbody").append("<td>"+key+"</td>")
-                $("#transformed-sample tbody").append("<td>"+property+"</td>")
-                $("#transformed-sample tbody").append("</tr>")
-            })
+    <section class="layout-semibreve">
+        <h3>Notes on Conversion</h3>
+        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+        <ul>
+            {% for (level, id, words) in messages %}
+                {% if level == 'warning' %}
+                    <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
+                {% elif level == 'error' %}
+                    <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
+                {% else %}
+                    <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
 
-            // $.each(geojson['features'][0]['properties'], function(key, property){
-            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
-            // })
-            
-        </script>
+        <table id="transformed-sample">
+            <thead>
+                <tr>
+                    <th colspan="10">Sample Transformed Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
 
-        <section class="layout-semibreve">
-            <table id="original-sample">
-                <thead>
-                    <tr>
-                        <th colspan="5">Sample Segment Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
-        </section>
+    <script>
+        var geojson = {{ opentrails_sample_segment | tojson | safe }}
+        // For each property make a column
+        $.each(geojson['features'][0]['properties'], function(key, property){
+            $("#transformed-sample tbody").append("<tr>")
+            $("#transformed-sample tbody").append("<td>"+key+"</td>")
+            $("#transformed-sample tbody").append("<td>"+property+"</td>")
+            $("#transformed-sample tbody").append("</tr>")
+        })
 
-        <script>
-            var geojson = {{ sample_segment | tojson | safe }}
-            // For each property make a column
-            $.each(geojson['features'][0]['properties'], function(key, property){
-                $("#original-sample tbody").append("<tr>")
-                $("#original-sample tbody").append("<td>"+key+"</td>")
-                $("#original-sample tbody").append("<td>"+property+"</td>")
-                $("#original-sample tbody").append("<tr>")
-            })
+        // $.each(geojson['features'][0]['properties'], function(key, property){
+        //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+        // })
 
-            // $.each(geojson['features'][0]['properties'], function(key, property){
-            //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
-            // })
-            
-        </script>
+    </script>
+
+    <section class="layout-semibreve">
+        <table id="original-sample">
+            <thead>
+                <tr>
+                    <th colspan="5">Sample Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        var geojson = {{ sample_segment | tojson | safe }}
+        // For each property make a column
+        $.each(geojson['features'][0]['properties'], function(key, property){
+            $("#original-sample tbody").append("<tr>")
+            $("#original-sample tbody").append("<td>"+key+"</td>")
+            $("#original-sample tbody").append("<td>"+property+"</td>")
+            $("#original-sample tbody").append("<tr>")
+        })
+
+        // $.each(geojson['features'][0]['properties'], function(key, property){
+        //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
+        // })
+
+    </script>
 
     {% include "script-olark.html" %}
 </body>

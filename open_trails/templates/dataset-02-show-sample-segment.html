@@ -32,37 +32,55 @@
 <body>
     {% include "headline.html" %}
     {% include "under-development.html" %}
-    {% include "step-tracker.html" %}
 
-    <div class="slab-gray">
-        <section class="layout-semibreve">
-            <h4>Upload Successful.</h4>
+<!-- Step Tracker  -->
+    <ol class="steps-tracker" data-steps="4">
+        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+        </li><!--
+     --><li id="step2" class="step-active h6">Review & Convert
+        </li><!--
+     --><li id="step3" class="step-todo h6">Extract Named Trails</li><!--
+     --><li id="step4" class="step-todo h6">Download OpenTrails</li>
+    </ol>
+
+    <section class="layout-semibreve">
+        <div class="badge-heading">
+            <h3 class="badge-heading-h3-fix">Upload Successful!</h3>
+        </div>
+        <div class="layout-minim">
+            <h4>Review your uploaded data.</h4>
+            <p>You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, and a sample value.</p>
+        </div>
+        <div class="layout-minim">
+        <h4> Ready? Let's convert your data to OpenTrails.</h4>
             <p>You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, and a sample value.</p>
             <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
                 <p>
-                    <button>Transform</button>
+                    <button>Convert</button>
                 </p>
             </form>
-        </section>
+        </div>
+    </section>
 
-        <section class="layout-semibreve">
-            <table id="original-sample">
-                <thead>
-                    <tr>
-                        <th colspan="5">A Sample of Your Data</th>
-                    </tr>
+    <div class="primary-content-line"></div>
 
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><b>Field Name</b></td>
-                        <td><b>Sample Value</b></td>
-                    </tr>
-                </tbody>
-            </table>
+    <section class="layout-semibreve">
+        <table id="original-sample">
+            <thead>
+                <tr>
+                    <th colspan="5">A Sample of Your Data</th>
+                </tr>
 
-        </section>
-    </div>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Field Name</b></td>
+                    <td><b>Sample Value</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
 
         <script>
             var geojson = {{ sample_segment | tojson | safe }}
