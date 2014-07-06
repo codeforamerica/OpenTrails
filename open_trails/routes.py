@@ -5,6 +5,7 @@ from functions import (
     get_sample_of_original_segments, make_name_trails, package_opentrails_archive
     )
 from transformers import shapefile2geojson, segments_transform
+from validators import check_open_trails
 from flask import request, render_template, redirect, make_response, send_file
 import json, os, csv, zipfile, time, re
 
@@ -20,6 +21,37 @@ def datasets():
     datastore = make_datastore(app.config['DATASTORE'])
     datasets_list = datastore.datasets()
     return render_template('datasets_list.html', datasets_list=datasets_list, server_url=request.url_root)
+
+@app.route('/check-dataset', methods=['POST'])
+def check_dataset():
+    '''
+    '''
+    '''
+    Create a unique url for this dataset to work under
+    Create a folder on S3 using this url
+    '''
+    # Create uuid
+    import uuid
+    id = str(uuid.uuid4())
+
+    # Make a new dataset object
+    dataset = Dataset(id)
+    dataset.datastore = make_datastore(app.config['DATASTORE'])
+    
+    # Make local folders for dataset
+    try:
+        os.makedirs(dataset.id + "/uploads")
+        os.makedirs(dataset.id + "/opentrails")
+    except OSError:
+        pass
+
+    # Write a verifying file to prove we created these folders
+    with open(os.path.join(dataset.id, 'uploads', '.valid'), "w") as validfile:
+        validfile.write(dataset.id)
+
+    # # Upload .valid to datastore
+    dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
+    return redirect('/checks/' + dataset.id)
 
 @app.route('/new-dataset', methods=['POST'])
 def new_dataset():
@@ -312,6 +344,81 @@ def existing_dataset(id):
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
+
+@app.route('/checks/<id>')
+def existing_validation(id):
+    '''
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+
+    return render_template('check-01-upload-opentrails.html', dataset=dataset)
+
+@app.route('/checks/<dataset_id>/upload', methods=['POST'])
+def validate_upload(dataset_id):
+    ''' 
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+
+    # Check that they uploaded a .zip file
+    if not request.files['file'] or not allowed_file(request.files['file'].filename):
+        return make_response("Only .zip files allowed", 403)
+        
+    # Save zip file to disk
+    # /blahblahblah/uploads/trail-segments.zip
+    zipfile_path = os.path.join(dataset_id, 'uploads/open-trails.zip')
+    request.files['file'].save(zipfile_path)
+
+    # Upload original file to S3
+    datastore.upload(zipfile_path)
+
+    # 
+    zf = zipfile.ZipFile(zipfile_path, 'r')
+    dirname = os.path.dirname(zipfile_path)
+    shapefile_path = None
+    
+    names = ['trail_segments.geojson', 'named_trails.csv',
+             'trailheads.geojson', 'stewards.csv', 'areas.geojson']
+    
+    for name in sorted(zf.namelist()):
+        base, (_, ext) = os.path.basename(name), os.path.splitext(name)
+        
+        if base in names:
+            with open(os.path.join(dataset_id, 'uploads', base), 'w') as file:
+                file.write(zf.open(name).read())
+
+    args = [os.path.join(dataset_id, 'uploads', base) for base in names]
+    messages, succeeded = check_open_trails(*args)
+    
+    with open(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'), 'w') as f:
+        json.dump(messages, f)
+    
+    datastore.upload(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'))
+    
+    # Show sample data from original file
+    return redirect('/checks/' + dataset_id + "/results", code=303)
+
+@app.route('/checks/<dataset_id>/results')
+def validated_results(dataset_id):
+    ''' 
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+
+    # Download the transformed segments messages file
+    validation_messages = dataset.id + '/opentrails/validate-messages.json'
+    datastore.download(validation_messages)
+    
+    with open(validation_messages) as f:
+        messages = map(tuple, json.load(f))
+    
+    message_types = [message[0] for message in messages]
+    
+    return render_template('check-02-validated-opentrails.html', messages=messages)
 
 @app.route('/errors/<error_id>')
 def get_error(error_id):

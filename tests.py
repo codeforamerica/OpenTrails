@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from zipfile import ZipFile
 from StringIO import StringIO
 
-from open_trails import app, transformers
+from open_trails import app, transformers, validators
 from open_trails.functions import unzip, compress
 from open_trails.models import make_datastore
 
@@ -23,6 +23,46 @@ class FakeUpload:
     def save(self, path):
         with open(path, 'w') as file:
             file.write(self._file.read())
+
+class TestValidators (TestCase):
+
+    def setUp(self):
+        self.dir = os.getcwd()
+        self.tmp = mkdtemp(prefix='plats-')
+
+        names = ('test-files/open-trails-GGNRA.zip',)
+        for name in names:
+            copy(name, self.tmp)
+
+    def tearDown(self):
+        rmtree(self.tmp)
+    
+    def test_validate_GGNRA(self):
+        '''
+        '''
+        unzip(join(self.tmp, 'open-trails-GGNRA.zip'), None, ('.geojson', '.csv'))
+        
+        files = (join(self.tmp, 'trail_segments.geojson'),
+                 join(self.tmp, 'named_trails.csv'),
+                 join(self.tmp, 'trailheads.geojson'),
+                 join(self.tmp, 'stewards.csv'),
+                 join(self.tmp, 'areas.geojson')
+                 )
+        
+        messages, result = validators.check_open_trails(*files)
+        
+        self.assertFalse(result)
+        
+        expected_messages = [
+            ('error', 'bad-data-stewards', 'Required stewards field "license" is missing.'),
+            ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
+            ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
+            ]
+        
+        self.assertEqual(len(messages), len(expected_messages))
+        
+        for expected in expected_messages:
+            self.assertTrue(expected in messages)
 
 class TestTransformers (TestCase):
 
@@ -271,6 +311,7 @@ class TestApp (TestCase):
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
+                 'test-files/open-trails-GGNRA.zip',
                  'test-files/portland-segments.geojson',
                  'test-files/san-antonio-segments.geojson',
                  'test-files/sa-trailheads-test.zip',
@@ -351,6 +392,39 @@ class TestApp (TestCase):
         
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
+
+    def test_validate_GGNRA(self):
+        ''' Test starting a new data set, and uploading segments.
+        '''
+        response = self.app.post('/check-dataset', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        
+        datastore = make_datastore(self.config['DATASTORE'])
+
+        # Ensure there is exactly one file and that it's called ".valid"
+        (filename, ) = datastore.filelist('')
+        self.assertTrue(filename.endswith('/.valid'))
+
+        #
+        # Check for a file upload field in the home page form.
+        #
+        soup = BeautifulSoup(response.data)
+        form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/checks'))
+        self.assertTrue(form['action'].endswith('/upload'))
+        self.assertTrue('multipart/form-data' in form['enctype'])
+        self.assertTrue(form.find_all('input', attrs=dict(type='file')))
+
+        # Upload a zipped shapefile
+        file = open(os.path.join(self.tmp, 'working-dir', 'open-trails-GGNRA.zip'))
+        uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('Notes' in uploaded.data)
+        
+        # Check for some error notes
+        soup = BeautifulSoup(uploaded.data)
+        self.assertTrue(soup.find(text='Optional trailheads field "area_id" is missing.'))
+        self.assertTrue(soup.find(text='Required stewards field "license" is missing.'))
+        self.assertTrue(soup.find(text='Could not find optional file areas.geojson.'))
 
     def do_not_test_stewards_list(self):
         ''' Test that /stewards returns a list of stewards
