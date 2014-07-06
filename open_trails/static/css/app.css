@@ -34,24 +34,27 @@
 .steps-tracker li {
   display: inline;
   list-style: none;
-  display: inline-block;
+  display: inline-table;
   text-align: center;
   line-height: 3em;
+  padding-top: 1em;
+  min-width: ;
+  height: 5em;
 }
 
 .steps-tracker .step-done {
     /* $color-blue in CfA style guide*/
-    border-bottom: 1em solid #399fd3;
+    border-top: 1em solid #399fd3;
 }
 
 .steps-tracker .step-active {
     /* $color-red in CfA style guide*/
-    border-bottom: 1em solid #cf1b41;
+    border-top: 1em solid #cf1b41;
 }
 
 .steps-tracker .step-todo {
     /* $color-light-gray in CfA style guide*/
-    border-bottom: 1em solid #e5e5e5;
+    border-top: 1em solid #e5e5e5;
 }
 
 
@@ -62,9 +65,10 @@
 }
 .steps-tracker li:before {
     position: relative;
-    bottom: -2.5em;
+    top: -2.5em;
     float: left;
     left: 50%;
+    margin-left: -1em;
     height: 2em;
     width: 2em;
     line-height: 2em;
