@@ -96,19 +96,20 @@
     border-radius: 2em;
 }
 .steps-tracker li.step-done:before {
-    content: "\2219";
+/* icon-checkmark instead of content*/
+/*    content: "\2219";*/
     color: white;
     background-color: #399fd3;
 }
 .steps-tracker li.step-active:before {
     content: "\2219";
-    color: white;
+    color:  #cf1b41;
     background-color: #cf1b41;
 }
 
 .steps-tracker li.step-todo:before {
     content: "\2219";
-    color: white;
+    color: #e5e5e5;
     background-color: #e5e5e5;
 }
 
