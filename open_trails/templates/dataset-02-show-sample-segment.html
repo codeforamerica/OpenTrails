@@ -30,17 +30,23 @@
 </head>
 
 <body>
-    {% include "headline.html" %}
-    {% include "under-development.html" %}
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
 
 <!-- Step Tracker  -->
-    <ol class="steps-tracker" data-steps="4">
-        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-done icon-checkmark h6">Upload
+            <br>Shapefiles
         </li><!--
-     --><li id="step2" class="step-active h6">Review & Convert
+     --><li id="step2" class="step-active h6">Convert to
+            <br>trail_segments.geojson
         </li><!--
-     --><li id="step3" class="step-todo h6">Extract Named Trails</li><!--
-     --><li id="step4" class="step-todo h6">Download OpenTrails</li>
+     --><li id="step3" class="step-todo h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-todo h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
     </ol>
 
     <div class="slab-gray">
