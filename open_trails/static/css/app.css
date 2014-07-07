@@ -37,12 +37,19 @@
 /* Alert & Badge heading fix */
 
 .alert-fix {
+  display: inline-block;
+  height: auto;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
 
-.badge-heading-fix {
-  border: none;
+.semibreve-alert {
+  padding: 1em 0;
+}
+
+.semibreve-alert-header {
+  margin-bottom: 0;
 }
 
 .badge-heading-layout-fix {
