@@ -30,26 +30,51 @@
 </head>
 
 <body>
-    {% include "headline.html" %}
+    {% include "headline-home.html" %}
     {% include "under-development.html" %}
 
     <div class="layout-semibreve">
-        <div class="badge-header">
-            <h3 class="badge-header-h3-fix">Convert your data.</h4>
-        </div>
-        <p>This tool will help you <b>convert Shapefiles to OpenTrails</b>.
-
-
-        <p>We will take you step by step through the conversion process, giving you the opportunity to review the data you've uploaded. We provide warnings and error messages that will help you rectify your data if need be, or to understand how the data could be made more complete in the future.</p>
-        <form id="start" action="/new-dataset" method=post>
-            <button>Get Started</button>
-        </form>
-        <h3>Or...Validate your current OpenTrails data.</h3>
-        <p>We'll need to rework this introductory section now that there are two options!</p>
-        <form id="start" action="/check-dataset" method=post>
-            <button>Validate Data</button>
-        </form>
-    </div>
+        <ul class="teasers">
+            <li class="layout-minim-staccato">
+                <article class="teaser teaser-app">
+                    <!-- teaser-header required to maintain format -->
+                    <header class="teaser-header"></header>
+                    <div class="teaser-body">
+                        <p>This tool will help you <b>convert Shapefiles to OpenTrails</b>.
+                        <p>Our converter tool transformers shapefiles into the OpenTrails format, which is a suite of GeoJSON and CSV files. The tool offers helpful feedback if there are problems, and suggestions about how to make the most of OpenTrails data.</p>
+                        <br>
+                        <form id="start" action="/new-dataset" method=post>
+                            <button class="minim-staccato-button">Get Started</button>
+                        </form>
+                    </div>
+                    <footer class="teaser-footer">
+                        <div class="teaser-masthead">
+                            <h3>Convert data to OpenTrails</h3>
+                        </div>
+                    </footer>
+                </article>
+            </li>
+            <li class="layout-minim-staccato">
+                <article class="teaser teaser-app">
+                    <!-- teaser-header required to maintain format -->
+                    <header class="teaser-header"></header>
+                    <div class="teaser-body">
+                        <p>This tool validates <b>OpenTrails GeoJSON and CSV files</b>.
+                        <p>Upload your various OpenTrails data, and this tool will evaluate its compliance with the OpenTrails specification. The tool provides helpful feedback about how to improve your data's conformance to the specification, and by extension, its value to third party developers or data consumers.
+                        <br>
+                        <form id="start" action="/check-dataset" method=post>
+                            <button class="minim-staccato-button">Validate Data</button>
+                        </form>
+                    </div>
+                    <footer class="teaser-footer">
+                        <div class="teaser-masthead">
+                            <h3 class="teaser-centered-title">Validate OpenTrails data</h3>
+                        </div>
+                    </footer>
+                </article>
+            </li>
+        </ul>
+    </section>
 
     <div class="slab-gray">
         <div class="layout-semibreve">
