@@ -32,9 +32,11 @@
 <body>
     {% include "headline-validator.html" %}
 
+    <div class="slab-gray">
         <section class="layout-semibreve">
-            <h3 class="h3">Upload your open trails data!</h3>
-            <p>Give it all to us!</p>
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">Upload your OpenTrails data.</h3>
+            </div>
             <form action="/checks/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
                 <p>
                     <input type=file name=file>
@@ -42,5 +44,16 @@
                 </p>
             </form>
         </section>
+    </div>
+    <section class="layout-semibreve">
+        <div class="layout-minim">
+            <h4>First thing</h4>
+            <p>More about the first thing.</p>
+        </div>
+        <div class="layout-minim">
+            <h4>Second thing</h4>
+            <p>More about the second thing.</p>
+        </div>
+    </section>
 </body>
 </html>

@@ -52,13 +52,14 @@
         <section class="layout-chimney-invert">
             <div class="layout-minim">
                 <div class="badge-heading badge-blue">
-                    <h3>Next: Create your stewards.csv record.</h3>
+                    <h3>Next: Create your stewards.csv file.</h3>
                 </div>
-                <h4>Your Information</h4>
-                <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
+                <h4>Information About Your Organization</h4>
+                <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance.OpenTrails requires the information requested by this form from each steward. Remember, the data is intended for visitor use first and foremost</p>
+                <p>The only outlier is the data license. It's important for third-parties to know uses of your data are appropriate. If you don't have a publicly accessible license for your data, let us know.</p>
             </div>
             <div class="layout-minim">
-                <form>
+                <form action="/datasets/{{ dataset.id }}/stewards.html" method=post>
                     <ul class="list-form">
                         <li class="form-field">
                             <label for="steward-name">Your Organization's Name</label>
@@ -81,7 +82,9 @@
                             <input id="steward-license" class="input" type="text" />
                         </li>
                         <br>
-                        <a href="#" class="button">Create stewards.csv</a>
+                        <p>
+                            <button class="button">Create File</button>
+                        </p>
                     </ul>
                 </form>
             </div>

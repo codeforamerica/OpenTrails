@@ -54,32 +54,32 @@
     <div class="slab-gray">
         <div class="layout-semibreve">
             <div class="badge-heading badge-blue">
-                <h3 class="badge-heading-h3-fix">Next: Extract "Named Trails" into a CSV.</h3>
+                <h3 class="badge-heading-h3-fix">Next: Extract "named trails" into a CSV.</h3>
             </div>
             <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
                 <p>
-                    <button>Create "Named Trails" (named_trails.csv)</button>
+                    <button>Create named_trails.csv</button>
                 </p>
             </form>
         </div>
     </div>
     <section class="layout-semibreve">
-        <div class="layout-minim">
-            <h4>Review what's changed.</h4>
-            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
-        </div>
-        <div class="layout-minim">
-            <h4>Ready? Let's Create the Named Trails file.</h4>
-            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
-        </div>
+        <h4>Review what's changed.</h4>
+        <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments.</p>
+
+        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+
+        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+
+        <p>Still have questions? We're available to help.</p>
     </section>
     {% endif %}
 
     <div class="primary-content-line"></div>
 
     <section class="layout-semibreve">
-        <h3>Notes on Conversion</h3>
-        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+        <h4>Notes from the Conversion</h4>
+        <br>
         <ul>
             {% for (level, id, words) in messages %}
                 {% if level == 'warning' %}
@@ -91,7 +91,8 @@
                 {% endif %}
             {% endfor %}
         </ul>
-
+    </section>
+    <section class="layout-semibreve">
         <table id="transformed-sample">
             <thead>
                 <tr>
