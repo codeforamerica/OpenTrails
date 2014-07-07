@@ -44,11 +44,20 @@
      --><li id="step4" class="step-todo h6">Download OpenTrails</li>
     </ol>
 
-    <section class="layout-semibreve">
-        {% if transform_succeeded %}
-        <div class="badge-heading">
-            <h3 class="badge-heading-h3-fix">Conversion Successful!</h3>
+    {% if transform_succeeded %}
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="badge-heading-h3-fix">Next: Extract "Named Trails" into a CSV.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
+                <p>
+                    <button>Create "Named Trails" (named_trails.csv)</button>
+                </p>
+            </form>
         </div>
+    </div>
+    <section class="layout-semibreve">
         <div class="layout-minim">
             <h4>Review what's changed.</h4>
             <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
@@ -56,14 +65,9 @@
         <div class="layout-minim">
             <h4>Ready? Let's Create the Named Trails file.</h4>
             <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
-            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
-                <p>
-                    <button>Create "Named Trails" (named_trails.csv)</button>
-                </p>
-            </form>
         </div>
-        {% endif %}
     </section>
+    {% endif %}
 
     <div class="primary-content-line"></div>
 

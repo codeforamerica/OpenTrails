@@ -43,10 +43,22 @@
      --><li id="step4" class="step-todo h6">Download OpenTrails</li>
     </ol>
 
-    <section class="layout-semibreve">
-        <div class="badge-heading">
-            <h3 class="h3 badge-heading-h3-fix">Start by uploading your trail data.</h3>
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">Next: Upload your trail data.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=hidden name="trailtype" value="segments">
+                <input type=submit value=Upload>
+            </p>
+            </form>
         </div>
+    </div>
+
+    <section class="layout-semibreve">
         <div class="layout-minim">
             <h4>ZIP up your shapefile</h4>
             <p>Upload a <b>zipped</b> shapefile that describes your trail network. This data should be a 'polyline' file that represents the actual paths a trail takes.</p>
@@ -64,13 +76,6 @@
 
             <p>Moreover, we expect many segments to only compose a portion of a trail. We will pull out all of the trail names, and create a seperate file called "named_trails.csv", associating each segment with the trail in its entirety.</p>
             <br>
-            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
-                <p>
-                    <input type=file name=file style="width:50%">
-                    <input type=hidden name="trailtype" value="segments">
-                    <input type=submit value=Upload>
-                </p>
-            </form>
         </div>
         <div class="layout-minim">
 

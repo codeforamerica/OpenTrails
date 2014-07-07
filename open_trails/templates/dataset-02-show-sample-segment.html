@@ -43,10 +43,19 @@
      --><li id="step4" class="step-todo h6">Download OpenTrails</li>
     </ol>
 
+    <div class="slab-gray">
+        <section class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="badge-heading-h3-fix">Next: Convert uploaded data.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
+                <p>
+                    <button>Convert</button>
+                </p>
+            </form>
+        </section>
+    </div>
     <section class="layout-semibreve">
-        <div class="badge-heading">
-            <h3 class="badge-heading-h3-fix">Upload Successful!</h3>
-        </div>
         <div class="layout-minim">
             <h4>Review your uploaded data.</h4>
             <p>You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, and a sample value.</p>
@@ -54,11 +63,6 @@
         <div class="layout-minim">
         <h4> Ready? Let's convert your data to OpenTrails.</h4>
             <p>You've uploaded a shapefile that contains all of the data we need to get started with the conversion. Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, and a sample value.</p>
-            <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
-                <p>
-                    <button>Convert</button>
-                </p>
-            </form>
         </div>
     </section>
 

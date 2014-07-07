@@ -43,41 +43,45 @@
      --><li id="step4" class="step-active h6">Download OpenTrails</li>
     </ol>
 
-    <section class="layout-semibreve">
-        <div class="badge-heading">
-            <h3 class="badge-heading-h3-fix">Extraction Successful!</h3>
-        </div>
-        <div class="layout-minim">
-            <h4>One Last Step</h4>
-            <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
-            <form>
-                <ul class="list-form">
-                    <li class="form-field">
-                        <label for="steward-name">Your Organization's Name</label>
-                        <input id="steward-name" class="input" type="text" />
-                    </li>
-                    <li class="form-field">
-                        <label for="steward-url">Your Organization's URL</label>
-                        <input id="steward-url" class="input" type="text" />
-                    </li>
-                    <li class="form-field">
-                        <label for="steward-phone">Phone Contact for Visitors</label>
-                        <input id="steward-phone" class="input" type="text" />
-                    </li>
-                    <li class="form-field">
-                        <label for="steward-address">HQ or Visitor Center Address</label>
-                        <input id="steward-address" class="input" type="text" />
-                    </li>
-                    <li class="form-field">
-                        <label for="steward-license">A link to your data license</label>
-                        <input id="steward-license" class="input" type="text" />
-                    </li>
-                    <br>
-                    <a href="#" class="button">Create stewards.csv</a>
-                </ul>
-            </form>
-        </div>
-    </section>
+    <div class="slab-gray">
+        <section class="layout-chimney-invert">
+            <div class="layout-minim">
+                <div class="badge-heading badge-blue">
+                    <h3>Next: Create your stewards.csv record.</h3>
+                </div>
+                <h4>Your Information</h4>
+                <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
+            </div>
+            <div class="layout-minim">
+                <form>
+                    <ul class="list-form">
+                        <li class="form-field">
+                            <label for="steward-name">Your Organization's Name</label>
+                            <input id="steward-name" class="input" type="text" />
+                        </li>
+                        <li class="form-field">
+                            <label for="steward-url">Your Organization's URL</label>
+                            <input id="steward-url" class="input" type="text" />
+                        </li>
+                        <li class="form-field">
+                            <label for="steward-phone">Phone Contact for Visitors</label>
+                            <input id="steward-phone" class="input" type="text" />
+                        </li>
+                        <li class="form-field">
+                            <label for="steward-address">HQ or Visitor Center Address</label>
+                            <input id="steward-address" class="input" type="text" />
+                        </li>
+                        <li class="form-field">
+                            <label for="steward-license">A link to your data license</label>
+                            <input id="steward-license" class="input" type="text" />
+                        </li>
+                        <br>
+                        <a href="#" class="button">Create stewards.csv</a>
+                    </ul>
+                </form>
+            </div>
+        </section>
+    </div>
 
     {% include "script-olark.html" %}
 </body>
