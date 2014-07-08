@@ -289,6 +289,16 @@ def named_trails(dataset_id):
 
     return render_template('dataset-04-named-trails.html', dataset=dataset)
 
+@app.route('/datasets/<dataset_id>/create-steward', methods=['POST'])
+def create_steward(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+    
+    from flask import jsonify
+    return jsonify(request.form)
+
 @app.route('/datasets/<dataset_id>/open-trails.zip')
 def download_opentrails_data(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])

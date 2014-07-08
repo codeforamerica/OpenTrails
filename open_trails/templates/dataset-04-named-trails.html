@@ -50,30 +50,30 @@
         <div class="layout-minim">
             <h4>One Last Step</h4>
             <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
-            <form>
+            <form action="/datasets/{{ dataset.id }}/create-steward" method="POST">
                 <ul class="list-form">
                     <li class="form-field">
-                        <label for="steward-name">Your Organization's Name</label>
-                        <input id="steward-name" class="input" type="text" />
+                        <label for="name">Your Organization's Name</label>
+                        <input name="name" class="input" type="text" />
                     </li>
                     <li class="form-field">
-                        <label for="steward-url">Your Organization's URL</label>
-                        <input id="steward-url" class="input" type="text" />
+                        <label for="url">Your Organization's URL</label>
+                        <input name="url" class="input" type="text" />
                     </li>
                     <li class="form-field">
-                        <label for="steward-phone">Phone Contact for Visitors</label>
-                        <input id="steward-phone" class="input" type="text" />
+                        <label for="phone">Phone Contact for Visitors</label>
+                        <input name="phone" class="input" type="text" />
                     </li>
                     <li class="form-field">
-                        <label for="steward-address">HQ or Visitor Center Address</label>
-                        <input id="steward-address" class="input" type="text" />
+                        <label for="address">HQ or Visitor Center Address</label>
+                        <input name="address" class="input" type="text" />
                     </li>
                     <li class="form-field">
-                        <label for="steward-license">A link to your data license</label>
-                        <input id="steward-license" class="input" type="text" />
+                        <label for="license">A link to your data license</label>
+                        <input name="license" class="input" type="text" />
                     </li>
                     <br>
-                    <a href="#" class="button">Create stewards.csv</a>
+                    <button>Create stewards.csv</button>
                 </ul>
             </form>
         </div>
