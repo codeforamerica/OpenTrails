@@ -32,7 +32,7 @@ def segments_transform(raw_geojson, dataset):
          "geometry" : old_segment['geometry'],
          "properties" : {
              "id" : find_segment_id(messages, old_properties) or str(id_counter.next()),
-             "stewardId" : None,
+             "steward_id" : None,
              "name" : find_segment_name(messages, old_properties),
              "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
              "foot" : find_segment_foot_use(messages, old_properties),
@@ -40,7 +40,7 @@ def segments_transform(raw_geojson, dataset):
              "horse" : find_segment_horse_use(messages, old_properties),
              "ski" : find_segment_ski_use(messages, old_properties),
              "wheelchair" : find_segment_wheelchair_use(messages, old_properties),
-             "osmTags" : None
+             "osm_tags" : None
          }
         }
         opentrails_geojson['features'].append(new_segment)
