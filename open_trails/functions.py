@@ -136,6 +136,11 @@ def package_opentrails_archive(dataset):
     dataset.datastore.download(named_trails_path)
     zf.write(named_trails_path, 'named_trails.csv')
     
+    # Download the stewards file
+    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+    dataset.datastore.download(stewards_path)
+    zf.write(stewards_path, 'stewards.csv')
+    
     zf.close()
     buffer.seek(0)
     

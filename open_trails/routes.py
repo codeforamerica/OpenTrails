@@ -296,8 +296,32 @@ def create_steward(dataset_id):
     if not dataset:
         return make_response("No Dataset Found", 404)
     
-    from flask import jsonify
-    return jsonify(request.form)
+    steward_fields = 'name', 'id', 'url', 'phone', 'address', 'publisher', 'license'
+    steward_values = [request.form.get(f, None) for f in steward_fields]
+
+    steward_values[steward_fields.index('id')] = '0' # This is assigned in segments_transform()
+    steward_values[steward_fields.index('publisher')] = 'no' # Better safe than sorry
+        
+    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+
+    with open(stewards_path, 'w') as stewards_file:
+        cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
+        writer = csv.writer(stewards_file)
+        writer.writerow(steward_fields)
+        writer.writerow(steward_values)
+    
+    datastore.upload(stewards_path)
+
+    return redirect('/datasets/' + dataset.id + '/stewards', code=303)
+
+@app.route('/datasets/<dataset_id>/stewards')
+def view_stewards(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+            
+    return render_template('dataset-05-stewards.html', dataset=dataset)
 
 @app.route('/datasets/<dataset_id>/open-trails.zip')
 def download_opentrails_data(dataset_id):
