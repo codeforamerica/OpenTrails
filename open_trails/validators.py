@@ -175,6 +175,8 @@ def _check_optional_boolean_field(messages, field, dictionary, table_name):
 def check_trail_segments(msgs, path):
     '''
     '''
+    starting_count = len(msgs)
+    
     try:
         features = check_geojson_structure(path, ('LineString', 'MultiLineString'))
     except _VE, e:
@@ -192,10 +194,15 @@ def check_trail_segments(msgs, path):
         
         for f in ('motor_vehicles', 'foot', 'bicycle', 'horse', 'ski', 'wheelchair'):
             _check_optional_boolean_field(msgs, f, properties, 'trail segments')
+    
+    if len(msgs) == starting_count:
+        msgs.append(('success', 'valid-file-trail-segments', 'Your trail-segments.geojson file looks good.'))
 
 def check_named_trails(messages, path):
     '''
     '''
+    starting_count = len(messages)
+    
     try:
         rows = check_csv_structure(path)
     except _VE, e:
@@ -208,10 +215,15 @@ def check_named_trails(messages, path):
 
         for field in ('part_of', ):
             _check_optional_string_field(messages, field, row, 'named trails')
+    
+    if len(messages) == starting_count:
+        messages.append(('success', 'valid-file-named-trails', 'Your named-trails.csv file looks good.'))
 
 def check_trailheads(msgs, path):
     '''
     '''
+    starting_count = len(msgs)
+    
     try:
         features = check_geojson_structure(path, ('Point', ))
     except _VE, e:
@@ -229,10 +241,15 @@ def check_trailheads(msgs, path):
         
         for field in ('parking', 'drinkwater', 'restrooms', 'kiosk', 'osm_tags'):
             _check_optional_boolean_field(msgs, field, properties, 'trailheads')
+    
+    if len(msgs) == starting_count:
+        msgs.append(('success', 'valid-file-trailheads', 'Your trailheads.geojson file looks good.'))
 
 def check_stewards(messages, path):
     '''
     '''
+    starting_count = len(messages)
+    
     try:
         rows = check_csv_structure(path)
     except _VE, e:
@@ -245,10 +262,15 @@ def check_stewards(messages, path):
 
         for field in ('publisher', ):
             _check_required_boolean_field(messages, field, row, 'stewards')
+    
+    if len(messages) == starting_count:
+        messages.append(('success', 'valid-file-stewards', 'Your stewards.csv file looks good.'))
 
 def check_areas(messages, path):
     '''
     '''
+    starting_count = len(messages)
+    
     try:
         features = check_geojson_structure(path, ('Polygon', 'MultiPolygon'))
     except _VE, e:
@@ -263,3 +285,6 @@ def check_areas(messages, path):
 
         for field in ('url', 'osm_tags'):
             _check_optional_string_field(messages, field, properties, 'areas')
+    
+    if len(messages) == starting_count:
+        messages.append(('success', 'valid-file-areas', 'Your areas.geojson file looks good.'))

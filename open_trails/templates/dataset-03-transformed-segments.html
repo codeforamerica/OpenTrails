@@ -70,17 +70,7 @@
     <section class="layout-semibreve">
         <h3>Notes on Conversion</h3>
         <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
-        <ul>
-            {% for (level, id, words) in messages %}
-                {% if level == 'warning' %}
-                    <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% elif level == 'error' %}
-                    <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% else %}
-                    <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+        {% include "messages-list.html" %}
 
         <table id="transformed-sample">
             <thead>

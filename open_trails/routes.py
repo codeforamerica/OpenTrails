@@ -379,7 +379,7 @@ def existing_dataset(id):
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
 
-@app.route('/checks/<id>')
+@app.route('/checks/<id>/')
 def existing_validation(id):
     '''
     '''
