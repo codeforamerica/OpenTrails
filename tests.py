@@ -380,14 +380,19 @@ class TestApp (TestCase):
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/name-trails'))
         
-        return
-        #------ Reimplement tests below to match new conversion flow -----------
-        
         # Ask to name the trails
         named = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('open-trails.zip' in named.data)
 
         soup = BeautifulSoup(named.data)
+        form = soup.find('input', attrs=dict(name='name')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/create-steward'))
+        
+        # Submit stewards information
+        args = dict(name='Winterfell', url='http://codeforamerica.org/governments/winterfell/')
+        stewarded = self.app.post(form['action'], data=args, follow_redirects=True)
+        
+        soup = BeautifulSoup(stewarded.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
         
         zipfile = self.app.get(link['href'])
@@ -395,6 +400,7 @@ class TestApp (TestCase):
         
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
+        self.assertTrue('stewards.csv' in zipfile.namelist())
 
     def test_validate_GGNRA(self):
         ''' Test starting a new data set, and uploading segments.
