@@ -366,7 +366,7 @@ class TestApp (TestCase):
         # Upload a zipped shapefile
         file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
         uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('"TRAILID": "714115"' in uploaded.data)
+        self.assertTrue('714115' in uploaded.data)
 
         soup = BeautifulSoup(uploaded.data)
         form = soup.find('button').find_parent('form')
@@ -375,7 +375,7 @@ class TestApp (TestCase):
 
         # Do the transforming
         transformed = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('"id": "714115"' in transformed.data)
+        self.assertTrue('714115' in transformed.data)
         
         soup = BeautifulSoup(transformed.data)
         form = soup.find('button').find_parent('form')
