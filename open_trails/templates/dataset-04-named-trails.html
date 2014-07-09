@@ -53,24 +53,24 @@
             <form action="/datasets/{{ dataset.id }}/create-steward" method="POST">
                 <ul class="list-form">
                     <li class="form-field">
-                        <label for="name">Your Organization's Name</label>
+                        <label for="name">Your Organization’s Name</label>
                         <input name="name" class="input" type="text" />
                     </li>
                     <li class="form-field">
-                        <label for="url">Your Organization's URL</label>
-                        <input name="url" class="input" type="text" />
+                        <label for="url">Your Organization’s URL</label>
+                        <input name="url" class="input" type="text" placeholder="http://" />
                     </li>
                     <li class="form-field">
                         <label for="phone">Phone Contact for Visitors</label>
-                        <input name="phone" class="input" type="text" />
+                        <input name="phone" class="input" type="text" placeholder="(555) 555-1212" />
                     </li>
                     <li class="form-field">
                         <label for="address">HQ or Visitor Center Address</label>
-                        <input name="address" class="input" type="text" />
+                        <input name="address" class="input" type="text" placeholder="123 Main St., Anytown USA"/>
                     </li>
                     <li class="form-field">
                         <label for="license">A link to your data license</label>
-                        <input name="license" class="input" type="text" />
+                        <input name="license" class="input" type="text" placeholder="http://" />
                     </li>
                     <br>
                     <button>Create stewards.csv</button>
