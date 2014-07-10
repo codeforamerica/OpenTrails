@@ -55,6 +55,8 @@ class TestValidators (TestCase):
         
         expected_messages = [
             ('error', 'bad-data-stewards', 'Required stewards field "license" is missing.'),
+            ('success', 'valid-file-trail-segments', 'Your trail-segments.geojson file looks good.'),
+            ('success', 'valid-file-named-trails', 'Your named-trails.csv file looks good.'),
             ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
             ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
             ]
@@ -364,7 +366,7 @@ class TestApp (TestCase):
         # Upload a zipped shapefile
         file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
         uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('"TRAILID": "714115"' in uploaded.data)
+        self.assertTrue('714115' in uploaded.data)
 
         soup = BeautifulSoup(uploaded.data)
         form = soup.find('button').find_parent('form')
@@ -373,21 +375,26 @@ class TestApp (TestCase):
 
         # Do the transforming
         transformed = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('"id": "714115"' in transformed.data)
+        self.assertTrue('714115' in transformed.data)
         
         soup = BeautifulSoup(transformed.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/name-trails'))
         
-        return
-        #------ Reimplement tests below to match new conversion flow -----------
-        
         # Ask to name the trails
         named = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('open-trails.zip' in named.data)
 
         soup = BeautifulSoup(named.data)
+        form = soup.find('input', attrs=dict(name='name')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/create-steward'))
+        
+        # Submit stewards information
+        args = dict(name='Winterfell', url='http://codeforamerica.org/governments/winterfell/')
+        stewarded = self.app.post(form['action'], data=args, follow_redirects=True)
+        
+        soup = BeautifulSoup(stewarded.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
         
         zipfile = self.app.get(link['href'])
@@ -395,6 +402,7 @@ class TestApp (TestCase):
         
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
+        self.assertTrue('stewards.csv' in zipfile.namelist())
 
     def test_validate_GGNRA(self):
         ''' Test starting a new data set, and uploading segments.

@@ -89,6 +89,25 @@ def get_sample_of_original_segments(dataset):
 
     return sample_segment
 
+def get_sample_uploaded_features(dataset):
+    # Download the original segments file
+    segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
+    dataset.datastore.download(segments_zip)
+
+    # Unzip it
+    zf = zipfile.ZipFile(segments_zip, 'r')
+    zf.extractall(os.path.split(segments_zip)[0])
+
+    # Find geojson file
+    for file in os.listdir(dataset.id + "/uploads/"):
+        if file.endswith(".geojson"):
+            segmentsfile = open(dataset.id + "/uploads/" + file)
+            original_segments = json.load(segmentsfile)
+            segmentsfile.close()
+            return original_segments['features'][:3]
+
+    return []
+
 def encode_list(items):
     '''
     '''
@@ -135,6 +154,11 @@ def package_opentrails_archive(dataset):
     named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
     dataset.datastore.download(named_trails_path)
     zf.write(named_trails_path, 'named_trails.csv')
+    
+    # Download the stewards file
+    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+    dataset.datastore.download(stewards_path)
+    zf.write(stewards_path, 'stewards.csv')
     
     zf.close()
     buffer.seek(0)

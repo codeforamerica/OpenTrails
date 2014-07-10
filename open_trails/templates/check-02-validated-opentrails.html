@@ -34,17 +34,7 @@
 
         <section class="layout-semibreve">
             <h3>Notes</h3>
-            <ul>
-                {% for (level, id, words) in messages %}
-                    {% if level == 'warning' %}
-                        <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% elif level == 'error' %}
-                        <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% else %}
-                        <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
+            {% include "messages-list.html" %}
         </section>
 
     {% include "script-olark.html" %}

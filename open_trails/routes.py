@@ -2,7 +2,7 @@ from open_trails import app
 from models import Dataset, make_datastore
 from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
-    get_sample_of_original_segments, make_name_trails, package_opentrails_archive
+    get_sample_uploaded_features, make_name_trails, package_opentrails_archive
     )
 from transformers import shapefile2geojson, segments_transform
 from validators import check_open_trails
@@ -154,8 +154,10 @@ def show_sample_segment(dataset_id):
     if not dataset:
         return make_response("No dataset Found", 404)
 
-    sample_segment = get_sample_of_original_segments(dataset)
-    return render_template("dataset-02-show-sample-segment.html", dataset=dataset, sample_segment=sample_segment)
+    features = get_sample_uploaded_features(dataset)
+    keys = list(sorted(features[0]['properties'].keys()))
+    args = dict(dataset=dataset, uploaded_features=features, uploaded_keys=keys)
+    return render_template("dataset-02-show-sample-segment.html", **args)
 
 @app.route('/datasets/<dataset_id>/transform-segments', methods=['POST'])
 def transform_segments(dataset_id):
@@ -206,14 +208,8 @@ def transformed_segments(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original segments file
-    original_segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
-    datastore.download(original_segments_zip)
-
-    # Unzip it
-    segments_path = unzip(original_segments_zip, '.geojson', [])
-    original_segments = json.load(open(segments_path))
-    sample_segment = {'type': 'FeatureCollection', 'features': []}
-    sample_segment['features'].append(original_segments['features'][0])
+    uploaded_features = get_sample_uploaded_features(dataset)
+    uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
     
     # Download the transformed segments file
     transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
@@ -222,8 +218,8 @@ def transformed_segments(dataset_id):
     # Unzip it
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     transformed_segments = json.load(open(segments_path))
-    opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
-    opentrails_sample_segment['features'].append(transformed_segments['features'][0])
+    transformed_features = transformed_segments['features'][:3]
+    transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
     
     # Download the transformed segments messages file
     transformed_segments_messages = dataset.id + '/opentrails/segments-messages.json'
@@ -242,11 +238,13 @@ def transformed_segments(dataset_id):
     vars = dict(
         dataset = dataset,
         messages = messages,
-        sample_segment = sample_segment,
-        opentrails_sample_segment = opentrails_sample_segment,
+        uploaded_keys = uploaded_keys,
+        uploaded_features = uploaded_features,
+        transformed_features = transformed_features,
+        transformed_keys = transformed_keys,
         transform_succeeded = bool('error' not in message_types)
         )
-            
+
     return render_template('dataset-03-transformed-segments.html', **vars)
         
 @app.route('/datasets/<dataset_id>/name-trails', methods=['POST'])
@@ -288,6 +286,40 @@ def named_trails(dataset_id):
         return make_response("No Dataset Found", 404)
 
     return render_template('dataset-04-named-trails.html', dataset=dataset)
+
+@app.route('/datasets/<dataset_id>/create-steward', methods=['POST'])
+def create_steward(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+    
+    steward_fields = 'name', 'id', 'url', 'phone', 'address', 'publisher', 'license'
+    steward_values = [request.form.get(f, None) for f in steward_fields]
+
+    steward_values[steward_fields.index('id')] = '0' # This is assigned in segments_transform()
+    steward_values[steward_fields.index('publisher')] = 'no' # Better safe than sorry
+        
+    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+
+    with open(stewards_path, 'w') as stewards_file:
+        cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
+        writer = csv.writer(stewards_file)
+        writer.writerow(steward_fields)
+        writer.writerow(steward_values)
+    
+    datastore.upload(stewards_path)
+
+    return redirect('/datasets/' + dataset.id + '/stewards', code=303)
+
+@app.route('/datasets/<dataset_id>/stewards')
+def view_stewards(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+            
+    return render_template('dataset-05-stewards.html', dataset=dataset)
 
 @app.route('/datasets/<dataset_id>/open-trails.zip')
 def download_opentrails_data(dataset_id):
@@ -345,7 +377,7 @@ def existing_dataset(id):
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
 
-@app.route('/checks/<id>')
+@app.route('/checks/<id>/')
 def existing_validation(id):
     '''
     '''

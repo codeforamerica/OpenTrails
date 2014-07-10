@@ -26,7 +26,6 @@
 
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
 <body>
@@ -78,21 +77,9 @@
     <div class="primary-content-line"></div>
 
     <section class="layout-semibreve">
-        <h4>Notes from the Conversion</h4>
-        <br>
-        <ul>
-            {% for (level, id, words) in messages %}
-                {% if level == 'warning' %}
-                    <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% elif level == 'error' %}
-                    <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% else %}
-                    <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+        {% include "messages-list.html" %}
     </section>
-    <section class="layout-semibreve">
+
         <table id="transformed-sample">
             <thead>
                 <tr>
@@ -100,25 +87,23 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><b>Field Name</b></td>
+                    {% for feature in transformed_features %}
+                        <td><b>Transformed Value</b></td>
+                    {% endfor %}
+                </tr>
+                {% for key in transformed_keys %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% for feature in transformed_features %}
+                            <td>{{ feature.properties[key] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </section>
-
-    <script>
-        var geojson = {{ opentrails_sample_segment | tojson | safe }}
-        // For each property make a column
-        $.each(geojson['features'][0]['properties'], function(key, property){
-            $("#transformed-sample tbody").append("<tr>")
-            $("#transformed-sample tbody").append("<td>"+key+"</td>")
-            $("#transformed-sample tbody").append("<td>"+property+"</td>")
-            $("#transformed-sample tbody").append("</tr>")
-        })
-
-        // $.each(geojson['features'][0]['properties'], function(key, property){
-        //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
-        // })
-
-    </script>
 
     <section class="layout-semibreve">
         <table id="original-sample">
@@ -128,26 +113,23 @@
                 </tr>
             </thead>
             <tbody>
-
+                <tr>
+                    <td><b>Field Name</b></td>
+                    {% for feature in uploaded_features %}
+                        <td><b>Sample Value</b></td>
+                    {% endfor %}
+                </tr>
+                {% for key in uploaded_keys %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% for feature in uploaded_features %}
+                            <td>{{ feature.properties[key] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </section>
-
-    <script>
-        var geojson = {{ sample_segment | tojson | safe }}
-        // For each property make a column
-        $.each(geojson['features'][0]['properties'], function(key, property){
-            $("#original-sample tbody").append("<tr>")
-            $("#original-sample tbody").append("<td>"+key+"</td>")
-            $("#original-sample tbody").append("<td>"+property+"</td>")
-            $("#original-sample tbody").append("<tr>")
-        })
-
-        // $.each(geojson['features'][0]['properties'], function(key, property){
-        //     $("#column-names").prepend("<input type='radio' name='id-column' value="+key+">"+key)
-        // })
-
-    </script>
 
     {% include "script-olark.html" %}
 </body>
