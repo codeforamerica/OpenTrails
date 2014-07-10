@@ -37,24 +37,14 @@
             <ul>
                 {% for (level, id, words) in messages %}
                     {% if level == 'warning' %}
-                        <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
+                        <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
                     {% elif level == 'error' %}
                         <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
                     {% else %}
-                        <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
+                        <li class="alert-info"><a href="/errors/{{ id }}">{{ words }}</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
-        </section>
-        <section class="layout-semibreve">
-            <div class="layout-minim">
-                <h4>First thing</h4>
-                <p>More about the first thing.</p>
-            </div>
-            <div class="layout-minim">
-                <h4>Second thing</h4>
-                <p>More about the second thing.</p>
-            </div>
         </section>
 
     {% include "script-olark.html" %}
