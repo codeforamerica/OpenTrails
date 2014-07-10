@@ -30,46 +30,56 @@
 
 <body>
 
-    {% include "headline.html" %}
-    {% include "under-development.html" %}
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
 
 <!-- Step Tracker  -->
-    <ol class="steps-tracker" data-steps="4">
-        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-done icon-checkmark h6">Upload
+            <br>Shapefiles
         </li><!--
-     --><li id="step2" class="step-done icon-checkmark h6">Review & Convert
+     --><li id="step2" class="step-done icon-checkmark h6">Convert to
+            <br>trail_segments.geojson
         </li><!--
-     --><li id="step3" class="step-active h6">Extract Named Trails</li><!--
-     --><li id="step4" class="step-todo h6">Download OpenTrails</li>
+     --><li id="step3" class="step-active h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-todo h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
     </ol>
 
-    <section class="layout-semibreve">
-        {% if transform_succeeded %}
-        <div class="badge-heading">
-            <h3 class="badge-heading-h3-fix">Conversion Successful!</h3>
-        </div>
-        <div class="layout-minim">
-            <h4>Review what's changed.</h4>
-            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
-        </div>
-        <div class="layout-minim">
-            <h4>Ready? Let's Create the Named Trails file.</h4>
-            <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments. Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+    {% if transform_succeeded %}
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="badge-heading-h3-fix">Next: Extract "named trails" into a CSV.</h3>
+            </div>
             <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
                 <p>
-                    <button>Create "Named Trails" (named_trails.csv)</button>
+                    <button>Create named_trails.csv</button>
                 </p>
             </form>
         </div>
-        {% endif %}
+    </div>
+    <section class="layout-semibreve">
+        <h4>Review what's changed.</h4>
+        <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments.</p>
+
+        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+
+        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+
+        <p>Still have questions? We're available to help.</p>
     </section>
+    {% endif %}
 
     <div class="primary-content-line"></div>
 
     <section class="layout-semibreve">
-        <h3>Notes on Conversion</h3>
-        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
         {% include "messages-list.html" %}
+    </section>
+    <section class="layout-semibreve">
 
         <table id="transformed-sample">
             <thead>
@@ -81,7 +91,7 @@
                 <tr>
                     <td><b>Field Name</b></td>
                     {% for feature in transformed_features %}
-                        <td><b>Transformed Value</b></td>
+                        <td><b>Sample Transformed Value</b></td>
                     {% endfor %}
                 </tr>
                 {% for key in transformed_keys %}

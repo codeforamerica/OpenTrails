@@ -30,55 +30,66 @@
 </head>
 
 <body>
-    {% include "headline.html" %}
-    {% include "under-development.html" %}
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
 
 <!-- Step Tracker  -->
-    <ol class="steps-tracker" data-steps="4">
-        <li id="step1"class="step-done icon-checkmark h6">Upload Shapefiles
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-done icon-checkmark h6">Upload
+            <br>Shapefiles
         </li><!--
-     --><li id="step2" class="step-done icon-checkmark h6">Review & Convert
+     --><li id="step2" class="step-done icon-checkmark h6">Convert to
+            <br>trail_segments.geojson
         </li><!--
-     --><li id="step3" class="step-done icon-checkmark h6">Extract Named Trails</li><!--
-     --><li id="step4" class="step-active h6">Download OpenTrails</li>
+     --><li id="step3" class="step-done icon-checkmark h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-active h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
     </ol>
-
-    <section class="layout-semibreve">
-        <div class="badge-heading">
-            <h3 class="badge-heading-h3-fix">Extraction Successful!</h3>
-        </div>
-        <div class="layout-minim">
-            <h4>One Last Step</h4>
-            <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance. The following information is required:</p>
-            <form action="/datasets/{{ dataset.id }}/create-steward" method="POST">
-                <ul class="list-form">
-                    <li class="form-field">
-                        <label for="name">Your Organization’s Name</label>
-                        <input name="name" class="input" type="text" />
-                    </li>
-                    <li class="form-field">
-                        <label for="url">Your Organization’s URL</label>
-                        <input name="url" class="input" type="text" placeholder="http://" />
-                    </li>
-                    <li class="form-field">
-                        <label for="phone">Phone Contact for Visitors</label>
-                        <input name="phone" class="input" type="text" placeholder="(555) 555-1212" />
-                    </li>
-                    <li class="form-field">
-                        <label for="address">HQ or Visitor Center Address</label>
-                        <input name="address" class="input" type="text" placeholder="123 Main St., Anytown USA"/>
-                    </li>
-                    <li class="form-field">
-                        <label for="license">A link to your data license</label>
-                        <input name="license" class="input" type="text" placeholder="http://" />
-                    </li>
-                    <br>
-                    <button>Create stewards.csv</button>
-                </ul>
-            </form>
-        </div>
-    </section>
-
+    <div class="slab-gray">
+        <section class="layout-chimney-invert">
+            <div class="layout-minim">
+                <div class="badge-heading badge-blue">
+                    <h3>Next: Create your stewards.csv file.</h3>
+                </div>
+                <h4>Information About Your Organization</h4>
+                <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance.OpenTrails requires the information requested by this form from each steward. Remember, the data is intended for visitor use first and foremost</p>
+                <p>The only outlier is the data license. It's important for third-parties to know uses of your data are appropriate. If you don't have a publicly accessible license for your data, let us know.</p>
+            </div>
+            <div class="layout-minim">
+                <form action="/datasets/{{ dataset.id }}/create-steward" method=post>
+                    <ul class="list-form">
+                        <li class="form-field">
+                            <label for="name">Your Organization's Name</label>
+                            <input name="name" class="input" type="text" />
+                        </li>
+                        <li class="form-field">
+                            <label for="url">Your Organization's URL</label>
+                            <input name="url" class="input" type="text" placeholder="http://" />
+                        </li>
+                        <li class="form-field">
+                            <label for="phone">Phone Contact for Visitors</label>
+                            <input name="phone" class="input" type="text" placeholder="(555) 555-1212" />
+                        </li>
+                        <li class="form-field">
+                            <label for="address">HQ or Visitor Center Address</label>
+                            <input name="address" class="input" type="text" placeholder="123 Main St., Anytown USA" />
+                        </li>
+                        <li class="form-field">
+                            <label for="license">A link to your data license</label>
+                            <input name="license" class="input" type="text" placeholder="http://" />
+                        </li>
+                        <br>
+                        <p>
+                            <button class="button">Create File</button>
+                        </p>
+                    </ul>
+                </form>
+            </div>
+        </section>
+    </div>
     {% include "script-olark.html" %}
 </body>
 </html>

@@ -30,26 +30,45 @@
 </head>
 
 <body>
-    {% include "headline.html" %}
-    {% include "under-development.html" %}
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
 
 <!-- Step tracker -->
-    <ol class="steps-tracker" data-steps="4">
-        <li id="step1"class="step-active h6">Upload Shapefiles
+
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-active h6">Upload
+            <br>Shapefiles
         </li><!--
-     --><li id="step2" class="step-todo h6">Review & Convert
+     --><li id="step2" class="step-todo h6">Convert to
+            <br>trail_segments.geojson
         </li><!--
-     --><li id="step3" class="step-todo h6">Extract Named Trails</li><!--
-     --><li id="step4" class="step-todo h6">Download OpenTrails</li>
+     --><li id="step3" class="step-todo h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-todo h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
     </ol>
 
-    <section class="layout-semibreve">
-        <div class="badge-heading">
-            <h3 class="h3 badge-heading-h3-fix">Start by uploading your trail data.</h3>
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">First: Upload your trail data.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=hidden name="trailtype" value="segments">
+                <input type=submit value=Upload>
+            </p>
+            </form>
         </div>
+    </div>
+
+    <section class="layout-semibreve">
         <div class="layout-minim">
             <h4>ZIP up your shapefile</h4>
-            <p>Upload a <b>zipped</b> shapefile that describes your trail network. This data should be a 'polyline' file that represents the actual paths a trail takes.</p>
+            <p>Upload a <b>zipped</b> shapefile that describes your trail system. This data should be a 'polyline' shapefile of features that represent the actual paths your trails take.</p>
             <ul>
                 <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
                 <li>.shp</li>
@@ -59,18 +78,15 @@
             </ul>
         </div>
         <div class="layout-minim">
-            <h4>What we are expecting</h4>
-            <p>This tool expects to receive a shapefile with many features, each representing a segment of trail. We expect each of those segments to have attributes about their location, condition, and appropriate use. This tool will keep those fields relevant in OpenTrails, and discard the rest.</p>
-
-            <p>Moreover, we expect many segments to only compose a portion of a trail. We will pull out all of the trail names, and create a seperate file called "named_trails.csv", associating each segment with the trail in its entirety.</p>
-            <br>
-            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
-                <p>
-                    <input type=file name=file style="width:50%">
-                    <input type=hidden name="trailtype" value="segments">
-                    <input type=submit value=Upload>
-                </p>
-            </form>
+            <h4>What we expect from your data</h4>
+            <p>This converter tool makes a number of assumptions about the data you upload. The tool is <a href="http://github.com/codeforamerica/plats">under active development</a>, and as such currently supports only a narrow range of all trail data.</p>
+            <ul>
+                <li>This tool expects to receive a shapefile with many features, each representing a segment of trail.</li>
+                <li>Moreover, we expect many segments to only compose a portion of a trail. We will pull out all of the trail names, and create a seperate file called "named_trails.csv", associating each segment with the trail in its entirety.</li>
+                <li>We expect each of those segments to have attributes about their location, condition, and appropriate use.</li>
+                <li>In fact, our initial input model is based on PRORAGIS, the GIS data model recommended by our partners, the <a href="http://nrpa.org"></a>National Recreation and Parks Association</a>.
+                <li>We expect the shapefiles uploaded to have many attributes not included in OpenTrails, which will be omitted.</li>
+            </ul>
         </div>
         <div class="layout-minim">
 

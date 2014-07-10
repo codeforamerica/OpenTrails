@@ -18,9 +18,16 @@
 
 /* Custom Styles */
 
+/* Converter vs. Validator Styles */
+
+.minim-staccato-button {
+  width: 100%;
+  height: 100%;
+}
+
 /* Converter title */
 
-.converter-title {
+.tool-title {
   text-decoration: none;
   color: white;
 }
@@ -37,12 +44,49 @@
 /* Alert & Badge heading fix */
 
 .alert-fix {
+  display: inline-block;
+  height: auto;
+  width: 100%;
   margin: 0;
   padding: 0;
+  border-left: 0;
+  border-right: 0;
 }
 
-.badge-heading-fix {
-  border: none;
+.semibreve-alert {
+  padding: .5em 0;
+}
+
+.semibreve-alert-header {
+  margin-bottom: 0;
+}
+
+.semibreve-reduced {
+  padding: 1em 2%;
+}
+
+.semibreve-reduced .tool-title {
+  margin-top: .5em;
+}
+
+.file-titles {
+  display: inline-table;
+  display: inline-block;
+  width: 33%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.file-titles h4 {
+  margin-top: 1em;
+}
+
+.file-titles .other-file-title {
+  color: #e5e5e5;
+}
+
+.coming-soon {
+  color: #e5e5e5;
 }
 
 .badge-heading-layout-fix {
@@ -56,6 +100,14 @@
 
 .badge-heading-h3-fix {
   padding-top: .25em;
+}
+
+/* Adaptation of App Teaser for side-by-side comparison of Converter and Validator */
+
+.teaser-masthead h3 {
+  text-align: center;
+  vertical-align: middle;
+  margin: 1em;
 }
 
 /* Progress Tracker */
@@ -78,7 +130,7 @@
   text-align: center;
   line-height: 3em;
   padding-top: 1em;
-  margin-top: 5em;
+  margin: 2em 0 4em 0;
   height: 3em;
 }
 
@@ -100,9 +152,6 @@
 
 /* Checkbox icons for progress bar */
 
-/*.steps-tracker li:after {
-    content: "\00a0\00a0";
-}*/
 .steps-tracker li:before {
     position: relative;
     top: -2.5em;
@@ -115,21 +164,45 @@
     border: none;
     border-radius: 2em;
 }
+
 .steps-tracker li.step-done:before {
 /* icon-checkmark instead of content*/
     color: white;
     background-color: #004b6a;
 }
 .steps-tracker li.step-active:before {
-    content: "\2219";
-    color:  #399fd3;
-    background-color: #399fd3;
+  color: white;
+  background-color: #399fd3;
 }
 
 .steps-tracker li.step-todo:before {
-    content: "\2219";
-    color: #e5e5e5;
-    background-color: #e5e5e5;
+  color: black;
+  background-color: #e5e5e5;
+}
+
+#step1.step-active:before,
+#step1.step-todo:before {
+  content: "\31";
+}
+
+#step2.step-active:before,
+#step2.step-todo:before {
+  content: "\32";
+}
+
+#step3.step-active:before,
+#step3.step-todo:before {
+  content: "\33";
+}
+
+#step4.step-active:before,
+#step4.step-todo:before {
+  content: "\34";
+}
+
+#step5.step-active:before,
+#step5.step-todo:before {
+  content: "\35";
 }
 
 /* Form widths for stewardanization Section */
