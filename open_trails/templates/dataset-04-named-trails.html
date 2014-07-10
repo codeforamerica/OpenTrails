@@ -59,27 +59,27 @@
                 <p>The only outlier is the data license. It's important for third-parties to know uses of your data are appropriate. If you don't have a publicly accessible license for your data, let us know.</p>
             </div>
             <div class="layout-minim">
-                <form action="/datasets/{{ dataset.id }}/stewards.html" method=post>
+                <form action="/datasets/{{ dataset.id }}/create-steward" method=post>
                     <ul class="list-form">
                         <li class="form-field">
                             <label for="steward-name">Your Organization's Name</label>
-                            <input id="steward-name" class="input" type="text" />
+                            <input id="steward-name" name=name class="input" type="text" />
                         </li>
                         <li class="form-field">
                             <label for="steward-url">Your Organization's URL</label>
-                            <input id="steward-url" class="input" type="text" />
+                            <input id="steward-url" name=url class="input" type="text" />
                         </li>
                         <li class="form-field">
                             <label for="steward-phone">Phone Contact for Visitors</label>
-                            <input id="steward-phone" class="input" type="text" />
+                            <input id="steward-phone" name=phone class="input" type="text" />
                         </li>
                         <li class="form-field">
                             <label for="steward-address">HQ or Visitor Center Address</label>
-                            <input id="steward-address" class="input" type="text" />
+                            <input id="steward-address" name=address class="input" type="text" />
                         </li>
                         <li class="form-field">
                             <label for="steward-license">A link to your data license</label>
-                            <input id="steward-license" class="input" type="text" />
+                            <input id="steward-license" name=license class="input" type="text" />
                         </li>
                         <br>
                         <p>
