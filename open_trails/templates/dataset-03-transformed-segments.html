@@ -79,6 +79,7 @@
     <section class="layout-semibreve">
         {% include "messages-list.html" %}
     </section>
+    <section class="layout-semibreve">
 
         <table id="transformed-sample">
             <thead>
@@ -90,7 +91,7 @@
                 <tr>
                     <td><b>Field Name</b></td>
                     {% for feature in transformed_features %}
-                        <td><b>Transformed Value</b></td>
+                        <td><b>Sample Transformed Value</b></td>
                     {% endfor %}
                 </tr>
                 {% for key in transformed_keys %}
