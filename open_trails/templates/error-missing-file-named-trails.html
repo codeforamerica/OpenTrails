@@ -32,6 +32,64 @@
 <html>
 	<body>
 		{% include "headline-validator.html" %}
+<section class="layout-semibreve">
+            <h3>You are missing a named_trails.csv file.</h3>
+            <p>Named Trails are a critical component of OpenTrails data. Named Trails group trail segments into proper trails that can be described to and traversed by visitors. The <a href="open-trails.herokuapp.com">OpenTrails Converter</a>can help created a named_trails.csv file from your shapefile data.</p>
+            <p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
+        </section>
+        <section class="layout-semibreve">
+            <h3>named_trails.csv</h3>
+            <h4 class="h5">Required File</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size:12px">Name</td>
+                        <td style="font-size:12px">Type</td>
+                        <td style="font-size:12px">Req'd?</td>
+                        <td style="font-size:12px">Summary</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!-- Min-width to get field names on one line. -->
+                        <th style="min-width:125px">name</th>
+                        <td style="min-width:125px">string</td>
+                        <td>yes</td>
+                        <td>The publicly advertised name of the trail, as shown on materials oriented towards visitors.</td>
+                    </tr>
+                    <tr>
+                        <th>segment_ids</th>
+                        <td>a string-encoded, semi-colon delimited array of “id” values from <a href="#trailsegments"></a>trail_segments.geojson</a></td>
+                        <td>yes</td>
+                        <td>An array of ids corresponding to those segments from which the Named Trail is composed. This field is required, but may have a null value.</td>
+                    </tr>
+                    <tr>
+                        <th>id</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>A unique identifier assigned by the data producer.</td>
+                    </tr>
+                    <tr>
+                        <th>description</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>This is the primary field for narrative descriptions of a Named Trail, and the experience or features a visitor might expect to encounter.</td>
+                    </tr>
+                    <tr>
+                        <th>part_of</th>
+                        <td>string-encoded array</td>
+                        <td></td>
+                        <td>
+                            <p>This field allows for data contributors to indicate a relationship between Named Trails.</p>
+
+                            <p>The <b>primary</b> anticipated use case is to indicate that a trail serves a leg in a larger trail system or regional trail, which is present in the named_trails.csv file, but which cannot be completely described (because it is beyond the scope of the data producer)--and therefore is included without any segment_ids.</p>
+
+                            <p>Thus, this is an array of named_trail “id” values. This is really for description purposes, rather than display purposes.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 		{% include "script-olark.html" %}
 	</body>
 </html>

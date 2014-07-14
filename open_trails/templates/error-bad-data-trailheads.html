@@ -32,6 +32,97 @@
 <html>
 	<body>
 		{% include "headline-validator.html" %}
+        <section class="layout-semibreve">
+            <h3>One or more properties in trailheads.geojson contains a value that is not allowed.</h3>
+            <p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
+        </section>
+        <section class="layout-semibreve">
+            <h3>trailheads.geojson</h3>
+            <h4 class="h5">Required File</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size:12px">Name</td>
+                        <td style="font-size:12px">Type</td>
+                        <td style="font-size:12px">Req'd?</td>
+                        <td style="font-size:12px">Summary</td>
+                        <td style="font-size:12px">Values</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>name</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>The public name of the trailhead, as advertised to visitors.</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>id</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>A unique identifier assigned by the data producer.</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>trail_ids</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>A collection of IDs for Named Trails (match to "id" in <a href="#namedtrails">named_trails.csv</a>), each representing a trail that can be accessed via this trailhead.</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>steward_ids</th>
+                        <td>string-encoded array</td>
+                        <td>yes</td>
+                        <td>A collection of IDs for Stewards (match to "id" <a href="#stewards">stewards.csv</a>), representing each agency or organization responsive to visitor concerns or inquiries about this trailhead.</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>address</th>
+                        <td>string</td>
+                        <td></td>
+                        <td>The street address, if one exists, that is associated with this trialhead.</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th>parking</th>
+                        <td>string-encoded boolean</td>
+                        <td></td>
+                        <td>An indication as to whether visitors can expect to find automobile park at or immediately adjacent to this trailhead.</td>
+                        <td>"yes" or "no"</td>
+                    </tr>
+                    <tr>
+                        <th>drinkwater</th>
+                        <td>string-encoded boolean</td>
+                        <td></td>
+                        <td>An indication as to whether visitors can expect to find drinking water available at or immediately adjacent to this trailhead.</td>
+                        <td>"yes" or "no"</td>
+                    </tr>
+                    <tr>
+                        <th>restrooms</th>
+                        <td>string-encoded boolean</td>
+                        <td></td>
+                        <td>An indication as to whether visitors can expect to find restrooms at or immediately adjacent to this trailhead.</td>
+                        <td>"yes" or "no"</td>
+                    </tr>
+                    <tr>
+                        <th>kiosk</th>
+                        <td>string-encoded boolean</td>
+                        <td></td>
+                        <td>An indication as to whether visitors can expect to find an information kiosk available at or immeidatley adjacent to this trailhead</td>
+                        <td>"yes" or "no"</td>
+                    </tr>
+                    <tr>
+                        <th>osm_tags</th>
+                        <td>string-encoded array</td>
+                        <td></td>
+                        <td>This field is designed to incorporate a fungible number of key-value pairs to further describe features. OpenTrails recommends using pre-defined sets of OpenStreetMap tags for this purpose, defined in the <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit#bookmark=id.saceiw7dq99"></a>appdenices.</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 		{% include "script-olark.html" %}
 	</body>
 </html>
