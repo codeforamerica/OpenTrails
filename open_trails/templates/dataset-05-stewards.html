@@ -31,7 +31,20 @@
 
 <body>
     {% include "headline-converter.html" %}
-    {% include "file-tabs.html" %}
+    <div class="layout-semibreve semibreve-reduced">
+        <div class="file-titles"  id="trailsegments-title">
+            <h4 class="current-file-title">Trail Segments</h4>
+            <h6 class="file-status-success">Complete</h6>
+        </div>
+        <div class="file-titles" id="trailheads-title">
+            <h4 class="other-file-title">Trailheads</h4>
+            <h6 class="coming-soon">coming soon</h6>
+        </div>
+        <div class="file-titles" id="areas-title">
+            <h4 class="other-file-title">Areas</h4>
+            <h6 class="coming-soon">Coming Soon</h6>
+        </div>
+    </div>
 
     <ol class="steps-tracker" data-steps="5">
         <li id="step1"class="step-done icon-checkmark h6">Upload

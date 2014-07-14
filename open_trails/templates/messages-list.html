@@ -1,7 +1,7 @@
 <ul>
     {% for (level, id, words) in messages %}
         {% if level == 'error' %}
-            <li class="alert-failure"><a href="/errors/{{ id }}">{{ words }}</a></li>
+            <li class="alert-failure"><a href="/errors/{{ id }}" target="_blank">{{ words }}</a></li>
         {% endif %}
     {% endfor %}
 
@@ -13,9 +13,9 @@
 
     {% for (level, id, words) in messages %}
         {% if level == 'warning' %}
-            <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
+            <li class="alert"><a href="/errors/{{ id }}" target="_blank">{{ words }}</a></li>
         {% elif level not in ('error', 'success') %}
-            <li class="alert"><a href="/errors/{{ id }}">{{ words }}</a></li>
+            <li class="alert"><a href="/errors/{{ id }}" target="_blank">{{ words }}</a></li>
         {% endif %}
     {% endfor %}
 </ul>
