@@ -32,6 +32,56 @@
 <html>
 	<body>
 		{% include "headline-validator.html" %}
+        <section class="layout-semibreve">
+            <h3>One or more properties in areas.geojson contains a value that is not allowed, or a property is missing.</h3>
+            <p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
+        </section>
+        <section class="layout-semibreve">
+            <h3>areas.geojson</h3>
+            <h4 class="h5">Optional File</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size:12px">Name</td>
+                        <td style="font-size:12px">Type</td>
+                        <td style="font-size:12px">Req'd?</td>
+                        <td style="font-size:12px">Summary</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>name</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>The publicly-advertised name of the individual park or preserve described, if one exists.</td>
+                    </tr>
+                    <tr>
+                        <th>id</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>A unique ID for this land area, which can be referenced by data consumers.</td>
+                    </tr>
+                    <tr>
+                        <th>steward_id</th>
+                        <td>string</td>
+                        <td>yes</td>
+                        <td>The id of the primary steward responsible for fielding public inquiries about this area, as defined in <a href="#stewards">stewards.csv</a></td>
+                    </tr>
+                    <tr>
+                        <th>url</th>
+                        <td>string</td>
+                        <td></td>
+                        <td>HTTP link to information specifically about this land area.</td>
+                    </tr>
+                    <tr>
+                        <th>osm_tags</th>
+                        <td>string-encoded array</td>
+                        <td></td>
+                        <td>This field is designed to incorporate a fungible number of key-value pairs to further describe features. OpenTrails recommends using pre-defined sets of OpenStreetMap tags for this purpose, defined in the <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit#bookmark=id.saceiw7dq99"></a>appdenices.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 		{% include "script-olark.html" %}
 	</body>
 </html>

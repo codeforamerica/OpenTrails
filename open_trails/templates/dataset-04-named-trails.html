@@ -55,8 +55,9 @@
                     <h3>Next: Create your stewards.csv file.</h3>
                 </div>
                 <h4>Information About Your Organization</h4>
-                <p>Each geographic feature in OpenTrails is associated with a steward--the organization that is primarily responisble for handling visitor questions and requests for assistance.OpenTrails requires the information requested by this form from each steward. Remember, the data is intended for visitor use first and foremost</p>
-                <p>The only outlier is the data license. It's important for third-parties to know uses of your data are appropriate. If you don't have a publicly accessible license for your data, let us know.</p>
+                <p>Each geographic feature in OpenTrails is associated with a "steward": the organization primarily responisble for handling visitor questions and requests for assistance. For each steward, OpenTrails requires the information solicited in this form. Remember, the data is intended for visitor use first and foremost</p>
+
+                <p>The only outlier is the data license. It's important for third-parties to know uses of your data are appropriate. If you don't have a publicly accessible license for your data, let us know. We also recommend reading <a href="http://opendatahandbook.org/en/how-to-open-up-data/apply-an-open-license.html">Open Data Handbook's resources on open licenses</a>.</p>
             </div>
             <div class="layout-minim">
                 <form action="/datasets/{{ dataset.id }}/create-steward" method=post>
@@ -81,12 +82,17 @@
                             <label for="license">A link to your data license</label>
                             <input name="license" class="input" type="text" placeholder="http://" />
                         </li>
-                        <br>
-                        <p>
-                            <button class="button">Create File</button>
-                        </p>
+                        <button class="button">Create File</button>
                     </ul>
                 </form>
+                <br>
+                <small>Please note, the content of this form is not currently validated. Please take care to provide:</small>
+                <ul>
+                    <li><small>A valid URL</small></li>
+                    <li><small>A valid phone number, with area code.</small></li>
+                    <li><small>A valid mailing address</small></li>
+                    <li><small>A valid URL to a data license.</small></li>
+                </ul>
             </div>
         </section>
     </div>

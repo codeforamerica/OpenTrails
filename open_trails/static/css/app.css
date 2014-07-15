@@ -85,6 +85,9 @@
   color: #e5e5e5;
 }
 
+.file-status-success {
+  color: #399fd3;
+}
 .coming-soon {
   color: #e5e5e5;
 }
@@ -227,4 +230,10 @@ body {
 #map, #trailhead-map {
 	width:100%;
 	height: 400px;
+}
+
+/* Sign up form for OpenTrails Course */
+
+.sign-up li label {
+  color: white;
 }

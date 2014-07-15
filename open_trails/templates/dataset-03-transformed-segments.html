@@ -64,19 +64,27 @@
     </div>
     <section class="layout-semibreve">
         <h4>Review what's changed.</h4>
-        <p>We were able to successfully transform the data you provided into trail_segments.geojson, an OpenTrails compliant file describing the geometry of trail segments.</p>
+        <p>We were able to successfully transform the data you provided into <code>trail_segments.geojson</code>, an OpenTrails conformant file describing the geometry of your trail segments.</p>
 
-        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments.</p>
+        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments, into a seperate file called <code>named_trails.csv</code>.</p>
 
-        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process. For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process.</p> 
+
+        <p>For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
 
         <p>Still have questions? We're available to help.</p>
     </section>
+    <div class="primary-content-line"></div>
+    {% else %}
+    <div class="alert-failure">
+        <section class="layout-semibreve">
+            <h4>We can't proceed with converting your data as is. Check the error messages below, and read about how you can get your data ready to convert.</h4>
+        </section>
+    </div>
     {% endif %}
 
-    <div class="primary-content-line"></div>
-
     <section class="layout-semibreve">
+        <h4>Feedback about your data</h4>
         {% include "messages-list.html" %}
     </section>
     <section class="layout-semibreve">

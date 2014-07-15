@@ -32,6 +32,11 @@
 <html>
 	<body>
 		{% include "headline-converter.html" %}
+        <section class="layout-semibreve">
+            <h3>Your trail segments do not contain a reference to a trail name.</h3>
+            <p>In the current version of this converter tool, we require that the trail segments contains in your shapefile include a trail name. This converter tool extracts those trail names, and creates the named_trails.csv file. Named Trails represent groups of segments, which constitute complete trails. Segments can belong to more than one Named Trail.</p>
+            <p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
+        </section>
 		{% include "script-olark.html" %}
 	</body>
 </html>
