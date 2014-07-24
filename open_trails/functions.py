@@ -111,7 +111,7 @@ def get_sample_uploaded_features(dataset):
 def encode_list(items):
     '''
     '''
-    return '; '.join(items)
+    return '; '.join(map(str,items))
 
 def make_name_trails(segment_features):
     '''
