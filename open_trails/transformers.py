@@ -278,7 +278,7 @@ def trailheads_transform(raw_geojson, dataset):
             "steward_id": "0",
             "name": find_trailhead_name(messages, old_properties),
             "area_id": "0",
-            "trail_ids": find_trailhead_trail_ids (messages, old_properties),
+            # "trail_ids": find_trailhead_trail_ids (messages, old_properties),
             "address": find_trailhead_address(messages, old_properties),
             "parking": find_trailhead_parking(messages, old_properties),
             "restrooms": find_trailhead_restrooms(messages, old_properties),
@@ -334,23 +334,23 @@ def find_trailhead_name(messages, properties):
 
     return None
 
-def find_trailhead_trail_ids(messages, properties):
-    ''' Return the value of a segment name from feature properties.
+# def find_trailhead_trail_ids(messages, properties):
+#     ''' Return the value of a segment name from feature properties.
 
-        Implements logic in https://github.com/codeforamerica/PLATS/issues/39
+#         Implements logic in https://github.com/codeforamerica/PLATS/issues/39
 
-        Gather messages along the way about potential problems.
-    '''
+#         Gather messages along the way about potential problems.
+#     '''
 
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+#     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
 
-    for field in ('trail', 'trailname', 'trail1'):
-        if field in keys:
-            return values[keys.index(field)]
+#     for field in ('trail', 'trailname', 'trail1', 'trail_name'):
+#         if field in keys:
+#             return values[keys.index(field)]
 
-    messages.append(('error', 'missing-trailhead-trail-ids', 'No column found for trail names, such as "trailname" or "trail1". Trailhead should be associated with at least one trail.'))
+#     messages.append(('error', 'missing-trailhead-trail-ids', 'No column found for trail names, such as "trailname" or "trail1". Trailhead should be associated with at least one trail.'))
 
-    return None
+#     return None
 
 def find_trailhead_address(messages, properties):
     ''' Return the value of a segment name from feature properties.
