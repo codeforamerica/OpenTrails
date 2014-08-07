@@ -370,7 +370,7 @@ def find_trailhead_address(messages, properties):
 
     return None
 
-def find_trailhead_parking
+def find_trailhead_parking(messages, properties):
     ''' Return the value of a segment name from feature properties.
 
         Implements logic in https://github.com/codeforamerica/PLATS/issues/42
@@ -380,15 +380,23 @@ def find_trailhead_parking
 
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
 
-    for field in ('park', 'parking', 'parking lot', 'roadside'):
-        if field in keys:
-            return values[keys.index(field)]
+    fieldnames = 'park', 'parking', 'parking lot', 'roadside'
+
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
+
+    # Search for a parking column and look for parking strings inside
+    fieldnames = 'park', 'parking'
+    pattern = re.compile(r'\b(?<!no )(parking lot|roadside parking|parking)\b', re.I)
+
+    if _has_listed_field(properties, fieldnames):
+        return _get_match_yes_no(properties, pattern, fieldnames)
 
     messages.append(('warning', 'missing-trailhead-parking', 'No column found for trailhead parking, such as "parking" or "roadside". Leaving "parking" blank.'))
 
     return None
 
-def find_trailhead_restrooms
+def find_trailhead_restrooms(messages, properties):
     ''' Return the value of a segment name from feature properties.
 
         Implements logic in https://github.com/codeforamerica/PLATS/issues/44
@@ -396,17 +404,16 @@ def find_trailhead_restrooms
         Gather messages along the way about potential problems.
     '''
 
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    fieldnames = 'restroom', 'bathroom', 'toilet'
 
-    for field in ('restroom', 'bathroom', 'toilet'):
-        if field in keys:
-            return values[keys.index(field)]
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
     messages.append(('warning', 'missing-trailhead-restroom', 'No column found for trailhead restroom, such as "bathroom" or "toilet". Leaving "restroom" blank.'))
 
     return None
 
-def find_trailhead_kiosk
+def find_trailhead_kiosk(messages, properties):
     ''' Return the value of a segment name from feature properties.
 
         Implements logic in https://github.com/codeforamerica/PLATS/issues/45
@@ -414,17 +421,16 @@ def find_trailhead_kiosk
         Gather messages along the way about potential problems.
     '''
 
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
 
-    for field in ('info', 'information', 'kiosk'):
-        if field in keys:
-            return values[keys.index(field)]
+    fieldnames = 'info', 'information', 'kiosk'
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
     messages.append(('warning', 'missing-trailhead-kiosk', 'No column found for trailhead kiosk, such as "info" or "kiosk". Leaving "kiosk" blank.'))
 
     return None
 
-def find_trailhead_drinkwater
+def find_trailhead_drinkwater(messages, properties):
     ''' Return the value of a segment name from feature properties.
 
         Implements logic in https://github.com/codeforamerica/PLATS/issues/43
@@ -432,11 +438,9 @@ def find_trailhead_drinkwater
         Gather messages along the way about potential problems.
     '''
 
-    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
-
-    for field in ('water', 'drinkingwa', 'drinkwater'):
-        if field in keys:
-            return values[keys.index(field)]
+    fieldnames = 'water', 'drinkingwa', 'drinkwater'
+    if _has_listed_field(properties, fieldnames):
+        return _get_value_yes_no(properties, fieldnames)
 
     messages.append(('warning', 'missing-trailhead-drinkwater', 'No column found for trailhead drinking water, such as "drinkwater" or "water". Leaving "drinkwater" blank.'))
 
