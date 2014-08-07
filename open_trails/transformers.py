@@ -268,12 +268,16 @@ def trailheads_transform(raw_geojson, dataset):
         Pattern replicated from segments_transform
     '''
     messages = []
-    opentrails_geojson = {'type': 'FeatureCollection', 'features': []}
+    opentrails_trailheads_geojson = {'type': 'FeatureCollection', 'features': []}
     id_counter = itertools.count(1)
 
     for old_trailhead in raw_geojson['features']:
-        old_properties = old_trailhead['geometry'],
-        "properties" : {
+        old_properties = old_trailhead['properties'],
+
+        new_trailhead = {
+          "type" :  "Feature",
+          "geometry" : old_trailhead['geometry'],
+          "properties" : {
             "id": find_trailhead_id(messages, old_properties) or str(id_counter.next()),
             "steward_id": "0",
             "name": find_trailhead_name(messages, old_properties),
@@ -283,11 +287,10 @@ def trailheads_transform(raw_geojson, dataset):
             "parking": find_trailhead_parking(messages, old_properties),
             "restrooms": find_trailhead_restrooms(messages, old_properties),
             "kiosk": find_trailhead_kiosk(messages, old_properties),
-            "drink water" find_trailhead_drinkwater(messages, old_properties)
+            "drink water": find_trailhead_drinkwater(messages, old_properties),
             "osm_tags": None
         }
     }
-    opentrails_geojson['features'].append(new_segment)
 
     deduped_messages = []
 
@@ -295,7 +298,7 @@ def trailheads_transform(raw_geojson, dataset):
         if message not in deduped_messages:
             deduped_messages.append(message)
 
-    return deduped_messages, opentrails_geojson
+    return deduped_messages, opentrails_trailheads_geojson
 
 
 def find_trailhead_id(messages, properties):
