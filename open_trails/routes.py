@@ -108,7 +108,10 @@ def upload(dataset_id):
         
         # Save zip file to disk
         # /blahblahblah/uploads/trail-segments.zip
-        zipfilepath = os.path.join(dataset_id, 'uploads/trail-segments.zip')
+        upload_dir = os.path.join(dataset_id, 'uploads')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        zipfilepath = os.path.join(upload_dir, 'trail-segments.zip')
         request.files['file'].save(zipfilepath)
 
         # Upload original file to S3
