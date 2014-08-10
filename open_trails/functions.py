@@ -14,7 +14,11 @@ def get_dataset(datastore, id):
     Creates a dataset object from the .valid file
     '''
     try:
-        datastore.download(id + '/uploads/.valid')
+        upload_dir = os.path.join(id, 'uploads')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        valid_path = os.path.join(upload_dir, '.valid')
+        datastore.download(valid_path)
     except AttributeError:
         return None
     with open(id + '/uploads/.valid', 'r') as validfile:
@@ -94,7 +98,10 @@ def get_sample_of_original_segments(dataset):
 
 def get_sample_uploaded_features(dataset):
     # Download the original segments file
-    segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
+    upload_dir = os.path.join(dataset.id, 'uploads')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    segments_zip = os.path.join(upload_dir, 'trail-segments.geojson.zip')
     dataset.datastore.download(segments_zip)
 
     # Unzip it

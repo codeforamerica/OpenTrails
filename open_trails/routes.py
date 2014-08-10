@@ -7,7 +7,7 @@ from functions import (
 from transformers import shapefile2geojson, segments_transform
 from validators import check_open_trails
 from flask import request, render_template, redirect, make_response, send_file
-import json, os, csv, zipfile, time, re
+import json, os, csv, zipfile, time, re, shutil
 
 @app.route('/')
 def index():
@@ -123,12 +123,6 @@ def upload(dataset_id):
         # Get geojson data from shapefile
         geojson = shapefile2geojson(shapefilepath)
 
-        # clean up - delete uneeded shapefiles
-        dont_delete = ['.csv','.zip','.geojson']
-        for file in os.listdir(dataset_id + '/uploads'):
-            if os.path.splitext(file)[1] not in dont_delete: 
-                os.remove(dataset_id + '/uploads/' + file)
-
         # Write original geojson to file
         geojsonfilepath = zipfilepath.replace('.zip', '.geojson')
         geojsonfile = open(geojsonfilepath,'w')
@@ -140,6 +134,9 @@ def upload(dataset_id):
 
         # Upload .geojson.zip file to datastore
         datastore.upload(geojsonfilepath + ".zip")
+        
+        # Clean up after ourselves.
+        shutil.rmtree(dataset_id)
 
         # Show sample data from original file
         return redirect('/datasets/' + dataset_id + "/sample-segment")
@@ -158,6 +155,10 @@ def show_sample_segment(dataset_id):
         return make_response("No dataset Found", 404)
 
     features = get_sample_uploaded_features(dataset)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
+
     keys = list(sorted(features[0]['properties'].keys()))
     args = dict(dataset=dataset, uploaded_features=features, uploaded_keys=keys)
     return render_template("dataset-02-show-sample-segment.html", **args)
