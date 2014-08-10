@@ -153,7 +153,10 @@ def package_opentrails_archive(dataset):
     zf = zipfile.ZipFile(buffer, 'w')
     
     # Download the transformed segments file
-    transformed_segments_zip = os.path.join(dataset.id, 'opentrails/segments.geojson.zip')
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
     dataset.datastore.download(transformed_segments_zip)
 
     # Unzip it and re-zip it.
@@ -161,12 +164,12 @@ def package_opentrails_archive(dataset):
     zf.write(segments_path, 'trail_segments.geojson')
     
     # Download the named trails file
-    named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
+    named_trails_path = os.path.join(opentrails_dir, 'named_trails.csv')
     dataset.datastore.download(named_trails_path)
     zf.write(named_trails_path, 'named_trails.csv')
     
     # Download the stewards file
-    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+    stewards_path = os.path.join(opentrails_dir, 'stewards.csv')
     dataset.datastore.download(stewards_path)
     zf.write(stewards_path, 'stewards.csv')
     

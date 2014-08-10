@@ -274,7 +274,10 @@ def name_trails(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the transformed segments file
-    transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
     datastore.download(transformed_segments_zip)
 
     # Unzip it
@@ -294,6 +297,9 @@ def name_trails(dataset_id):
             writer.writerow([row[c] for c in cols])
     
     datastore.upload(named_trails_path)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/named-trails', code=303)
             
@@ -319,7 +325,10 @@ def create_steward(dataset_id):
     steward_values[steward_fields.index('id')] = '0' # This is assigned in segments_transform()
     steward_values[steward_fields.index('publisher')] = 'no' # Better safe than sorry
         
-    stewards_path = os.path.join(dataset.id, 'opentrails/stewards.csv')
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    stewards_path = os.path.join(opentrails_dir, 'stewards.csv')
 
     with open(stewards_path, 'w') as stewards_file:
         cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
@@ -328,6 +337,9 @@ def create_steward(dataset_id):
         writer.writerow(steward_values)
     
     datastore.upload(stewards_path)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/stewards', code=303)
 
@@ -350,8 +362,6 @@ def download_opentrails_data(dataset_id):
     buffer = package_opentrails_archive(dataset)
     
     return send_file(buffer, 'application/zip')
-    
-    return 'poop'
 
 @app.route('/datasets/<id>')
 def existing_dataset(id):
