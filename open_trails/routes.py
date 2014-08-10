@@ -177,7 +177,10 @@ def transform_segments(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original segments file
-    segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
+    upload_dir = os.path.join(dataset.id, 'uploads')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    segments_zip = os.path.join(upload_dir, 'trail-segments.geojson.zip')
     datastore.download(segments_zip)
 
     # Unzip it
@@ -186,7 +189,10 @@ def transform_segments(dataset_id):
     messages, opentrails_segments = segments_transform(original_segments, dataset)
 
     # Write files from transformed segments
-    opentrails_segments_path = dataset.id + "/opentrails/segments.geojson"
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    opentrails_segments_path = os.path.join(opentrails_dir, 'segments.geojson')
     opentrails_segments_file = open(opentrails_segments_path ,'w')
     opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
     opentrails_segments_file.close()
@@ -201,6 +207,9 @@ def transform_segments(dataset_id):
     # Upload transformed segments and messages
     datastore.upload(opentrails_segments_path + ".zip")
     datastore.upload(transform_messages_path)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/transformed-segments', code=303)
         
@@ -216,7 +225,10 @@ def transformed_segments(dataset_id):
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
     
     # Download the transformed segments file
-    transformed_segments_zip = dataset.id + '/opentrails/segments.geojson.zip'
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
     datastore.download(transformed_segments_zip)
 
     # Unzip it
@@ -248,6 +260,9 @@ def transformed_segments(dataset_id):
         transformed_keys = transformed_keys,
         transform_succeeded = bool('error' not in message_types)
         )
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
 
     return render_template('dataset-03-transformed-segments.html', **vars)
         
