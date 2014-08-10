@@ -52,6 +52,9 @@ def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
         
+        if base.startswith('.'):
+            continue
+        
         if ext in [search_ext] + list(other_exts):
             unzipped_path = os.path.join(dirname, base)
             

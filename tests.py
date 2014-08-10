@@ -77,7 +77,8 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
-                 'test-files/lake-man-Nested.zip')
+                 'test-files/lake-man-Nested.zip',
+                 'test-files/lake-man-EBRPD.zip')
         for name in names:
             copy(name, self.tmp)
 
