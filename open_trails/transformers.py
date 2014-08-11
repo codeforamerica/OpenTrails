@@ -279,7 +279,7 @@ def trailheads_transform(raw_geojson, dataset):
           "geometry" : old_trailhead['geometry'],
           "properties" : {
             "id": find_trailhead_id(messages, old_properties) or str(id_counter.next()),
-            "steward_id": "0",
+            "steward_id": "0", # Steward ID 0 is the only steward we generate.
             "name": find_trailhead_name(messages, old_properties),
             "area_id": "0",
             # "trail_ids": find_trailhead_trail_ids (messages, old_properties),
