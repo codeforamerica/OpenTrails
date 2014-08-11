@@ -233,7 +233,7 @@ def check_trailheads(msgs, path):
     for feature in features:
         properties = feature['properties']
         
-        for field in ('name', 'trail_ids', 'steward_ids'):
+        for field in ('name', 'trail_ids', 'steward_id'):
             _check_required_string_field(msgs, field, properties, 'trailheads')
 
         for field in ('address', 'area_id'):
