@@ -269,7 +269,7 @@ class TestTransformers (TestCase):
         self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
-        expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
+        expected_ids = [str(f['properties']['OBJECTID']) for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
     
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]

@@ -31,7 +31,7 @@ def segments_transform(raw_geojson, dataset):
          "type" : "Feature",
          "geometry" : old_segment['geometry'],
          "properties" : {
-             "id" : find_segment_id(messages, old_properties) or str(id_counter.next()),
+             "id" : str(find_segment_id(messages, old_properties) or id_counter.next()),
              "steward_id" : "0",
              "name" : find_segment_name(messages, old_properties),
              "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
@@ -278,7 +278,7 @@ def trailheads_transform(raw_geojson, dataset):
           "type" :  "Feature",
           "geometry" : old_trailhead['geometry'],
           "properties" : {
-            "id": find_trailhead_id(messages, old_properties) or str(id_counter.next()),
+            "id": str(find_trailhead_id(messages, old_properties) or id_counter.next()),
             "steward_id": "0", # Steward ID 0 is the only steward we generate.
             "name": find_trailhead_name(messages, old_properties),
             "area_id": "0",
