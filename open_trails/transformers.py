@@ -314,7 +314,7 @@ def find_trailhead_id(messages, properties):
 
     for field in ('id', 'objectid', 'object id'):
         if field in keys:
-            return values[key.index(field)]
+            return values[keys.index(field)]
 
     messages.append(('warning', 'missing-trailhead-id', 'No column found for trailhead ID, such as "id" or "objectid". A new numeric ID was created. '))
 

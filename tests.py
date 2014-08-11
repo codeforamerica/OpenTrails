@@ -78,7 +78,8 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
                  'test-files/lake-man-Nested.zip',
-                 'test-files/lake-man-EBRPD.zip')
+                 'test-files/lake-man-EBRPD.zip',
+                 'test-files/lake-points-Ohio.zip')
         for name in names:
             copy(name, self.tmp)
 
@@ -107,8 +108,14 @@ class TestTransformers (TestCase):
         # Is it GeoJSON?
         #
         self.assertEqual(geojson['type'], 'FeatureCollection')
-        self.assertEqual(len(geojson['features']), 6)
-        self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+        
+        if 'lake-man-' in path:
+            self.assertEqual(len(geojson['features']), 6)
+            self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+
+        elif 'lake-points-' in path:
+            self.assertEqual(len(geojson['features']), 5)
+            self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['Point']))
 
         #
         # Does it cover the expected geographic area?
@@ -116,11 +123,15 @@ class TestTransformers (TestCase):
         lons, lats = [], []
 
         for f in geojson['features']:
-            lons.extend([x for (x, y) in f['geometry']['coordinates']])
-            lats.extend([y for (x, y) in f['geometry']['coordinates']])
-
-        self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
-        self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
+            if f['geometry']['type'] == 'LineString':
+                lons.extend([x for (x, y) in f['geometry']['coordinates']])
+                lats.extend([y for (x, y) in f['geometry']['coordinates']])
+            elif f['geometry']['type'] == 'Point':
+                lons.append(f['geometry']['coordinates'][0])
+                lats.append(f['geometry']['coordinates'][1])
+        
+        self.assertTrue(37.8007 < min(lats) and max(lats) < 37.8044)
+        self.assertTrue(-122.2593 < min(lons) and max(lons) < -122.2567)
 
     def test_segments_conversion_Portland(self):
         ''' Test overall segments conversion.
@@ -300,6 +311,24 @@ class TestTransformers (TestCase):
         
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
+    
+    def test_trailheads_conversion_Ohio(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-points-Ohio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        m, converted_geojson = transformers.trailheads_transform(geojson, None)
+        
+        self.assertEqual(len(m), 1)
+
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = [f['properties']['id'] for f in geojson['features']]
+        self.assertEqual(converted_ids, expected_ids)
+    
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['name'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
     
 class TestApp (TestCase):
 
