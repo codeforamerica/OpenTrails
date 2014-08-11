@@ -152,7 +152,9 @@ def _check_required_boolean_field(messages, field, dictionary, table_name):
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('error', message_type, message_text))
 
-    elif dictionary[field] not in ('yes', 'no', None):
+    value = dictionary[field].lower() if dictionary[field] is not None else None
+    
+    if value not in ('yes', 'no', None):
         found_value = dictionary[field]
         message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
         messages.append(('error', message_type, message_text))
@@ -167,7 +169,9 @@ def _check_optional_boolean_field(messages, field, dictionary, table_name):
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('warning', message_type, message_text))
 
-    elif dictionary[field] not in ('yes', 'no', None):
+    value = dictionary[field].lower() if dictionary[field] is not None else None
+    
+    if value not in ('yes', 'no', None):
         found_value = dictionary[field]
         message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
         messages.append(('error', message_type, message_text))
