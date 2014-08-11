@@ -2,7 +2,8 @@ from open_trails import app
 from models import Dataset, make_datastore
 from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
-    get_sample_uploaded_features, make_name_trails, package_opentrails_archive
+    get_sample_segment_features, make_name_trails, package_opentrails_archive,
+    get_sample_trailhead_features
     )
 from transformers import shapefile2geojson, segments_transform, trailheads_transform
 from validators import check_open_trails
@@ -154,7 +155,7 @@ def show_sample_segment(dataset_id):
     if not dataset:
         return make_response("No dataset Found", 404)
 
-    features = get_sample_uploaded_features(dataset)
+    features = get_sample_segment_features(dataset)
     
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
@@ -221,7 +222,7 @@ def transformed_segments(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original segments file
-    uploaded_features = get_sample_uploaded_features(dataset)
+    uploaded_features = get_sample_segment_features(dataset)
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
     
     # Download the transformed segments file
@@ -410,7 +411,7 @@ def show_sample_trailhead(dataset_id):
     if not dataset:
         return make_response("No dataset Found", 404)
 
-    features = get_sample_uploaded_features(dataset)
+    features = get_sample_trailhead_features(dataset)
     
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
@@ -477,7 +478,7 @@ def transformed_trailheads(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original trailheads file
-    uploaded_features = get_sample_uploaded_features(dataset)
+    uploaded_features = get_sample_trailhead_features(dataset)
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
     
     # Download the transformed trailheads file

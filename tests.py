@@ -64,7 +64,7 @@ class TestValidators (TestCase):
         self.assertEqual(len(messages), len(expected_messages))
         
         for expected in expected_messages:
-            self.assertTrue(expected in messages)
+            self.assertTrue(expected in messages, expected)
 
 class TestTransformers (TestCase):
 
@@ -345,8 +345,8 @@ class TestApp (TestCase):
     def test_convert_Portland(self):
         ''' Test starting a new data set, and uploading segments.
         '''
-        response = self.app.post('/new-dataset', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        started = self.app.post('/new-dataset', follow_redirects=True)
+        self.assertEqual(started.status_code, 200)
         
         datastore = make_datastore(self.config['DATASTORE'])
 
@@ -357,7 +357,7 @@ class TestApp (TestCase):
         #
         # Check for a file upload field in the home page form.
         #
-        soup = BeautifulSoup(response.data)
+        soup = BeautifulSoup(started.data)
         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/upload'))
@@ -366,19 +366,19 @@ class TestApp (TestCase):
 
         # Upload a zipped shapefile
         file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
-        uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('714115' in uploaded.data)
+        uploaded1 = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('714115' in uploaded1.data)
 
-        soup = BeautifulSoup(uploaded.data)
+        soup = BeautifulSoup(uploaded1.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/transform-segments'))
 
         # Do the transforming
-        transformed = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('714115' in transformed.data)
+        transformed1 = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('714115' in transformed1.data)
         
-        soup = BeautifulSoup(transformed.data)
+        soup = BeautifulSoup(transformed1.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/name-trails'))
@@ -395,13 +395,38 @@ class TestApp (TestCase):
         args = dict(name='Winterfell', url='http://codeforamerica.org/governments/winterfell/')
         stewarded = self.app.post(form['action'], data=args, follow_redirects=True)
         
+        #
+        # Check for a file upload field in the next page form.
+        #
         soup = BeautifulSoup(stewarded.data)
+        form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/upload-trailheads'))
+        self.assertTrue('multipart/form-data' in form['enctype'])
+        self.assertTrue(form.find_all('input', attrs=dict(type='file')))
+
+        # Upload a zipped shapefile
+        file = open(os.path.join(self.tmp, 'working-dir', 'sa-trailheads-test.zip'))
+        uploaded2 = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('Comanche' in uploaded2.data)
+
+        soup = BeautifulSoup(uploaded2.data)
+        form = soup.find('button').find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/transform-trailheads'))
+
+        # Do the transforming
+        transformed2 = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('Comanche' in transformed2.data)
+        
+        soup = BeautifulSoup(transformed2.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
         
         zipfile = self.app.get(link['href'])
         zipfile = ZipFile(StringIO(zipfile.data))
         
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
+        self.assertTrue('trailheads.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
         self.assertTrue('stewards.csv' in zipfile.namelist())
 

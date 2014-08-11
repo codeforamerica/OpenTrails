@@ -96,12 +96,12 @@ def get_sample_of_original_segments(dataset):
 
     return sample_segment
 
-def get_sample_uploaded_features(dataset):
+def get_sample_uploaded_features(dataset, zipped_geojson_name):
     # Download the original segments file
     upload_dir = os.path.join(dataset.id, 'uploads')
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
-    segments_zip = os.path.join(upload_dir, 'trail-segments.geojson.zip')
+    segments_zip = os.path.join(upload_dir, zipped_geojson_name)
     dataset.datastore.download(segments_zip)
 
     # Unzip it
@@ -117,6 +117,12 @@ def get_sample_uploaded_features(dataset):
             return original_segments['features'][:3]
 
     return []
+
+def get_sample_segment_features(dataset):
+    return get_sample_uploaded_features(dataset, 'trail-segments.geojson.zip')
+
+def get_sample_trailhead_features(dataset):
+    return get_sample_uploaded_features(dataset, 'trail-trailheads.geojson.zip')
 
 def encode_list(items):
     '''
