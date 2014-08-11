@@ -4,7 +4,7 @@ from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
     get_sample_uploaded_features, make_name_trails, package_opentrails_archive
     )
-from transformers import shapefile2geojson, segments_transform
+from transformers import shapefile2geojson, segments_transform, trailheads_transform
 from validators import check_open_trails
 from flask import request, render_template, redirect, make_response, send_file
 import json, os, csv, zipfile, time, re, shutil
@@ -352,6 +352,176 @@ def view_stewards(dataset_id):
             
     return render_template('dataset-05-stewards.html', dataset=dataset)
 
+@app.route('/datasets/<dataset_id>/upload-trailheads', methods=['POST'])
+def upload_trailheads(dataset_id):
+    '''
+    Upload a zip of one shapefile to datastore
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+
+    # Check that they uploaded a .zip file
+    if request.files['file'] and allowed_file(request.files['file'].filename):
+        
+        # Save zip file to disk
+        # /blahblahblah/uploads/trail-trailheads.zip
+        upload_dir = os.path.join(dataset_id, 'uploads')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        zipfilepath = os.path.join(upload_dir, 'trail-trailheads.zip')
+        request.files['file'].save(zipfilepath)
+
+        # Upload original file to S3
+        datastore.upload(zipfilepath)
+
+        # Unzip orginal file
+        shapefilepath = unzip(zipfilepath)
+
+        # Get geojson data from shapefile
+        geojson = shapefile2geojson(shapefilepath)
+
+        # Write original geojson to file
+        geojsonfilepath = zipfilepath.replace('.zip', '.geojson')
+        geojsonfile = open(geojsonfilepath,'w')
+        geojsonfile.write(json.dumps(geojson, sort_keys=True))
+        geojsonfile.close()
+
+        # Compress geojson file
+        compress(geojsonfilepath, geojsonfilepath + ".zip")
+
+        # Upload .geojson.zip file to datastore
+        datastore.upload(geojsonfilepath + ".zip")
+        
+        # Clean up after ourselves.
+        shutil.rmtree(dataset_id)
+
+        # Show sample data from original file
+        return redirect('/datasets/' + dataset_id + "/sample-trailhead")
+
+    else:
+        return make_response("Only .zip files allowed", 403)
+
+@app.route('/datasets/<dataset_id>/sample-trailhead')
+def show_sample_trailhead(dataset_id):
+    '''
+    Show an example row of data
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No dataset Found", 404)
+
+    features = get_sample_uploaded_features(dataset)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
+
+    keys = list(sorted(features[0]['properties'].keys()))
+    args = dict(dataset=dataset, uploaded_features=features, uploaded_keys=keys)
+    return render_template("dataset-07-show-sample-trailhead.html", **args)
+
+@app.route('/datasets/<dataset_id>/transform-trailheads', methods=['POST'])
+def transform_trailheads(dataset_id):
+    '''
+    Grab a zip file off of datastore
+    Unzip it
+    Transform into opentrails
+    Upload
+    '''
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    # Download the original trailheads file
+    upload_dir = os.path.join(dataset.id, 'uploads')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    trailheads_zip = os.path.join(upload_dir, 'trail-trailheads.geojson.zip')
+    datastore.download(trailheads_zip)
+
+    # Unzip it
+    trailheads_path = unzip(trailheads_zip, '.geojson', [])
+    original_trailheads = json.load(open(trailheads_path))
+    messages, opentrails_trailheads = trailheads_transform(original_trailheads, dataset)
+
+    # Write files from transformed trailheads
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    opentrails_trailheads_path = os.path.join(opentrails_dir, 'trailheads.geojson')
+    opentrails_trailheads_file = open(opentrails_trailheads_path ,'w')
+    opentrails_trailheads_file.write(json.dumps(opentrails_trailheads, sort_keys=True))
+    opentrails_trailheads_file.close()
+    
+    transform_messages_path = dataset.id + "/opentrails/trailheads-messages.json"
+    with open(transform_messages_path, 'w') as file:
+        json.dump(messages, file)
+
+    # zip up transformed trailheads
+    compress(opentrails_trailheads_path, opentrails_trailheads_path + ".zip")
+
+    # Upload transformed trailheads and messages
+    datastore.upload(opentrails_trailheads_path + ".zip")
+    datastore.upload(transform_messages_path)
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
+
+    return redirect('/datasets/' + dataset.id + '/transformed-trailheads', code=303)
+        
+@app.route('/datasets/<dataset_id>/transformed-trailheads')
+def transformed_trailheads(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+
+    # Download the original trailheads file
+    uploaded_features = get_sample_uploaded_features(dataset)
+    uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
+    
+    # Download the transformed trailheads file
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+    transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
+    datastore.download(transformed_trailheads_zip)
+
+    # Unzip it
+    trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
+    transformed_trailheads = json.load(open(trailheads_path))
+    transformed_features = transformed_trailheads['features'][:3]
+    transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
+    
+    # Download the transformed trailheads messages file
+    transformed_trailheads_messages = dataset.id + '/opentrails/trailheads-messages.json'
+    datastore.download(transformed_trailheads_messages)
+    
+    with open(transformed_trailheads_messages) as f:
+        data = json.load(f)
+        try:
+            messages = [(type, id, words) for (type, id, words) in data]
+        except ValueError:
+            # Old stored format.
+            messages = [(type, None, words) for (type, words) in data]
+    
+    message_types = [message[0] for message in messages]
+    
+    vars = dict(
+        dataset = dataset,
+        messages = messages,
+        uploaded_keys = uploaded_keys,
+        uploaded_features = uploaded_features,
+        transformed_features = transformed_features,
+        transformed_keys = transformed_keys,
+        transform_succeeded = bool('error' not in message_types)
+        )
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset.id)
+
+    return render_template('dataset-08-transformed-trailheads.html', **vars)
+        
 @app.route('/datasets/<dataset_id>/open-trails.zip')
 def download_opentrails_data(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])

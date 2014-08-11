@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.webtype.com/css/944a7551-9b08-4f0a-8767-e0f83db4a16b.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/1/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/1/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<body>
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
+
+<!-- Step tracker -->
+
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-active h6">Upload
+            <br>Shapefiles
+        </li><!--
+     --><li id="step2" class="step-todo h6">Convert to
+            <br>trail_segments.geojson
+        </li><!--
+     --><li id="step3" class="step-todo h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-todo h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
+    </ol>
+
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">First: Upload your trail data.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/upload" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=hidden name="trailtype" value="segments">
+                <input type=submit value=Upload>
+            </p>
+            </form>
+            <small>Note: data uploads make take a minute on poor connections.</small>
+        </div>
+    </div>
+
+    <section class="layout-semibreve">
+        <div class="layout-minim">
+            <h4>ZIP up your shapefile</h4>
+            <p>Upload a <b>zipped</b> shapefile that describes your trail system. This data should be a 'polyline' shapefile of features that represent the actual paths your trails take.</p>
+            <ul>
+                <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+                <li>.shp</li>
+                <li>.shx</li>
+                <li>.dbf</li>
+                <li>.prj</li>
+            </ul>
+        </div>
+        <div class="layout-minim">
+            <h4>What we expect from your data</h4>
+            <p>This converter tool makes a number of assumptions about the data you upload. The tool is <a href="http://github.com/codeforamerica/plats">under active development</a>, and as such currently supports only a narrow range of all trail data.</p>
+            <ul>
+                <li>This tool expects to receive a shapefile with many features, each representing a segment of trail.</li>
+                <li>Moreover, we expect many segments to only compose a portion of a trail. We will pull out all of the trail names, and create a seperate file called "named_trails.csv", associating each segment with the trail in its entirety.</li>
+                <li>We expect each of those segments to have attributes about their location, condition, and appropriate use.</li>
+                <li>In fact, our initial input model is based on PRORAGIS, the GIS data model recommended by our partners, the <a href="http://nrpa.org">National Recreation and Parks Association</a>.
+                <li>We expect the shapefiles uploaded to have many attributes not included in OpenTrails, which will be omitted.</li>
+            </ul>
+        </div>
+        <div class="layout-minim">
+
+        </div>
+    </section>
+</body>
+</html>

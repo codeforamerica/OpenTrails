@@ -62,19 +62,19 @@
     </ol>
 
     <div class="slab-gray">
-        <section class="layout-semibreve">
-            <div class="badge-heading">
-                <h3 class="badge-heading-h3-fix">Download your data in OpenTrails!</h3>
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">Upload your trailheads data.</h3>
             </div>
-            <br>
-            <a href="/datasets/{{ dataset.id }}/open-trails.zip" class="button">Download open-trails.zip</a>
-            <p>In the .zip file, you'll find the following files:</p>
-            <ul>
-                <li><code>trail_segments.geojson</code>, which contains your trail segment geometries</li>
-                <li><code>named_trails.csv</code>which groups segments into trails, and describes their use.</li>
-                <li><code>stewards.csv</code>which describes your organization for visitors looking for more information.</li>
-            </ul>
-        </section>
+            <form action="/datasets/{{ dataset.id }}/upload-trailheads" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=hidden name="trailtype" value="segments">
+                <input type=submit value=Upload>
+            </p>
+            </form>
+            <small>Note: data uploads make take a minute on poor connections.</small>
+        </div>
     </div>
 
     <section>

@@ -152,16 +152,22 @@ def package_opentrails_archive(dataset):
     buffer = StringIO()
     zf = zipfile.ZipFile(buffer, 'w')
     
-    # Download the transformed segments file
+    # Download the transformed segments and trailheads files
     opentrails_dir = os.path.join(dataset.id, 'opentrails')
     if not os.path.exists(opentrails_dir):
         os.makedirs(opentrails_dir)
-    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
-    dataset.datastore.download(transformed_segments_zip)
 
-    # Unzip it and re-zip it.
+    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
+    transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
+    dataset.datastore.download(transformed_segments_zip)
+    dataset.datastore.download(transformed_trailheads_zip)
+
+    # Unzip it and re-zip them.
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     zf.write(segments_path, 'trail_segments.geojson')
+    
+    trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
+    zf.write(trailheads_path, 'trailheads.geojson')
     
     # Download the named trails file
     named_trails_path = os.path.join(opentrails_dir, 'named_trails.csv')

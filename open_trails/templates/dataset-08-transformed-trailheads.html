@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.webtype.com/css/944a7551-9b08-4f0a-8767-e0f83db4a16b.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/1/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/1/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+</head>
+
+<body>
+
+    {% include "headline-converter.html" %}
+    {% include "file-tabs.html" %}
+
+<!-- Step Tracker  -->
+    <ol class="steps-tracker" data-steps="5">
+        <li id="step1"class="step-done icon-checkmark h6">Upload
+            <br>Shapefiles
+        </li><!--
+     --><li id="step2" class="step-done icon-checkmark h6">Convert to
+            <br>trail_segments.geojson
+        </li><!--
+     --><li id="step3" class="step-active h6">Extract
+            <br>named_trails.csv</li><!--
+     --><li id="step4" class="step-todo h6">Create 
+            <br>stewards.csv</li><!--
+     --><li id="step5" class="step-todo h6">Download 
+            <br>OpenTrails.zip</li>
+    </ol>
+
+    {% if transform_succeeded %}
+    <div class="slab-gray">
+        <section class="layout-semibreve">
+            <div class="badge-heading">
+                <h3 class="badge-heading-h3-fix">Download your data in OpenTrails!</h3>
+            </div>
+            <br>
+            <a href="/datasets/{{ dataset.id }}/open-trails.zip" class="button">Download open-trails.zip</a>
+            <p>In the .zip file, you'll find the following files:</p>
+            <ul>
+                <li><code>trail_segments.geojson</code>, which contains your trail segment geometries</li>
+                <li><code>named_trails.csv</code>which groups segments into trails, and describes their use.</li>
+                <li><code>stewards.csv</code>which describes your organization for visitors looking for more information.</li>
+                <li><code>trailheads.geojson</code>, which contains your trailhead geometries</li>
+            </ul>
+        </section>
+    </div>
+    <section class="layout-semibreve">
+        <h4>Review what's changed.</h4>
+        <p>We were able to successfully transform the data you provided into <code>trail_segments.geojson</code>, an OpenTrails conformant file describing the geometry of your trail segments.</p>
+
+        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments, into a seperate file called <code>named_trails.csv</code>.</p>
+
+        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process.</p> 
+
+        <p>For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
+
+        <p>Still have questions? We're available to help.</p>
+    </section>
+    <div class="primary-content-line"></div>
+    {% else %}
+    <div class="alert-failure">
+        <section class="layout-semibreve">
+            <h4>We can't proceed with converting your data as is. Check the error messages below, and read about how you can get your data ready to convert.</h4>
+        </section>
+    </div>
+    {% endif %}
+
+    <section class="layout-semibreve">
+        <h4>Feedback about your data</h4>
+        {% include "messages-list.html" %}
+    </section>
+    <section class="layout-semibreve">
+
+        <table id="transformed-sample">
+            <thead>
+                <tr>
+                    <th colspan="10">Sample Transformed Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Field Name</b></td>
+                    {% for feature in transformed_features %}
+                        <td><b>Sample Transformed Value</b></td>
+                    {% endfor %}
+                </tr>
+                {% for key in transformed_keys %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% for feature in transformed_features %}
+                            <td>{{ feature.properties[key] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="layout-semibreve">
+        <table id="original-sample">
+            <thead>
+                <tr>
+                    <th colspan="5">Sample Segment Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Field Name</b></td>
+                    {% for feature in uploaded_features %}
+                        <td><b>Sample Value</b></td>
+                    {% endfor %}
+                </tr>
+                {% for key in uploaded_keys %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% for feature in uploaded_features %}
+                            <td>{{ feature.properties[key] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    {% include "script-olark.html" %}
+</body>
+</html>

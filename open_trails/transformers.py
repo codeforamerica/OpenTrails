@@ -272,7 +272,7 @@ def trailheads_transform(raw_geojson, dataset):
     id_counter = itertools.count(1)
 
     for old_trailhead in raw_geojson['features']:
-        old_properties = old_trailhead['properties'],
+        old_properties = old_trailhead['properties']
 
         new_trailhead = {
           "type" :  "Feature",
@@ -289,8 +289,9 @@ def trailheads_transform(raw_geojson, dataset):
             "kiosk": find_trailhead_kiosk(messages, old_properties),
             "drink water": find_trailhead_drinkwater(messages, old_properties),
             "osm_tags": None
+          }
         }
-    }
+        opentrails_trailheads_geojson['features'].append(new_trailhead)
 
     deduped_messages = []
 
