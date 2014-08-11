@@ -1,6 +1,6 @@
 from os.path import exists, basename
 from csv import DictReader
-from json import load
+from json import load, dumps
 
 from shapely.geometry import shape
 
@@ -154,7 +154,7 @@ def _check_required_boolean_field(messages, field, dictionary, table_name):
 
     elif dictionary[field] not in ('yes', 'no', None):
         found_value = dictionary[field]
-        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
+        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
         messages.append(('error', message_type, message_text))
 
 def _check_optional_boolean_field(messages, field, dictionary, table_name):
@@ -169,7 +169,7 @@ def _check_optional_boolean_field(messages, field, dictionary, table_name):
 
     elif dictionary[field] not in ('yes', 'no', None):
         found_value = dictionary[field]
-        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
+        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
         messages.append(('error', message_type, message_text))
 
 def check_trail_segments(msgs, path):
