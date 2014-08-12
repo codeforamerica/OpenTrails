@@ -115,6 +115,7 @@
 
 /* Progress Tracker */
 .steps-tracker {
+  width: 100%;
   margin: 0 auto;
   padding: 0;
   list-style: none;
@@ -125,13 +126,15 @@
 .steps-tracker[data-steps="4"] li { width: 25%; }
 .steps-tracker[data-steps="5"] li { width: 20%; }
 .steps-tracker[data-steps="6"] li { width: 16%; }
+.steps-tracker[data-steps="7"] li { width: 14.285%;}
+.steps-tracker[data-steps="8"] li { width: 12.5%; }
 
 .steps-tracker li {
   display: inline;
   list-style: none;
   display: inline-table;
   text-align: center;
-  line-height: 3em;
+  line-height: 1.2em;
   padding-top: 1em;
   margin: 2em 0 2em 0;
   height: 3em;
@@ -154,6 +157,9 @@
 
 
 /* Checkbox icons for progress bar */
+.st-text {
+  font-size: 12px;
+}
 
 .steps-tracker li:before {
     position: relative;
@@ -206,6 +212,21 @@
 #step5.step-active:before,
 #step5.step-todo:before {
   content: "\35";
+}
+
+#step6.step-active:before,
+#step6.step-todo:before {
+  content: "\36";
+}
+
+#step7.step-active:before,
+#step7.step-todo:before {
+  content: "\37";
+}
+
+#step8.step-active:before,
+#step8.step-todo:before {
+  content: "\38";
 }
 
 /* Form widths for stewardanization Section */
