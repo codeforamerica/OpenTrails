@@ -250,6 +250,8 @@ def find_segment_motor_vehicles_use(messages, properties):
     '''
     # Search for a motor_vehicles column
     fieldnames = "MOTORBIKE", "ALLTERVEH", "ATV", "FOURWD", "4WD", "Motorcycle", "Snowmobile"
+    #  we recieved one set of data wherein the field name is MOTORBIKE, and the value is 'motorcycle'
+    pattern = re.compile(r'\b(?<!no )(motorcylce)\b', re.I)
 
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
