@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.webtype.com/css/944a7551-9b08-4f0a-8767-e0f83db4a16b.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/1/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/1/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<html>
+	<body>
+		{% include "headline-converter.html" %}
+
+	    <div class="alert-failure">
+	        <section class="layout-semibreve">
+			<h3>403 Error</h3>
+			<p>This converter only accepts .zip files, containing shapefile data.</p>
+	        </section>
+	    </div>
+		<section class="layout-semibreve">
+			<h3>Try again!</h3>
+            <p>Upload a <b>zipped</b> shapefile that describes your trail system. This data should be a 'polyline' shapefile of features that represent the actual paths your trails take.</p>
+            <ul>
+                <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+                <li>.shp</li>
+                <li>.shx</li>
+                <li>.dbf</li>
+                <li>.prj</li>
+            </ul>
+        </div>
+		</section>
+		{% include "script-olark.html" %}
+	</body>
+</html>

@@ -143,7 +143,7 @@ def upload(dataset_id):
         return redirect('/datasets/' + dataset_id + "/sample-segment")
 
     else:
-        return make_response("Only .zip files allowed", 403)
+        return render_template('error-not-zip.html'), 403
 
 @app.route('/datasets/<dataset_id>/sample-segment')
 def show_sample_segment(dataset_id):
