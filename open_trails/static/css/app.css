@@ -138,6 +138,12 @@
   list-style: none;
 }
 
+/* Validator list item marigns */
+ul .alert-success {
+  margin: 1em 0;
+}
+
+
 /* We need to specify the width for different numbers of steps*/
 
 .steps-tracker[data-steps="4"] li { width: 25%; }
