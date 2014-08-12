@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Code for America</title>
+
+ 	<!-- LEAFLET -->
+
+    <!-- CODE FOR AMERICA STYLES -->
+    <link rel="stylesheet" type="text/css" href="//cloud.webtype.com/css/944a7551-9b08-4f0a-8767-e0f83db4a16b.css" />
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/main.css">
+    <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all and (min-width: 40em)">
+    <link href="http://style.codeforamerica.org/1/style/css/prism.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon-precomposed" href="http://style.codeforamerica.org/1/style/favicons/60x60/flag-red.png"/>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!--[if (lt IE 9)&(gt IE 6)&(!IEMobile)]>
+        <link rel="stylesheet" href="http://style.codeforamerica.org/1/style/css/layout.css" media="all">
+    <![endif]-->
+
+	<!-- CUSTOM STYLES -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+
+<html>
+	<body>
+		{% include "headline-converter.html" %}
+		<section class="layout-semibreve">
+			<h3>A determination as to whether drinking water is available on site.</h3>
+			<p>OpenTrails is designed to communicate to visitors not just where trails traverse and how they can be accessed, but also what amenities are available for their use. The absence or presence of drinking water is a valuable peice of information for trail goers. This field is not required, but is strongly recommended.</p>
+			<p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
+		</section>
+		<section class="layout-semibreve">
+			<table>
+				<thead>
+				<tr>
+					<th colspan="5">Excerpt from the Open Trail System Specification</th>
+				</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<b>Field Name</b>
+						</td>
+						<td>
+							<b>Data Type</b>
+						</td>
+						<td>
+							<b>Required?</b>
+						</td>
+						<td>
+							<b>Description</b>
+						</td>
+						<td>
+							<b>Values</b>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							drinkwater
+						</td>
+						<td>
+							string-encoded boolean
+						</td>
+						<td>
+							no
+						</td>
+						<td>
+							Drinking water is available on site.
+						</td>
+						<td>
+							“yes” or “no”
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+		{% include "script-olark.html" %}
+	</body>
+</html>
