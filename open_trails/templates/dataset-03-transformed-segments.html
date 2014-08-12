@@ -69,6 +69,11 @@
 
 
     {% if transform_succeeded %}
+    <div class="alert-success">
+        <section class="layout-semibreve">
+            <p><b>Success!</b> We transformed your trail segment shapefile to "trail_segments.geojson".</p>
+        </section>
+    </div>
     <div class="slab-gray">
         <div class="layout-semibreve">
             <div class="badge-heading badge-blue">
@@ -82,7 +87,7 @@
         </div>
     </div>
     <section class="layout-semibreve">
-        <h4>Review what's changed.</h4>
+        <h4>Review the transformation.</h4>
         <p>We were able to successfully transform the data you provided into <code>trail_segments.geojson</code>, an OpenTrails conformant file describing the geometry of your trail segments.</p>
 
         <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments, into a seperate file called <code>named_trails.csv</code>.</p>
@@ -137,7 +142,7 @@
         <table id="original-sample">
             <thead>
                 <tr>
-                    <th colspan="5">Sample Segment Data</th>
+                    <th colspan="5">Sample of Original Segment Data</th>
                 </tr>
             </thead>
             <tbody>

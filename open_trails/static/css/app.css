@@ -32,6 +32,22 @@
   color: white;
 }
 
+/* less margins for our Pimary CTA */
+
+.slab-gray .layout-semibreve {
+  padding: 1em 2%;
+}
+
+/* Alterations to default alert styles, for success feedback banners */
+
+.alert-success {
+  margin: 0;
+}
+
+.alert-success .layout-semibreve {
+  padding: 1em 2%;
+}
+
 /* Bottom border for primary content on each page */
 
 .primary-content-line {

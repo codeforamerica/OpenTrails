@@ -36,7 +36,7 @@
             <h6 class="file-status-success">Complete</h6>
         </div>
         <div class="file-titles" id="trailheads-title">
-            <h5 class="other-file-title">Trailheads</h5>
+            <h5 class="current-file-title">Trailheads</h5>
             <h6>In Progress</h6>
         </div>
         <div class="file-titles" id="areas-title">
@@ -65,11 +65,15 @@
             <br>opentrails.zip</small></li>
     </ol>
 
-
+    <div class="alert-success">
+        <section class="layout-semibreve">
+            <p><b>Success!</b> You uploaded a valid trailhead shapefile.</p>
+        </section>
+    </div>
     <div class="slab-gray">
         <section class="layout-semibreve">
             <div class="badge-heading badge-blue">
-                <h3 class="badge-heading-h3-fix">Next: Review and convert your data.</h3>
+                <h3 class="badge-heading-h3-fix">Next: Review and convert your trailhead data.</h3>
             </div>
             <form action="/datasets/{{ dataset.id }}/transform-trailheads" method=post>
                 <p>
@@ -82,11 +86,7 @@
         <h4>Review your uploaded data.</h4>
         <p>You've uploaded a shapefile that contains the data we need to get started with the conversion.</p>
 
-        <p>Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, along with a few sample values. Here are a couple of questions to keep in mind:</p>
-        <ul>
-            <li>Do the segments contain the name of the trail they are a part of? Names are used to group segments into full trails.</li>
-            <li>Do the segments have attributes describing appropriate or allowed use? These fields are not required, but are recommended.</li>
-        </ul>
+        <p>Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, along with a few sample values.</p>
     </section>
 
     <div class="primary-content-line"></div>
