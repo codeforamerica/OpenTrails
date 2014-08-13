@@ -343,6 +343,7 @@ class TestApp (TestCase):
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
+                 'test-files/lake-points-Ohio.zip',
                  'test-files/open-trails-GGNRA.zip',
                  'test-files/portland-segments.geojson',
                  'test-files/san-antonio-segments.geojson',
@@ -435,9 +436,9 @@ class TestApp (TestCase):
         self.assertTrue(form.find_all('input', attrs=dict(type='file')))
 
         # Upload a zipped shapefile
-        file = open(os.path.join(self.tmp, 'working-dir', 'sa-trailheads-test.zip'))
+        file = open(os.path.join(self.tmp, 'working-dir', 'lake-points-Ohio.zip'))
         uploaded2 = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('Comanche' in uploaded2.data)
+        self.assertTrue('Rockside' in uploaded2.data)
 
         soup = BeautifulSoup(uploaded2.data)
         form = soup.find('button').find_parent('form')
@@ -446,7 +447,7 @@ class TestApp (TestCase):
 
         # Do the transforming
         transformed2 = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('Comanche' in transformed2.data)
+        self.assertTrue('Rockside' in transformed2.data)
         
         soup = BeautifulSoup(transformed2.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
