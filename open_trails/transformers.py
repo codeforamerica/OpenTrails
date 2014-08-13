@@ -109,7 +109,7 @@ def _get_value_yes_no(properties, fieldnames):
 
     for field in fieldnames:
         if field.lower() in keys:
-            value = values[keys.index(field)]
+            value = values[keys.index(field.lower())]
             return value and yes_nos.get(value.lower(), None)
 
     return None
@@ -121,7 +121,7 @@ def _get_match_yes_no(properties, pattern, fieldnames):
 
     for field in fieldnames:
         if field.lower() in keys:
-            value = values[keys.index(field)]
+            value = values[keys.index(field.lower())]
 
             if type(value) not in (str, unicode):
                 return None
