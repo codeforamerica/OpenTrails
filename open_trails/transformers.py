@@ -1,5 +1,7 @@
 import os, json, subprocess, itertools, re
 
+from .functions import encode_list
+
 def shapefile2geojson(shapefilepath):
     '''Converts a shapefile to a geojson file with spherical mercator.
     '''
@@ -31,7 +33,7 @@ def segments_transform(raw_geojson, dataset):
          "type" : "Feature",
          "geometry" : old_segment['geometry'],
          "properties" : {
-             "id" : find_segment_id(messages, old_properties) or str(id_counter.next()),
+             "id" : str(find_segment_id(messages, old_properties) or id_counter.next()),
              "steward_id" : "0",
              "name" : find_segment_name(messages, old_properties),
              "motor_vehicles" : find_segment_motor_vehicles_use(messages, old_properties),
@@ -250,6 +252,8 @@ def find_segment_motor_vehicles_use(messages, properties):
     '''
     # Search for a motor_vehicles column
     fieldnames = "MOTORBIKE", "ALLTERVEH", "ATV", "FOURWD", "4WD", "Motorcycle", "Snowmobile"
+    #  we recieved one set of data wherein the field name is MOTORBIKE, and the value is 'motorcycle'
+    pattern = re.compile(r'\b(?<!no )(motorcylce)\b', re.I)
 
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
@@ -272,25 +276,26 @@ def trailheads_transform(raw_geojson, dataset):
     id_counter = itertools.count(1)
 
     for old_trailhead in raw_geojson['features']:
-        old_properties = old_trailhead['properties'],
+        old_properties = old_trailhead['properties']
 
         new_trailhead = {
           "type" :  "Feature",
           "geometry" : old_trailhead['geometry'],
           "properties" : {
-            "id": find_trailhead_id(messages, old_properties) or str(id_counter.next()),
-            "steward_id": "0",
+            "id": str(find_trailhead_id(messages, old_properties) or id_counter.next()),
+            "steward_id": "0", # Steward ID 0 is the only steward we generate.
             "name": find_trailhead_name(messages, old_properties),
             "area_id": "0",
-            # "trail_ids": find_trailhead_trail_ids (messages, old_properties),
+            "trail_ids": find_trailhead_trail_ids(messages, old_properties, dataset),
             "address": find_trailhead_address(messages, old_properties),
             "parking": find_trailhead_parking(messages, old_properties),
             "restrooms": find_trailhead_restrooms(messages, old_properties),
             "kiosk": find_trailhead_kiosk(messages, old_properties),
             "drink water": find_trailhead_drinkwater(messages, old_properties),
             "osm_tags": None
+          }
         }
-    }
+        opentrails_trailheads_geojson['features'].append(new_trailhead)
 
     deduped_messages = []
 
@@ -313,7 +318,7 @@ def find_trailhead_id(messages, properties):
 
     for field in ('id', 'objectid', 'object id'):
         if field in keys:
-            return values[key.index(field)]
+            return values[keys.index(field)]
 
     messages.append(('warning', 'missing-trailhead-id', 'No column found for trailhead ID, such as "id" or "objectid". A new numeric ID was created. '))
 
@@ -337,23 +342,28 @@ def find_trailhead_name(messages, properties):
 
     return None
 
-# def find_trailhead_trail_ids(messages, properties):
-#     ''' Return the value of a segment name from feature properties.
+def find_trailhead_trail_ids(messages, properties, dataset):
+    ''' Return the value of a segment name from feature properties.
 
-#         Implements logic in https://github.com/codeforamerica/PLATS/issues/39
+        Implements logic in https://github.com/codeforamerica/PLATS/issues/39
 
-#         Gather messages along the way about potential problems.
-#     '''
+        Gather messages along the way about potential problems.
+    '''
 
-#     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
+    
+    id_values = list()
+    
+    for key in keys:
+        if key.startswith('trail') or key.startswith('segment'):
+            id_values.append(values[keys.index(key)])
+    
+    if len(id_values):
+        return encode_list(id_values)
 
-#     for field in ('trail', 'trailname', 'trail1', 'trail_name'):
-#         if field in keys:
-#             return values[keys.index(field)]
+    messages.append(('error', 'missing-trailhead-trail-ids', 'No column found for trail names, such as "trailname" or "trail1". Trailhead should be associated with at least one trail.'))
 
-#     messages.append(('error', 'missing-trailhead-trail-ids', 'No column found for trail names, such as "trailname" or "trail1". Trailhead should be associated with at least one trail.'))
-
-#     return None
+    return None
 
 def find_trailhead_address(messages, properties):
     ''' Return the value of a segment name from feature properties.

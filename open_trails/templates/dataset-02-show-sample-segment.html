@@ -30,28 +30,51 @@
 
 <body>
     {% include "headline-converter.html" %}
-    {% include "file-tabs.html" %}
+    <div class="layout-semibreve semibreve-reduced">
+        <div class="file-titles"  id="trailsegments-title">
+            <h5 class="current-file-title">Trail Segments</h5>
+            <h6>In Progress</h6>
+        </div>
+        <div class="file-titles" id="trailheads-title">
+            <h5 class="other-file-title">Trailheads</h5>
+            <h6 class="coming-soon">Up Next</h6>
+        </div>
+        <div class="file-titles" id="areas-title">
+            <h5 class="other-file-title">Areas</h5>
+            <h6 class="coming-soon">Coming Soon</h6>
+        </div>
+    </div>
+
 
 <!-- Step Tracker  -->
-    <ol class="steps-tracker" data-steps="5">
-        <li id="step1"class="step-done icon-checkmark h6">Upload
-            <br>Shapefiles
+    <ol class="steps-tracker" data-steps="7">
+        <li id="step1"class="step-done icon-checkmark st-text"><small>Upload
+            <br>segments shapefile</small>
         </li><!--
-     --><li id="step2" class="step-active h6">Convert to
-            <br>trail_segments.geojson
+     --><li id="step2" class="step-active st-text"><small>Convert to
+            <br>trail_segments.geojson</small>
         </li><!--
-     --><li id="step3" class="step-todo h6">Extract
-            <br>named_trails.csv</li><!--
-     --><li id="step4" class="step-todo h6">Create 
-            <br>stewards.csv</li><!--
-     --><li id="step5" class="step-todo h6">Download 
-            <br>OpenTrails.zip</li>
+     --><li id="step3" class="step-todo st-text"><small>Extract
+            <br>named_trails.csv</small></li><!--
+     --><li id="step4" class="step-todo st-text"><small>Create
+            <br>stewards.csv</small></li><!--
+     --><li id="step5" class="step-todo st-text"><small>Upload
+            <br>trailheads shapefile</small></li><!--
+     --><li id="step6" class="step-todo st-text"><small>Conver to
+            <br>trailheads.geojson</small></li><!--
+     --><li id="step7" class="step-todo st-text"><small>Download
+            <br>opentrails.zip</small></li>
     </ol>
 
+    <div class="alert-success">
+        <section class="layout-semibreve">
+            <p><b>Success!</b> You uploaded a valid shapefile.</p>
+        </section>
+    </div>
     <div class="slab-gray">
         <section class="layout-semibreve">
             <div class="badge-heading badge-blue">
-                <h3 class="badge-heading-h3-fix">Next: Review and convert your data.</h3>
+                <h3 class="badge-heading-h3-fix">Next: Review and convert your segment data.</h3>
             </div>
             <form action="/datasets/{{ dataset.id }}/transform-segments" method=post>
                 <p>
@@ -61,13 +84,12 @@
         </section>
     </div>
     <section class="layout-semibreve">
-        <h4>Review your uploaded data.</h4>
-        <p>You've uploaded a shapefile that contains the data we need to get started with the conversion.</p>
+        <h4>Review the shapefile you've uploaded.</h4>
 
-        <p>Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, along with a few sample values. Here are a couple of questions to keep in mind:</p>
+        <p>Before we move forward, review this sample of the data you've uploaded. We've included all of the field names from the shapefile, along with a few sample values. Here are a couple of questions to keep in mind:</p>
         <ul>
             <li>Do the segments contain the name of the trail they are a part of? Names are used to group segments into full trails.</li>
-            <li>Do the segments have attributes describing appropriate or allowed use? These fields are not required, but are recommended.</li>
+            <li>Do the segments have attributes describing appropriate or allowed use? These fields are not required, but are recommended; we want to help visitors enjoy your trail system safely!</li>
         </ul>
     </section>
 
@@ -77,7 +99,7 @@
         <table id="original-sample">
             <thead>
                 <tr>
-                    <th colspan="5">A Sample of Your Data</th>
+                    <th colspan="5">A Sample of Your Segment Data</th>
                 </tr>
 
             </thead>

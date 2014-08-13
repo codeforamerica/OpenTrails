@@ -1,0 +1,100 @@
+<div class="slab-gray">
+	<div class="layout-semibreve">
+		<h3>This tool is best used with the following "input schema"</h3>
+		<p>This tool converts shapefiles that contain data in certain schema.</p>
+		<p>These schemas are based on data received from park agencies to date. As this tool is used and developed by the community, it will grow to accept a wider variety of data.</p>
+
+		<p>To ensure successful use of this converter, we advise you to create shapefiles that contain the following field names and values.</p>
+		<div>
+			<table>
+	            <thead>
+	                <tr>
+	                    <th colspan="10">Trail Segments shapefile</th>
+	                </tr>
+	                <tr>
+	                	<th colspan="10">
+	                		<p>From this shapefile, the following files will be created:</p>
+	                		<ul>
+	                			<li>trail_segments.geojson</li>
+	                			<li>named_trails.csv</li>
+	                		</ul>
+	                	</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr>
+	                    <td><b>Field Name</b></td>
+	                    <td><b>Values</b></td>
+	                    <td><b>Required?</b></td>
+	                </tr>
+                    <tr>
+                        <td>
+                        	<p>ID</p>
+                        	<small><b>Alternatives:</b> 'id', 'trailid', 'objectid', 'trail id', 'object id'</small>
+                        </td>
+                        <td>
+                        	<p>String</p>
+                        </td>
+                        <td>
+                        	<p>No</p>
+                        	<small><b>Explanation:</b> This is required in OpenTrails, but not in your upload data. If you don't include one, the Converter will automatically create one for each segment.</small>
+                        </td>
+                    </tr>
+                    <tr>
+                    	<td>
+                    		<p>Trail</p>
+	                    		<small><b>Alternatives:</b> 'trail', 'trailname', 'trail_name'</small>
+                    	</td>
+                    	<td>
+                    		<p>String</p>
+
+                    	</td>
+                    	<td>
+                    		<p>Yes</p>
+                    		<small><b>Explanation:</b> Each segment should be associated with one more more Named Trail. Many segments can (and probably should) be associated with the same trail.</small>
+                    	</td>
+                    </tr>
+                    <tr>
+                    	<td>
+                    		<p>Trail</p>
+	                    		<small><b>Alternatives:</b> 'trail', 'trailname', 'trail_name'</small>
+                    	</td>
+                    	<td>
+                    		<p>String</p>
+
+                    	</td>
+                    	<td>
+                    		<p>Yes</p>
+                    		<small><b>Explanation:</b> Each segment should be associated with one more more Named Trail. Many segments can (and probably should) be associated with the same trail.</small>
+                    	</td>
+                    </tr>
+	            </tbody>
+	        </table>
+	    </div>
+		<div>
+			<table>
+	            <thead>
+	                <tr>
+	                    <th colspan="10">Trailheads shapefile</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+
+	                <tr>
+	                    <td><b>Field Name</b></td>
+	                    <td><b>Values</b></td>
+	                    <td><b>Required?</b></td>
+	                </tr>
+                    <tr>
+                        <td>Key</td>
+                        <td>Hello</td>
+                    </tr>
+                    <tr>
+                    	<td>Required?</td>
+                    	<td>Yes</td>
+                    </tr>
+	            </tbody>
+	        </table>
+	    </div>
+	</div>
+</div>

@@ -64,7 +64,7 @@ class TestValidators (TestCase):
         self.assertEqual(len(messages), len(expected_messages))
         
         for expected in expected_messages:
-            self.assertTrue(expected in messages)
+            self.assertTrue(expected in messages, expected)
 
 class TestTransformers (TestCase):
 
@@ -78,7 +78,8 @@ class TestTransformers (TestCase):
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
                  'test-files/lake-man-Nested.zip',
-                 'test-files/lake-man-EBRPD.zip')
+                 'test-files/lake-man-EBRPD.zip',
+                 'test-files/lake-points-Ohio.zip')
         for name in names:
             copy(name, self.tmp)
 
@@ -107,8 +108,14 @@ class TestTransformers (TestCase):
         # Is it GeoJSON?
         #
         self.assertEqual(geojson['type'], 'FeatureCollection')
-        self.assertEqual(len(geojson['features']), 6)
-        self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+        
+        if 'lake-man-' in path:
+            self.assertEqual(len(geojson['features']), 6)
+            self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
+
+        elif 'lake-points-' in path:
+            self.assertEqual(len(geojson['features']), 5)
+            self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['Point']))
 
         #
         # Does it cover the expected geographic area?
@@ -116,11 +123,15 @@ class TestTransformers (TestCase):
         lons, lats = [], []
 
         for f in geojson['features']:
-            lons.extend([x for (x, y) in f['geometry']['coordinates']])
-            lats.extend([y for (x, y) in f['geometry']['coordinates']])
-
-        self.assertTrue(37.80071 < min(lats) and max(lats) < 37.80436)
-        self.assertTrue(-122.25925 < min(lons) and max(lons) < -122.25671)
+            if f['geometry']['type'] == 'LineString':
+                lons.extend([x for (x, y) in f['geometry']['coordinates']])
+                lats.extend([y for (x, y) in f['geometry']['coordinates']])
+            elif f['geometry']['type'] == 'Point':
+                lons.append(f['geometry']['coordinates'][0])
+                lats.append(f['geometry']['coordinates'][1])
+        
+        self.assertTrue(37.8007 < min(lats) and max(lats) < 37.8044)
+        self.assertTrue(-122.2593 < min(lons) and max(lons) < -122.2567)
 
     def test_segments_conversion_Portland(self):
         ''' Test overall segments conversion.
@@ -258,7 +269,7 @@ class TestTransformers (TestCase):
         self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
-        expected_ids = [f['properties']['OBJECTID'] for f in geojson['features']]
+        expected_ids = [str(f['properties']['OBJECTID']) for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
     
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
@@ -301,6 +312,24 @@ class TestTransformers (TestCase):
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
     
+    def test_trailheads_conversion_Ohio(self):
+        ''' Test overall segments conversion.
+        '''
+        path = unzip(join(self.tmp, 'lake-points-Ohio.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+        
+        m, converted_geojson = transformers.trailheads_transform(geojson, None)
+        
+        self.assertEqual(len(m), 1)
+
+        converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        expected_ids = [f['properties']['id'] for f in geojson['features']]
+        self.assertEqual(converted_ids, expected_ids)
+    
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['name'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
+    
 class TestApp (TestCase):
 
     def setUp(self):
@@ -314,6 +343,7 @@ class TestApp (TestCase):
                  'test-files/lake-man-San-Antonio.zip',
                  'test-files/lake-man-Santa-Clara.zip',
                  'test-files/lake-man-Portland.zip',
+                 'test-files/lake-points-Ohio.zip',
                  'test-files/open-trails-GGNRA.zip',
                  'test-files/portland-segments.geojson',
                  'test-files/san-antonio-segments.geojson',
@@ -345,8 +375,8 @@ class TestApp (TestCase):
     def test_convert_Portland(self):
         ''' Test starting a new data set, and uploading segments.
         '''
-        response = self.app.post('/new-dataset', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        started = self.app.post('/new-dataset', follow_redirects=True)
+        self.assertEqual(started.status_code, 200)
         
         datastore = make_datastore(self.config['DATASTORE'])
 
@@ -357,7 +387,7 @@ class TestApp (TestCase):
         #
         # Check for a file upload field in the home page form.
         #
-        soup = BeautifulSoup(response.data)
+        soup = BeautifulSoup(started.data)
         form = soup.find('input', attrs=dict(type='file')).find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/upload'))
@@ -366,19 +396,19 @@ class TestApp (TestCase):
 
         # Upload a zipped shapefile
         file = open(os.path.join(self.tmp, 'working-dir', 'lake-man-Portland.zip'))
-        uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
-        self.assertTrue('714115' in uploaded.data)
+        uploaded1 = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('714115' in uploaded1.data)
 
-        soup = BeautifulSoup(uploaded.data)
+        soup = BeautifulSoup(uploaded1.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/transform-segments'))
 
         # Do the transforming
-        transformed = self.app.post(form['action'], follow_redirects=True)
-        self.assertTrue('714115' in transformed.data)
+        transformed1 = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('714115' in transformed1.data)
         
-        soup = BeautifulSoup(transformed.data)
+        soup = BeautifulSoup(transformed1.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/name-trails'))
@@ -395,13 +425,38 @@ class TestApp (TestCase):
         args = dict(name='Winterfell', url='http://codeforamerica.org/governments/winterfell/')
         stewarded = self.app.post(form['action'], data=args, follow_redirects=True)
         
+        #
+        # Check for a file upload field in the next page form.
+        #
         soup = BeautifulSoup(stewarded.data)
+        form = soup.find('input', attrs=dict(type='file')).find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/upload-trailheads'))
+        self.assertTrue('multipart/form-data' in form['enctype'])
+        self.assertTrue(form.find_all('input', attrs=dict(type='file')))
+
+        # Upload a zipped shapefile
+        file = open(os.path.join(self.tmp, 'working-dir', 'lake-points-Ohio.zip'))
+        uploaded2 = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
+        self.assertTrue('Rockside' in uploaded2.data)
+
+        soup = BeautifulSoup(uploaded2.data)
+        form = soup.find('button').find_parent('form')
+        self.assertTrue(form['action'].startswith('/datasets'))
+        self.assertTrue(form['action'].endswith('/transform-trailheads'))
+
+        # Do the transforming
+        transformed2 = self.app.post(form['action'], follow_redirects=True)
+        self.assertTrue('Rockside' in transformed2.data)
+        
+        soup = BeautifulSoup(transformed2.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
         
         zipfile = self.app.get(link['href'])
         zipfile = ZipFile(StringIO(zipfile.data))
         
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
+        self.assertTrue('trailheads.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
         self.assertTrue('stewards.csv' in zipfile.namelist())
 

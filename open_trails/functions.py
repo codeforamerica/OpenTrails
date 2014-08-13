@@ -96,12 +96,12 @@ def get_sample_of_original_segments(dataset):
 
     return sample_segment
 
-def get_sample_uploaded_features(dataset):
+def get_sample_uploaded_features(dataset, zipped_geojson_name):
     # Download the original segments file
     upload_dir = os.path.join(dataset.id, 'uploads')
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
-    segments_zip = os.path.join(upload_dir, 'trail-segments.geojson.zip')
+    segments_zip = os.path.join(upload_dir, zipped_geojson_name)
     dataset.datastore.download(segments_zip)
 
     # Unzip it
@@ -117,6 +117,12 @@ def get_sample_uploaded_features(dataset):
             return original_segments['features'][:3]
 
     return []
+
+def get_sample_segment_features(dataset):
+    return get_sample_uploaded_features(dataset, 'trail-segments.geojson.zip')
+
+def get_sample_trailhead_features(dataset):
+    return get_sample_uploaded_features(dataset, 'trail-trailheads.geojson.zip')
 
 def encode_list(items):
     '''
@@ -152,16 +158,22 @@ def package_opentrails_archive(dataset):
     buffer = StringIO()
     zf = zipfile.ZipFile(buffer, 'w')
     
-    # Download the transformed segments file
+    # Download the transformed segments and trailheads files
     opentrails_dir = os.path.join(dataset.id, 'opentrails')
     if not os.path.exists(opentrails_dir):
         os.makedirs(opentrails_dir)
-    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
-    dataset.datastore.download(transformed_segments_zip)
 
-    # Unzip it and re-zip it.
+    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
+    transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
+    dataset.datastore.download(transformed_segments_zip)
+    dataset.datastore.download(transformed_trailheads_zip)
+
+    # Unzip it and re-zip them.
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     zf.write(segments_path, 'trail_segments.geojson')
+    
+    trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
+    zf.write(trailheads_path, 'trailheads.geojson')
     
     # Download the named trails file
     named_trails_path = os.path.join(opentrails_dir, 'named_trails.csv')

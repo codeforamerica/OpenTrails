@@ -33,110 +33,69 @@
     {% include "headline-converter.html" %}
     <div class="layout-semibreve semibreve-reduced">
         <div class="file-titles"  id="trailsegments-title">
-            <h4 class="current-file-title">Trail Segments</h4>
+            <h5 class="current-file-title">Trail Segments</h5>
             <h6 class="file-status-success">Complete</h6>
         </div>
         <div class="file-titles" id="trailheads-title">
-            <h4 class="other-file-title">Trailheads</h4>
-            <h6 class="coming-soon">coming soon</h6>
+            <h5 class="current-file-title">Trailheads</h5>
+            <h6>In Progress</h6>
         </div>
         <div class="file-titles" id="areas-title">
-            <h4 class="other-file-title">Areas</h4>
+            <h5 class="other-file-title">Areas</h5>
             <h6 class="coming-soon">Coming Soon</h6>
         </div>
     </div>
 
-    <ol class="steps-tracker" data-steps="5">
-        <li id="step1"class="step-done icon-checkmark h6">Upload
-            <br>Shapefiles
+    <ol class="steps-tracker" data-steps="7">
+        <li id="step1"class="step-done icon-checkmark st-text"><small>Upload
+            <br>segments shapefile</small>
         </li><!--
-     --><li id="step2" class="step-done icon-checkmark h6">Convert to
-            <br>trail_segments.geojson
+     --><li id="step2" class="step-done icon-checkmark st-text"><small>Convert to
+            <br>trail_segments.geojson</small>
         </li><!--
-     --><li id="step3" class="step-done icon-checkmark h6">Extract
-            <br>named_trails.csv</li><!--
-     --><li id="step4" class="step-done icon-checkmark h6">Create 
-            <br>stewards.csv</li><!--
-     --><li id="step5" class="step-active h6">Download 
-            <br>OpenTrails.zip</li>
+     --><li id="step3" class="step-done icon-checkmark st-text"><small>Extract
+            <br>named_trails.csv</small></li><!--
+     --><li id="step4" class="step-done icon-checkmark st-text"><small>Create
+            <br>stewards.csv</small></li><!--
+     --><li id="step5" class="step-active st-text"><small>Upload
+            <br>trailheads shapefile</small></li><!--
+     --><li id="step6" class="step-todo st-text"><small>Conver to
+            <br>trailheads.geojson</small></li><!--
+     --><li id="step7" class="step-todo st-text"><small>Download
+            <br>opentrails.zip</small></li>
     </ol>
 
-    <div class="slab-gray">
+    <div class="alert-success">
         <section class="layout-semibreve">
-            <div class="badge-heading">
-                <h3 class="badge-heading-h3-fix">Download your data in OpenTrails!</h3>
-            </div>
-            <br>
-            <a href="/datasets/{{ dataset.id }}/open-trails.zip" class="button">Download open-trails.zip</a>
-            <p>In the .zip file, you'll find the following files:</p>
-            <ul>
-                <li><code>trail_segments.geojson</code>, which contains your trail segment geometries</li>
-                <li><code>named_trails.csv</code>which groups segments into trails, and describes their use.</li>
-                <li><code>stewards.csv</code>which describes your organization for visitors looking for more information.</li>
-            </ul>
+            <p><b>Success!</b> You've created a stewards.csv file.</p>
         </section>
     </div>
-
-    <section>
-        <div class="layout-chimney-invert">
-          <div class="layout-minim">
-            <h4>Come back soon to convert other data to OpenTrails.</h4>
-            <p>This tool is <a href="http://github.com/codeforamerica.org/plats">under active development</a>. In the coming weeks, functionality for converting your trailhead and area (park boundary) shapefiles into OpenTrails will be released.</p>
-
-            <h4>Ready for more? Enroll in the OpenTrails Course today.</h4>
-            <p>During this three week course, Code for America and OpenTrails advisors will walk your staff through each step of publishing and maintaining open data for your trail system.</p>
-
-            <p>We'll help you produce the data, establish clear internal process, and find the right OpenTrails apps or tools for your needs. The course consists of weekly webinars, "coursework" for your OpenTrails team, and ongoing technical assistance.</p>
-          </div>
-          <div class="layout-minim slab-dark-blue chimney">
-            <h3>Enroll now in the OpenTrails Course, beginning August 6th. Space is limited.</h3>
-            <form class="sign-up" action="https://codeforamerica.wufoo.com/forms/z1jk38le1dysfvv/#public" autocomplete="off" enctype="multipart/form-data" method="post" novalidate="">
-              <ul class="list-form">
-                <li id="foli15" class="notranslate form-field">
-                  <label class="desc" id="title15" for="Field15">
-                  Name
-                  </label>
-                  <div>
-                    <input id="Field15" name="Field15" type="text" class="field text medium" value="" maxlength="255" tabindex="1" onkeyup=""/>
-                  </div>
-                </li>
-                <li id="foli17" class="notranslate form-field">
-                  <label class="desc" id="title17" for="Field17">
-                  Your Preferred Title
-                  </label>
-                  <div>
-                    <input id="Field17" name="Field17" type="text" class="field text medium" value="" maxlength="255" tabindex="2" onkeyup=""/>
-                  </div>
-                </li>
-                <li id="foli21" class="notranslate form-field">
-                  <label class="desc" id="title21" for="Field21">
-                  City or Agency
-                  </label>
-                  <div>
-                    <input id="Field21" name="Field21" type="text" class="field text medium" value="" maxlength="255" tabindex="4" onkeyup=""/>
-                  </div>
-                </li>
-                <li id="foli24" class="notranslate form-field">
-                  <label class="desc" id="title24" for="Field24">
-                    State
-                  </label>
-                  <div>
-                    <input id="Field24" name="Field24" type="text" class="field text medium" value="" maxlength="255" tabindex="5" onkeyup=""/>
-                  </div>
-                </li>
-                <li id="foli26" class="notranslate form-field">
-                  <label class="desc" id="title26" for="Field26">
-                    Email
-                  </label>
-                  <div>
-                    <input id="Field26" name="Field26" type="email" spellcheck="false" class="field text medium" value="" maxlength="255" tabindex="6" /> 
-                  </div>
-                </li>
-                  <button class="button">Submit</button>
-                  <input id="idstamp" type="hidden" name="idstamp" value="KHrPZnNTvj9RHvqFq8Hfbyb7+Em3WAjEj5ECsWJAgKQ=">
-              </ul>
+    <div class="slab-gray">
+        <div class="layout-semibreve">
+            <div class="badge-heading badge-blue">
+                <h3 class="h3 badge-heading-h3-fix">Upload your trailheads data.</h3>
+            </div>
+            <form action="/datasets/{{ dataset.id }}/upload-trailheads" method=post enctype=multipart/form-data>
+            <p>
+                <input type=file name=file>
+                <input type=submit value=Upload>
+            </p>
             </form>
-              <small>Code for America staff will respond with details about the course, and whether or not space is available in the August cohort.</small>
-          </div>
+            <small>Note: data uploads make take a minute on poor connections.</small>
         </div>
-    </section>
+    </div>
+    <div class="layout-semibreve">
+        <h4>ZIP up your shapefile</h4>
+        <p>Upload a <b>zipped</b> shapefile that describes your trail system. This data should be a 'polyline' shapefile of features that represent the actual paths your trails take.</p>
+        <ul>
+            <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+            <li>.shp</li>
+            <li>.shx</li>
+            <li>.dbf</li>
+            <li>.prj</li>
+        </ul>
+        <br>
+        <h4>Looking for more guidance?</h4>
+        <p>If you are unsure as to whether your shapefile will be succesffuly transformed using this converter, please refer to this <a href="https://docs.google.com/a/codeforamerica.org/document/d/1tZQRaHh76dP-t2_KhMR9zT2DktuOGwRjCAfvHU9_Tpg/edit">Guidance for Preparing Shapefile data.</a></p>
+        <p>Of course, it can also be helpful to refer to the <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">Technical Draft of the OpenTrails Specification</a> itself.</p>
+    </div>
