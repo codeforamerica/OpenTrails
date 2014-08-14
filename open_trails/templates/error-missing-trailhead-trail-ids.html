@@ -33,8 +33,8 @@
 	<body>
 		{% include "headline-converter.html" %}
 		<section class="layout-semibreve">
-			<h3>A determination as to whether "equestrain activities" are permitted is not required, but is strongly recommended.</h3>
-			<p>OpenTrails is designed to communicate to visitors not just where trails traverse and how they can be accessed, but also what activities are permissable. While not required to include this value, many consumers of OpenTrails data are interested in knowing whether certain acitivites are apporopriate.</p>
+			<h3>Trailheads are required to be associated with one or more trail. By definition, they provide visitors access to trails.</h3>
+			<p>OpenTrails is designed to communicate to visitors not just where trails traverse, but also how they can be accessed. This is accomplished primarily through the inclusion of trailheads. By definition, a trailhead provides access to one or more trial.</p>
 			<p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
 		</section>
 		<section class="layout-semibreve">
@@ -58,25 +58,19 @@
 						<td>
 							<b>Description</b>
 						</td>
-						<td>
-							<b>Values</b>
-						</td>
 					</tr>
 					<tr>
 						<td>
-							motor_vehicles
+							trail_ids
 						</td>
 						<td>
-							string-encoded boolean
+							string-encoded array
 						</td>
 						<td>
 							no
 						</td>
 						<td>
-							A strongly recommended determination of appropriate visitor use of this segment.
-						</td>
-						<td>
-							“yes” or “no”
+							An array of trail ids, each of which the trailhead provides access to.
 						</td>
 					</tr>
 				</tbody>

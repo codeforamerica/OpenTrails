@@ -33,8 +33,8 @@
 	<body>
 		{% include "headline-converter.html" %}
 		<section class="layout-semibreve">
-			<h3>A determination as to whether "equestrain activities" are permitted is not required, but is strongly recommended.</h3>
-			<p>OpenTrails is designed to communicate to visitors not just where trails traverse and how they can be accessed, but also what activities are permissable. While not required to include this value, many consumers of OpenTrails data are interested in knowing whether certain acitivites are apporopriate.</p>
+			<h3>The street address of the trailhead, if one exists.</h3>
+			<p>OpenTrails is designed to communicate to visitors not just where trails traverse and how they can be used, but also how they can be accessed. A street address or landmark description for each trailhead's location is not required, but is strongly recommended. Geocodable addresses that can be used for routing are preferred.</p>
 			<p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
 		</section>
 		<section class="layout-semibreve">
@@ -58,25 +58,19 @@
 						<td>
 							<b>Description</b>
 						</td>
-						<td>
-							<b>Values</b>
-						</td>
 					</tr>
 					<tr>
 						<td>
-							motor_vehicles
+							address
 						</td>
 						<td>
-							string-encoded boolean
+							string
 						</td>
 						<td>
 							no
 						</td>
 						<td>
-							A strongly recommended determination of appropriate visitor use of this segment.
-						</td>
-						<td>
-							“yes” or “no”
+							The street address of the Trailhead, if one exists. Geocodable addresses preferred.
 						</td>
 					</tr>
 				</tbody>

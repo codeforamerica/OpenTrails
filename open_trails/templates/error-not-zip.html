@@ -32,55 +32,24 @@
 <html>
 	<body>
 		{% include "headline-converter.html" %}
+
+	    <div class="alert-failure">
+	        <section class="layout-semibreve">
+			<h3>403 Error</h3>
+			<p>This converter only accepts .zip files, containing shapefile data.</p>
+	        </section>
+	    </div>
 		<section class="layout-semibreve">
-			<h3>A determination as to whether "equestrain activities" are permitted is not required, but is strongly recommended.</h3>
-			<p>OpenTrails is designed to communicate to visitors not just where trails traverse and how they can be accessed, but also what activities are permissable. While not required to include this value, many consumers of OpenTrails data are interested in knowing whether certain acitivites are apporopriate.</p>
-			<p>For more information, please review <a href="https://docs.google.com/a/codeforamerica.org/document/d/1KF8KAio-SqGHhh9oFY_KjfwIi3PePOHg7KfTSPh27fc/edit">the Open Trail System Specification (OpenTrails) in detail</a>.</p>
-		</section>
-		<section class="layout-semibreve">
-			<table>
-				<thead>
-				<tr>
-					<th colspan="5">Excerpt from the Open Trail System Specification</th>
-				</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>
-							<b>Field Name</b>
-						</td>
-						<td>
-							<b>Data Type</b>
-						</td>
-						<td>
-							<b>Required?</b>
-						</td>
-						<td>
-							<b>Description</b>
-						</td>
-						<td>
-							<b>Values</b>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							motor_vehicles
-						</td>
-						<td>
-							string-encoded boolean
-						</td>
-						<td>
-							no
-						</td>
-						<td>
-							A strongly recommended determination of appropriate visitor use of this segment.
-						</td>
-						<td>
-							“yes” or “no”
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<h3>Try again!</h3>
+            <p>Hit the back button, then upload a <b>zipped</b> shapefile that describes your trail system. This data should be a 'polyline' shapefile of features that represent the actual paths your trails take.</p>
+            <ul>
+                <p>As you probably know, a "shapefile" is actually a set of several files. To use this converter, we require the following files be included in a single zipped upload:</p>
+                <li>.shp</li>
+                <li>.shx</li>
+                <li>.dbf</li>
+                <li>.prj</li>
+            </ul>
+        </div>
 		</section>
 		{% include "script-olark.html" %}
 	</body>

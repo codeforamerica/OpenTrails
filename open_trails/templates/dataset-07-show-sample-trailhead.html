@@ -29,23 +29,21 @@
 </head>
 
 <body>
-
     {% include "headline-converter.html" %}
     <div class="layout-semibreve semibreve-reduced">
         <div class="file-titles"  id="trailsegments-title">
             <h5 class="current-file-title">Trail Segments</h5>
-            <h6>In Progress</h6>
+            <h6 class="file-status-success">Complete</h6>
         </div>
         <div class="file-titles" id="trailheads-title">
-            <h5 class="other-file-title">Trailheads</h5>
-            <h6 class="coming-soon">Up Next</h6>
+            <h5 class="current-file-title">Trailheads</h5>
+            <h6>In Progress</h6>
         </div>
         <div class="file-titles" id="areas-title">
             <h5 class="other-file-title">Areas</h5>
             <h6 class="coming-soon">Coming Soon</h6>
         </div>
     </div>
-
 
 <!-- Step Tracker  -->
     <ol class="steps-tracker" data-steps="7">
@@ -55,95 +53,51 @@
      --><li id="step2" class="step-done icon-checkmark st-text"><small>Convert to
             <br>trail_segments.geojson</small>
         </li><!--
-     --><li id="step3" class="step-active st-text"><small>Extract
+     --><li id="step3" class="step-done icon-checkmark st-text"><small>Extract
             <br>named_trails.csv</small></li><!--
-     --><li id="step4" class="step-todo st-text"><small>Create
+     --><li id="step4" class="step-done icon-checkmark st-text"><small>Create
             <br>stewards.csv</small></li><!--
-     --><li id="step5" class="step-todo st-text"><small>Upload
+     --><li id="step5" class="step-done icon-checkmark st-text"><small>Upload
             <br>trailheads shapefile</small></li><!--
-     --><li id="step6" class="step-todo st-text"><small>Conver to
+     --><li id="step6" class="step-active st-text"><small>Conver to
             <br>trailheads.geojson</small></li><!--
      --><li id="step7" class="step-todo st-text"><small>Download
             <br>opentrails.zip</small></li>
     </ol>
 
-
-    {% if transform_succeeded %}
     <div class="alert-success">
         <section class="layout-semibreve">
-            <p><b>Success!</b> We transformed your trail segment shapefile to "trail_segments.geojson".</p>
+            <p><b>Success!</b> You uploaded a valid trailhead shapefile.</p>
         </section>
     </div>
     <div class="slab-gray">
-        <div class="layout-semibreve">
+        <section class="layout-semibreve">
             <div class="badge-heading badge-blue">
-                <h3 class="badge-heading-h3-fix">Next: Extract "named trails" into a CSV.</h3>
+                <h3 class="badge-heading-h3-fix">Next: Review and convert your trailhead data.</h3>
             </div>
-            <form action="/datasets/{{ dataset.id }}/name-trails" method=post>
+            <form action="/datasets/{{ dataset.id }}/transform-trailheads" method=post>
                 <p>
-                    <button>Create named_trails.csv</button>
+                    <button>Ready? Convert it.</button>
                 </p>
             </form>
-        </div>
-    </div>
-    <section class="layout-semibreve">
-        <h4>Review the transformation.</h4>
-        <p>We were able to successfully transform the data you provided into <code>trail_segments.geojson</code>, an OpenTrails conformant file describing the geometry of your trail segments.</p>
-
-        <p>Review the sample data below (and compare it to your original, if you like), then let's move forward to the next step: extracting "named trails" from your segments, into a seperate file called <code>named_trails.csv</code>.</p>
-
-        <p>Every conversion to OpenTrails is different. Below you'll find warnings and error messages that reveal how we are handling the conversion process.</p> 
-
-        <p>For more information, click on the link in each message. You'll find a more detailed explanation, along with a reference to the relevant section of the Open Trail System Specification.</p>
-
-        <p>Still have questions? We're available to help.</p>
-    </section>
-    <div class="primary-content-line"></div>
-    {% else %}
-    <div class="alert-failure">
-        <section class="layout-semibreve">
-            <h4>We can't proceed with converting your data as is. Check the error messages below, and read about how you can get your data ready to convert.</h4>
         </section>
     </div>
-    {% endif %}
-
     <section class="layout-semibreve">
-        <h4>Feedback about your data</h4>
-        {% include "messages-list.html" %}
-    </section>
-    <section class="layout-semibreve">
+        <h4>Review your uploaded data.</h4>
+        <p>You've uploaded a shapefile that contains the point data we need to get started with the conversion.</p>
 
-        <table id="transformed-sample">
-            <thead>
-                <tr>
-                    <th colspan="10">Sample Transformed Segment Data</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><b>Field Name</b></td>
-                    {% for feature in transformed_features %}
-                        <td><b>Sample Transformed Value</b></td>
-                    {% endfor %}
-                </tr>
-                {% for key in transformed_keys %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        {% for feature in transformed_features %}
-                            <td>{{ feature.properties[key] }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <p>Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, along with a few sample values.</p>
     </section>
+
+    <div class="primary-content-line"></div>
 
     <section class="layout-semibreve">
         <table id="original-sample">
             <thead>
                 <tr>
-                    <th colspan="5">Sample of Original Segment Data</th>
+                    <th colspan="5">A Sample of Your Data</th>
                 </tr>
+
             </thead>
             <tbody>
                 <tr>
@@ -162,6 +116,7 @@
                 {% endfor %}
             </tbody>
         </table>
+
     </section>
 
     {% include "script-olark.html" %}

@@ -1,6 +1,6 @@
 from os.path import exists, basename
 from csv import DictReader
-from json import load
+from json import load, dumps
 
 from shapely.geometry import shape
 
@@ -152,10 +152,13 @@ def _check_required_boolean_field(messages, field, dictionary, table_name):
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('error', message_type, message_text))
 
-    elif dictionary[field] not in ('yes', 'no', None):
-        found_value = dictionary[field]
-        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
-        messages.append(('error', message_type, message_text))
+    else:
+        value = dictionary[field].lower() if (dictionary[field] is not None) else None
+    
+        if value not in ('yes', 'no', None):
+            found_value = dictionary[field]
+            message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
+            messages.append(('error', message_type, message_text))
 
 def _check_optional_boolean_field(messages, field, dictionary, table_name):
     ''' Find and note missing or badly-typed optional boolean fields.
@@ -167,10 +170,13 @@ def _check_optional_boolean_field(messages, field, dictionary, table_name):
         message_text = 'Optional {0} field "{1}" is missing.'.format(table_name, field)
         messages.append(('warning', message_type, message_text))
 
-    elif dictionary[field] not in ('yes', 'no', None):
-        found_value = dictionary[field]
-        message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, repr(found_value))
-        messages.append(('error', message_type, message_text))
+    else:
+        value = dictionary[field].lower() if (dictionary[field] is not None) else None
+    
+        if value not in ('yes', 'no', None):
+            found_value = dictionary[field]
+            message_text = '{0} "{1}" field is not an allowed value: {2}.'.format(title_name, field, dumps(found_value))
+            messages.append(('error', message_type, message_text))
 
 def check_trail_segments(msgs, path):
     '''
@@ -233,7 +239,7 @@ def check_trailheads(msgs, path):
     for feature in features:
         properties = feature['properties']
         
-        for field in ('name', 'trail_ids', 'steward_ids'):
+        for field in ('name', 'trail_ids', 'steward_id'):
             _check_required_string_field(msgs, field, properties, 'trailheads')
 
         for field in ('address', 'area_id'):

@@ -32,6 +32,22 @@
   color: white;
 }
 
+/* less margins for our Pimary CTA */
+
+.slab-gray .layout-semibreve {
+  padding: 1em 2%;
+}
+
+/* Alterations to default alert styles, for success feedback banners */
+
+.alert-success {
+  margin: 0;
+}
+
+.alert-success .layout-semibreve {
+  padding: 1em 2%;
+}
+
 /* Bottom border for primary content on each page */
 
 .primary-content-line {
@@ -77,8 +93,9 @@
   vertical-align: middle;
 }
 
-.file-titles h4 {
-  margin-top: 1em;
+.file-titles h5 {
+  margin-top: .5em;
+  margin-bottom: 0;
 }
 
 .file-titles .other-file-title {
@@ -115,25 +132,34 @@
 
 /* Progress Tracker */
 .steps-tracker {
+  width: 100%;
   margin: 0 auto;
   padding: 0;
   list-style: none;
 }
+
+/* Validator list item marigns */
+ul .alert-success {
+  margin: 1em 0;
+}
+
 
 /* We need to specify the width for different numbers of steps*/
 
 .steps-tracker[data-steps="4"] li { width: 25%; }
 .steps-tracker[data-steps="5"] li { width: 20%; }
 .steps-tracker[data-steps="6"] li { width: 16%; }
+.steps-tracker[data-steps="7"] li { width: 14.285%;}
+.steps-tracker[data-steps="8"] li { width: 12.5%; }
 
 .steps-tracker li {
   display: inline;
   list-style: none;
   display: inline-table;
   text-align: center;
-  line-height: 3em;
+  line-height: 1.2em;
   padding-top: 1em;
-  margin: 2em 0 4em 0;
+  margin: 2em 0 2em 0;
   height: 3em;
 }
 
@@ -154,6 +180,9 @@
 
 
 /* Checkbox icons for progress bar */
+.st-text {
+  font-size: 12px;
+}
 
 .steps-tracker li:before {
     position: relative;
@@ -206,6 +235,21 @@
 #step5.step-active:before,
 #step5.step-todo:before {
   content: "\35";
+}
+
+#step6.step-active:before,
+#step6.step-todo:before {
+  content: "\36";
+}
+
+#step7.step-active:before,
+#step7.step-todo:before {
+  content: "\37";
+}
+
+#step8.step-active:before,
+#step8.step-todo:before {
+  content: "\38";
 }
 
 /* Form widths for stewardanization Section */
