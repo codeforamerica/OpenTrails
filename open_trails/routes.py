@@ -295,7 +295,7 @@ def name_trails(dataset_id):
         writer = csv.writer(named_trails_file)
         writer.writerow(cols)
         for row in named_trails:
-            writer.writerow([row[c] for c in cols])
+            writer.writerow([(row[c] or '').encode('utf8') for c in cols])
 
     datastore.upload(named_trails_path)
 
@@ -335,7 +335,7 @@ def create_steward(dataset_id):
         cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
         writer = csv.writer(stewards_file)
         writer.writerow(steward_fields)
-        writer.writerow(steward_values)
+        writer.writerow([(v or '').encode('utf8') for v in steward_values])
 
     datastore.upload(stewards_path)
 
