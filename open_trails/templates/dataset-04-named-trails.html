@@ -31,21 +31,6 @@
 
 <body>
     {% include "headline-converter.html" %}
-    <div class="layout-semibreve semibreve-reduced">
-        <div class="file-titles"  id="trailsegments-title">
-            <h5 class="current-file-title">Trail Segments</h5>
-            <h6>In Progress</h6>
-        </div>
-        <div class="file-titles" id="trailheads-title">
-            <h5 class="other-file-title">Trailheads</h5>
-            <h6 class="coming-soon">Up Next</h6>
-        </div>
-        <div class="file-titles" id="areas-title">
-            <h5 class="other-file-title">Areas</h5>
-            <h6 class="coming-soon">Coming Soon</h6>
-        </div>
-    </div>
-
 
 <!-- Step Tracker  -->
     <ol class="steps-tracker" data-steps="7">
@@ -67,14 +52,12 @@
             <br>opentrails.zip</small></li>
     </ol>
 
-    <div class="alert-success">
-        <section class="layout-semibreve">
-            <p><b>Success!</b> We created a "named_trails.csv" file from your trail segment data.</p>
-        </section>
-    </div>
     <div class="slab-gray">
         <section class="layout-chimney-invert">
             <div class="layout-minim">
+                <div class="alert-success">
+                    <b>Success!</b> We created a "named_trails.csv" file from your trail segment data.
+                </div>
                 <div class="badge-heading badge-blue">
                     <h3>Next: Create your stewards.csv file.</h3>
                 </div>

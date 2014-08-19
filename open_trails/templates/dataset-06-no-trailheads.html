@@ -26,9 +26,11 @@
 
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 
 <body>
+
     {% include "headline-converter.html" %}
 
 <!-- Step Tracker  -->
@@ -43,66 +45,31 @@
             <br>named_trails.csv</small></li><!--
      --><li id="step4" class="step-done icon-checkmark st-text"><small>Create
             <br>stewards.csv</small></li><!--
-     --><li id="step5" class="step-done icon-checkmark st-text"><small>Upload
+     --><li id="step5" class="step-todo st-text"><small>Upload
             <br>trailheads shapefile</small></li><!--
-     --><li id="step6" class="step-active st-text"><small>Conver to
+     --><li id="step6" class="step-todo st-text"><small>Conver to
             <br>trailheads.geojson</small></li><!--
-     --><li id="step7" class="step-todo st-text"><small>Download
+     --><li id="step7" class="step-active st-text"><small>Download
             <br>opentrails.zip</small></li>
     </ol>
 
     <div class="slab-gray">
         <section class="layout-semibreve">
             <div class="alert-success">
-                <b>Success!</b> You uploaded a valid trailhead shapefile.
+                <b>You succesfully skipped the trailhead upload and transform process. Download the rest of your data now!</p>
             </div>
-            <div class="badge-heading badge-blue">
-                <h3 class="badge-heading-h3-fix">Next: Review and convert your trailhead data.</h3>
+            <div class="badge-heading">
+                <h3 class="badge-heading-h3-fix">Download your OpenTrails data.</h3>
             </div>
-            <form action="/datasets/{{ dataset.id }}/transform-trailheads" method=post>
-                <p>
-                    <button>Ready? Convert it.</button>
-                </p>
-            </form>
+            <br>
+            <a href="/datasets/{{ dataset.id }}/open-trails.zip" class="button">Download open-trails.zip</a>
+            <p>In the .zip file, you'll find the following files:</p>
+            <ul>
+                <li><code>trail_segments.geojson</code>, which contains your trail segment geometries</li>
+                <li><code>named_trails.csv</code>which groups segments into trails, and describes their use.</li>
+                <li><code>stewards.csv</code>which describes your organization for visitors looking for more information.</li>
+                <li><code>trailheads.geojson</code>, which contains your trailhead geometries</li>
+            </ul>
         </section>
     </div>
-    <section class="layout-semibreve">
-        <h4>Review your uploaded data.</h4>
-        <p>You've uploaded a shapefile that contains the point data we need to get started with the conversion.</p>
-
-        <p>Before we move forward, review the sample data below. We've included all of the field names from the data you uploaded, along with a few sample values.</p>
-    </section>
-
-    <div class="primary-content-line"></div>
-
-    <section class="layout-semibreve">
-        <table id="original-sample">
-            <thead>
-                <tr>
-                    <th colspan="5">A Sample of Your Data</th>
-                </tr>
-
-            </thead>
-            <tbody>
-                <tr>
-                    <td><b>Field Name</b></td>
-                    {% for feature in uploaded_features %}
-                        <td><b>Sample Value</b></td>
-                    {% endfor %}
-                </tr>
-                {% for key in uploaded_keys %}
-                    <tr>
-                        <td>{{ key }}</td>
-                        {% for feature in uploaded_features %}
-                            <td>{{ feature.properties[key] }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-    </section>
-
-    {% include "script-olark.html" %}
 </body>
-</html>
