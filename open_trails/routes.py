@@ -350,8 +350,16 @@ def view_stewards(dataset_id):
     dataset = get_dataset(datastore, dataset_id)
     if not dataset:
         return make_response("No Dataset Found", 404)
-            
+
     return render_template('dataset-05-stewards.html', dataset=dataset)
+
+@app.route('/datasets/<dataset_id>/no-trailheads', methods=['POST', 'GET'])
+def no_trailheads(dataset_id):
+    datastore = make_datastore(app.config['DATASTORE'])
+    dataset = get_dataset(datastore, dataset_id)
+    if not dataset:
+        return make_response("No Dataset Found", 404)
+    return render_template('dataset-06-no-trailheads.html', dataset=dataset)
 
 @app.route('/datasets/<dataset_id>/upload-trailheads', methods=['POST'])
 def upload_trailheads(dataset_id):
