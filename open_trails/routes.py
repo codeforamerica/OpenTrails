@@ -38,7 +38,7 @@ def check_dataset():
     # Make a new dataset object
     dataset = Dataset(id)
     dataset.datastore = make_datastore(app.config['DATASTORE'])
-    
+
     # Make local folders for dataset
     try:
         os.makedirs(dataset.id + "/uploads")
@@ -73,7 +73,7 @@ def new_dataset():
     # dataset_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
     dataset = Dataset(id)
     dataset.datastore = make_datastore(app.config['DATASTORE'])
-    
+
     # Make local folders for dataset
     try:
         os.makedirs(dataset.id + "/uploads")
@@ -91,7 +91,7 @@ def new_dataset():
     #     writer = csv.writer(csvfile)
     #     writer.writerow(["name","id","url","phone","address","publisher"])
     #     writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
-    
+
     # # Upload .valid to datastore
     dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
     return redirect('/datasets/' + dataset.id)
@@ -106,7 +106,7 @@ def upload(dataset_id):
 
     # Check that they uploaded a .zip file
     if request.files['file'] and allowed_file(request.files['file'].filename):
-        
+
         # Save zip file to disk
         # /blahblahblah/uploads/trail-segments.zip
         upload_dir = os.path.join(dataset_id, 'uploads')
@@ -135,7 +135,7 @@ def upload(dataset_id):
 
         # Upload .geojson.zip file to datastore
         datastore.upload(geojsonfilepath + ".zip")
-        
+
         # Clean up after ourselves.
         shutil.rmtree(dataset_id)
 
@@ -156,7 +156,7 @@ def show_sample_segment(dataset_id):
         return make_response("No dataset Found", 404)
 
     features = get_sample_segment_features(dataset)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
@@ -197,7 +197,7 @@ def transform_segments(dataset_id):
     opentrails_segments_file = open(opentrails_segments_path ,'w')
     opentrails_segments_file.write(json.dumps(opentrails_segments, sort_keys=True))
     opentrails_segments_file.close()
-    
+
     transform_messages_path = dataset.id + "/opentrails/segments-messages.json"
     with open(transform_messages_path, 'w') as file:
         json.dump(messages, file)
@@ -208,12 +208,12 @@ def transform_segments(dataset_id):
     # Upload transformed segments and messages
     datastore.upload(opentrails_segments_path + ".zip")
     datastore.upload(transform_messages_path)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/transformed-segments', code=303)
-        
+
 @app.route('/datasets/<dataset_id>/transformed-segments')
 def transformed_segments(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
@@ -224,7 +224,7 @@ def transformed_segments(dataset_id):
     # Download the original segments file
     uploaded_features = get_sample_segment_features(dataset)
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
-    
+
     # Download the transformed segments file
     opentrails_dir = os.path.join(dataset.id, 'opentrails')
     if not os.path.exists(opentrails_dir):
@@ -237,11 +237,11 @@ def transformed_segments(dataset_id):
     transformed_segments = json.load(open(segments_path))
     transformed_features = transformed_segments['features'][:3]
     transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
-    
+
     # Download the transformed segments messages file
     transformed_segments_messages = dataset.id + '/opentrails/segments-messages.json'
     datastore.download(transformed_segments_messages)
-    
+
     with open(transformed_segments_messages) as f:
         data = json.load(f)
         try:
@@ -249,9 +249,9 @@ def transformed_segments(dataset_id):
         except ValueError:
             # Old stored format.
             messages = [(type, None, words) for (type, words) in data]
-    
+
     message_types = [message[0] for message in messages]
-    
+
     vars = dict(
         dataset = dataset,
         messages = messages,
@@ -261,12 +261,12 @@ def transformed_segments(dataset_id):
         transformed_keys = transformed_keys,
         transform_succeeded = bool('error' not in message_types)
         )
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
     return render_template('dataset-03-transformed-segments.html', **vars)
-        
+
 @app.route('/datasets/<dataset_id>/name-trails', methods=['POST'])
 def name_trails(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
@@ -284,10 +284,10 @@ def name_trails(dataset_id):
     # Unzip it
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     transformed_segments = json.load(open(segments_path))
-    
+
     # Generate a list of (name, ids) tuples
     named_trails = make_name_trails(transformed_segments['features'])
-    
+
     named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
 
     with open(named_trails_path, 'w') as named_trails_file:
@@ -296,14 +296,14 @@ def name_trails(dataset_id):
         writer.writerow(cols)
         for row in named_trails:
             writer.writerow([row[c] for c in cols])
-    
+
     datastore.upload(named_trails_path)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/named-trails', code=303)
-            
+
 @app.route('/datasets/<dataset_id>/named-trails')
 def named_trails(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
@@ -319,13 +319,13 @@ def create_steward(dataset_id):
     dataset = get_dataset(datastore, dataset_id)
     if not dataset:
         return make_response("No Dataset Found", 404)
-    
+
     steward_fields = 'name', 'id', 'url', 'phone', 'address', 'publisher', 'license'
     steward_values = [request.form.get(f, None) for f in steward_fields]
 
     steward_values[steward_fields.index('id')] = '0' # This is assigned in segments_transform()
     steward_values[steward_fields.index('publisher')] = 'no' # Better safe than sorry
-        
+
     opentrails_dir = os.path.join(dataset.id, 'opentrails')
     if not os.path.exists(opentrails_dir):
         os.makedirs(opentrails_dir)
@@ -336,9 +336,9 @@ def create_steward(dataset_id):
         writer = csv.writer(stewards_file)
         writer.writerow(steward_fields)
         writer.writerow(steward_values)
-    
+
     datastore.upload(stewards_path)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
@@ -362,7 +362,7 @@ def upload_trailheads(dataset_id):
 
     # Check that they uploaded a .zip file
     if request.files['file'] and allowed_file(request.files['file'].filename):
-        
+
         # Save zip file to disk
         # /blahblahblah/uploads/trail-trailheads.zip
         upload_dir = os.path.join(dataset_id, 'uploads')
@@ -391,7 +391,7 @@ def upload_trailheads(dataset_id):
 
         # Upload .geojson.zip file to datastore
         datastore.upload(geojsonfilepath + ".zip")
-        
+
         # Clean up after ourselves.
         shutil.rmtree(dataset_id)
 
@@ -412,7 +412,7 @@ def show_sample_trailhead(dataset_id):
         return make_response("No dataset Found", 404)
 
     features = get_sample_trailhead_features(dataset)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
@@ -453,7 +453,7 @@ def transform_trailheads(dataset_id):
     opentrails_trailheads_file = open(opentrails_trailheads_path ,'w')
     opentrails_trailheads_file.write(json.dumps(opentrails_trailheads, sort_keys=True))
     opentrails_trailheads_file.close()
-    
+
     transform_messages_path = dataset.id + "/opentrails/trailheads-messages.json"
     with open(transform_messages_path, 'w') as file:
         json.dump(messages, file)
@@ -464,12 +464,12 @@ def transform_trailheads(dataset_id):
     # Upload transformed trailheads and messages
     datastore.upload(opentrails_trailheads_path + ".zip")
     datastore.upload(transform_messages_path)
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
     return redirect('/datasets/' + dataset.id + '/transformed-trailheads', code=303)
-        
+
 @app.route('/datasets/<dataset_id>/transformed-trailheads')
 def transformed_trailheads(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
@@ -480,7 +480,7 @@ def transformed_trailheads(dataset_id):
     # Download the original trailheads file
     uploaded_features = get_sample_trailhead_features(dataset)
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
-    
+
     # Download the transformed trailheads file
     opentrails_dir = os.path.join(dataset.id, 'opentrails')
     if not os.path.exists(opentrails_dir):
@@ -493,11 +493,11 @@ def transformed_trailheads(dataset_id):
     transformed_trailheads = json.load(open(trailheads_path))
     transformed_features = transformed_trailheads['features'][:3]
     transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
-    
+
     # Download the transformed trailheads messages file
     transformed_trailheads_messages = dataset.id + '/opentrails/trailheads-messages.json'
     datastore.download(transformed_trailheads_messages)
-    
+
     with open(transformed_trailheads_messages) as f:
         data = json.load(f)
         try:
@@ -505,9 +505,9 @@ def transformed_trailheads(dataset_id):
         except ValueError:
             # Old stored format.
             messages = [(type, None, words) for (type, words) in data]
-    
+
     message_types = [message[0] for message in messages]
-    
+
     vars = dict(
         dataset = dataset,
         messages = messages,
@@ -517,12 +517,12 @@ def transformed_trailheads(dataset_id):
         transformed_keys = transformed_keys,
         transform_succeeded = bool('error' not in message_types)
         )
-    
+
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
 
     return render_template('dataset-08-transformed-trailheads.html', **vars)
-        
+
 @app.route('/datasets/<dataset_id>/open-trails.zip')
 def download_opentrails_data(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
@@ -531,7 +531,7 @@ def download_opentrails_data(dataset_id):
         return make_response("No Dataset Found", 404)
 
     buffer = package_opentrails_archive(dataset)
-    
+
     return send_file(buffer, 'application/zip')
 
 @app.route('/datasets/<id>')
@@ -552,7 +552,7 @@ def existing_dataset(id):
     # # if steward.status == "transform segments":
     # #     # transform segments
     # #     return redirect("/stewards/"+steward.id+"/transform/segments")
-    
+
     # if steward.status == "show uploaded segments":
     #     sample_segment = get_sample_of_original_segments(steward)
 
@@ -597,7 +597,7 @@ def validate_upload(dataset_id):
     # Check that they uploaded a .zip file
     if not request.files['file'] or not allowed_file(request.files['file'].filename):
         return make_response("Only .zip files allowed", 403)
-        
+
     # Save zip file to disk
     # /blahblahblah/uploads/trail-segments.zip
     zipfile_path = os.path.join(dataset_id, 'uploads/open-trails.zip')
@@ -606,29 +606,29 @@ def validate_upload(dataset_id):
     # Upload original file to S3
     datastore.upload(zipfile_path)
 
-    # 
+    #
     zf = zipfile.ZipFile(zipfile_path, 'r')
     dirname = os.path.dirname(zipfile_path)
     shapefile_path = None
-    
+
     names = ['trail_segments.geojson', 'named_trails.csv',
              'trailheads.geojson', 'stewards.csv', 'areas.geojson']
-    
+
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
-        
+
         if base in names:
             with open(os.path.join(dataset_id, 'uploads', base), 'w') as file:
                 file.write(zf.open(name).read())
 
     args = [os.path.join(dataset_id, 'uploads', base) for base in names]
     messages, succeeded = check_open_trails(*args)
-    
+
     with open(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'), 'w') as f:
         json.dump(messages, f)
-    
+
     datastore.upload(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'))
-    
+
     # Show sample data from original file
     return redirect('/checks/' + dataset_id + "/results", code=303)
 
@@ -644,12 +644,12 @@ def validated_results(dataset_id):
     # Download the transformed segments messages file
     validation_messages = dataset.id + '/opentrails/validate-messages.json'
     datastore.download(validation_messages)
-    
+
     with open(validation_messages) as f:
         messages = map(tuple, json.load(f))
-    
+
     message_types = [message[0] for message in messages]
-    
+
     return render_template('check-02-validated-opentrails.html', messages=messages)
 
 @app.route('/errors/<error_id>')
