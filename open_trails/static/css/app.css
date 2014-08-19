@@ -40,12 +40,18 @@
 
 /* Alterations to default alert styles, for success feedback banners */
 
-.alert-success {
-  margin: 0;
+.cta-form {
+  display: inline-block;
+}
+.cta-button {
+  display: inline-block;
 }
 
-.alert-success .layout-semibreve {
-  padding: 1em 2%;
+.alert-success {
+  display: inline-block;
+  float: right;
+  margin: 0;
+  padding: 0.725rem;
 }
 
 /* Bottom border for primary content on each page */
