@@ -51,26 +51,23 @@
             <br>opentrails.zip</small></li>
     </ol>
 
-    <div class="alert-success">
-        <section class="layout-semibreve">
-            <p><b>Success!</b> You've created a stewards.csv file.</p>
-        </section>
-    </div>
     <div class="slab-gray">
         <div class="layout-semibreve">
+            <div class="alert-success">
+                <b>Success!</b> You've created a stewards.csv file.
+            </div>
             <div class="badge-heading badge-blue">
                 <h3 class="h3 badge-heading-h3-fix">Upload your trailheads data.</h3>
             </div>
-            <form action="/datasets/{{ dataset.id }}/upload-trailheads" method=post enctype=multipart/form-data>
+            <form action="/datasets/{{ dataset.id }}/upload-trailheads" method=post enctype=multipart/form-data class="cta-form">
             <p>
                 <input type=file name=file>
                 <input type=submit value=Upload>
             </p>
             </form>
-            <form action="/datasets/{{ dataset.id }}/no-trailheads" method=post>
-                <input type=submit value=Skip>
+            <form action="/datasets/{{ dataset.id }}/no-trailheads" method=post class="cta-form">
+                <input type=submit value="No Trailhead data? Skip this step." class="button-alternative">
             </form>
-            <small>Note: data uploads make take a minute on poor connections.</small>
         </div>
     </div>
     <div class="layout-semibreve">

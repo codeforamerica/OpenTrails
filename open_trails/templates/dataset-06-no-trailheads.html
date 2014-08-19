@@ -45,22 +45,21 @@
             <br>named_trails.csv</small></li><!--
      --><li id="step4" class="step-done icon-checkmark st-text"><small>Create
             <br>stewards.csv</small></li><!--
-     --><li id="step5" class="step-done icon-checkmark st-text"><small>Upload
+     --><li id="step5" class="step-todo st-text"><small>Upload
             <br>trailheads shapefile</small></li><!--
-     --><li id="step6" class="step-done icon-checkmark st-text"><small>Conver to
+     --><li id="step6" class="step-todo st-text"><small>Conver to
             <br>trailheads.geojson</small></li><!--
      --><li id="step7" class="step-active st-text"><small>Download
             <br>opentrails.zip</small></li>
     </ol>
-    <div class="alert-success">
-        <section class="layout-semibreve">
-            <p><b>Success!</b> We transformed your trailheads shapefile to "trailheads.geojson".</p>
-        </section>
-    </div>
+
     <div class="slab-gray">
         <section class="layout-semibreve">
+            <div class="alert-success">
+                <b>You succesfully skipped the trailhead upload and transform process. Download the rest of your data now!</p>
+            </div>
             <div class="badge-heading">
-                <h3 class="badge-heading-h3-fix">Download your data in OpenTrails!</h3>
+                <h3 class="badge-heading-h3-fix">Download your OpenTrails data.</h3>
             </div>
             <br>
             <a href="/datasets/{{ dataset.id }}/open-trails.zip" class="button">Download open-trails.zip</a>

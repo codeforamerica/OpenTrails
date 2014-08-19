@@ -53,15 +53,15 @@
 
     <div class="slab-gray">
         <section class="layout-semibreve">
+            <div class="alert-success">
+                <b>Success!</b> You uploaded a valid shapefile.
+            </div>
             <div class="badge-heading badge-blue">
                 <h3 class="badge-heading-h3-fix">Next: Review and convert your segment data.</h3>
             </div>
             <form action="/datasets/{{ dataset.id }}/transform-segments" method=post class="cta-form">
                 <button class="cta-button">Ready? Convert it.</button>
             </form>
-            <div class="alert-success">
-                <b>Success!</b> You uploaded a valid shapefile.
-            </div>
         </section>
     </div>
     <section class="layout-semibreve">

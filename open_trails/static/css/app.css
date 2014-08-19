@@ -43,14 +43,14 @@
 .cta-form {
   display: inline-block;
 }
+
 .cta-button {
   display: inline-block;
 }
 
 .alert-success {
   display: inline-block;
-  float: right;
-  margin: 0;
+  margin: 1em 0;
   padding: 0.725rem;
 }
 
