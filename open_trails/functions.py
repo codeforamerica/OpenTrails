@@ -166,15 +166,20 @@ def package_opentrails_archive(dataset):
     transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
     transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
     dataset.datastore.download(transformed_segments_zip)
-    dataset.datastore.download(transformed_trailheads_zip)
+    # We moved this up from below the unzip and re-zip section
+    # If a user skips adding and converting trailheads, we want to give them the option
+    # to download a zip of their data thus far.
+    try:
+        dataset.datastore.download(transformed_trailheads_zip)
+        trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
+        zf.write(trailheads_path, 'trailheads.geojson')
+    except AttributeError:
+        pass
 
     # Unzip it and re-zip them.
     segments_path = unzip(transformed_segments_zip, '.geojson', [])
     zf.write(segments_path, 'trail_segments.geojson')
-    
-    trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
-    zf.write(trailheads_path, 'trailheads.geojson')
-    
+
     # Download the named trails file
     named_trails_path = os.path.join(opentrails_dir, 'named_trails.csv')
     dataset.datastore.download(named_trails_path)
