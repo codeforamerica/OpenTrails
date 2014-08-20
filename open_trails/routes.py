@@ -605,10 +605,18 @@ def validate_upload(dataset_id):
     # Check that they uploaded a .zip file
     if not request.files['file'] or not allowed_file(request.files['file'].filename):
         return make_response("Only .zip files allowed", 403)
+        
+    upload_dir = os.path.join(dataset_id, 'uploads')
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+
+    opentrails_dir = os.path.join(dataset_id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
 
     # Save zip file to disk
     # /blahblahblah/uploads/trail-segments.zip
-    zipfile_path = os.path.join(dataset_id, 'uploads/open-trails.zip')
+    zipfile_path = os.path.join(upload_dir, 'open-trails.zip')
     request.files['file'].save(zipfile_path)
 
     # Upload original file to S3
@@ -626,16 +634,19 @@ def validate_upload(dataset_id):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
 
         if base in names:
-            with open(os.path.join(dataset_id, 'uploads', base), 'w') as file:
+            with open(os.path.join(upload_dir, base), 'w') as file:
                 file.write(zf.open(name).read())
 
-    args = [os.path.join(dataset_id, 'uploads', base) for base in names]
+    args = [os.path.join(upload_dir, base) for base in names]
     messages, succeeded = check_open_trails(*args)
-
-    with open(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'), 'w') as f:
+    
+    with open(os.path.join(opentrails_dir, 'validate-messages.json'), 'w') as f:
         json.dump(messages, f)
-
-    datastore.upload(os.path.join(dataset_id, 'opentrails', 'validate-messages.json'))
+    
+    datastore.upload(os.path.join(opentrails_dir, 'validate-messages.json'))
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset_id)
 
     # Show sample data from original file
     return redirect('/checks/' + dataset_id + "/results", code=303)
@@ -649,15 +660,22 @@ def validated_results(dataset_id):
     if not dataset:
         return make_response("No dataset Found", 404)
 
+    opentrails_dir = os.path.join(dataset.id, 'opentrails')
+    if not os.path.exists(opentrails_dir):
+        os.makedirs(opentrails_dir)
+
     # Download the transformed segments messages file
-    validation_messages = dataset.id + '/opentrails/validate-messages.json'
+    validation_messages = os.path.join(opentrails_dir, 'validate-messages.json')
     datastore.download(validation_messages)
 
     with open(validation_messages) as f:
         messages = map(tuple, json.load(f))
 
     message_types = [message[0] for message in messages]
-
+    
+    # Clean up after ourselves.
+    shutil.rmtree(dataset_id)
+    
     return render_template('check-02-validated-opentrails.html', messages=messages)
 
 @app.route('/errors/<error_id>')
