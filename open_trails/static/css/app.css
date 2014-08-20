@@ -48,7 +48,7 @@
   display: inline-block;
 }
 
-.alert-success {
+.slab-gray .alert-success {
   display: inline-block;
   margin: 1em 0;
   padding: 0.725rem;
