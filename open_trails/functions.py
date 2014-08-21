@@ -15,10 +15,7 @@ def get_dataset(datastore, id):
     Creates a dataset object from the .valid file
     '''
     try:
-        upload_dir = os.path.join(id, 'uploads')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        valid_path = os.path.join(upload_dir, '.valid')
+        valid_path = os.path.join(id, 'uploads', '.valid')
         valid_file = datastore.read(valid_path)
     except AttributeError:
         return None
