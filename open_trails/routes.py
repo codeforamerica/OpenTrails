@@ -8,7 +8,8 @@ from functions import (
 from transformers import shapefile2geojson, segments_transform, trailheads_transform
 from validators import check_open_trails
 from flask import request, render_template, redirect, make_response, send_file
-import json, os, csv, zipfile, time, re, shutil
+import json, os, csv, zipfile, time, re, shutil, uuid
+from StringIO import StringIO
 
 @app.route('/')
 def index():
@@ -26,32 +27,18 @@ def datasets():
 @app.route('/check-dataset', methods=['POST'])
 def check_dataset():
     '''
-    '''
-    '''
     Create a unique url for this dataset to work under
     Create a folder on S3 using this url
     '''
-    # Create uuid
-    import uuid
-    id = str(uuid.uuid4())
-
     # Make a new dataset object
+    id = str(uuid.uuid4())
     dataset = Dataset(id)
     dataset.datastore = make_datastore(app.config['DATASTORE'])
-
-    # Make local folders for dataset
-    try:
-        os.makedirs(dataset.id + "/uploads")
-        os.makedirs(dataset.id + "/opentrails")
-    except OSError:
-        pass
-
+    
     # Write a verifying file to prove we created these folders
-    with open(os.path.join(dataset.id, 'uploads', '.valid'), "w") as validfile:
-        validfile.write(dataset.id)
+    validname = os.path.join(dataset.id, 'uploads', '.valid')
+    dataset.datastore.write(validname, StringIO(dataset.id))
 
-    # # Upload .valid to datastore
-    dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
     return redirect('/checks/' + dataset.id)
 
 @app.route('/new-dataset', methods=['POST'])
@@ -60,40 +47,15 @@ def new_dataset():
     Create a unique url for this dataset to work under
     Create a folder on S3 using this url
     '''
-
-    # Get info from form
-    # name, url = request.form['name'], request.form['url']
-    # id = make_id_from_url(url)
-
-    # Create uuid
-    import uuid
-    id = str(uuid.uuid4())
-
     # Make a new dataset object
-    # dataset_info = {"id":id, "name":name, "url":url, "phone":None, "address":None, "publisher":"yes"}
+    id = str(uuid.uuid4())
     dataset = Dataset(id)
     dataset.datastore = make_datastore(app.config['DATASTORE'])
-
-    # Make local folders for dataset
-    try:
-        os.makedirs(dataset.id + "/uploads")
-        os.makedirs(dataset.id + "/opentrails")
-    except OSError:
-        pass
-
+    
     # Write a verifying file to prove we created these folders
-    with open(os.path.join(dataset.id, 'uploads', '.valid'), "w") as validfile:
-        validfile.write(dataset.id)
+    validname = os.path.join(dataset.id, 'uploads', '.valid')
+    dataset.datastore.write(validname, StringIO(dataset.id))
 
-    # # Write a stewards.csv file
-    # stewards_info_filepath = os.path.join(steward.id, 'uploads', 'stewards.csv')
-    # with open(stewards_info_filepath, 'w') as csvfile:
-    #     writer = csv.writer(csvfile)
-    #     writer.writerow(["name","id","url","phone","address","publisher"])
-    #     writer.writerow([steward.name,steward.id,steward.url,steward.phone,steward.address,steward.publisher])
-
-    # # Upload .valid to datastore
-    dataset.datastore.upload(os.path.join(dataset.id, 'uploads', '.valid'))
     return redirect('/datasets/' + dataset.id)
 
 
