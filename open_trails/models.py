@@ -20,28 +20,6 @@ class Dataset:
         
         # for key in initial_data:
         #     setattr(self, key, initial_data[key])
-        
-
-    def get_status(self):
-        '''
-        Use the filelist from datastore to figure out how far along
-        this dataset is in the process.
-        '''
-
-        filelist = self.datastore.filelist(self.id)
-        # matching = [filename for filename in filelist if ".geojson.zip" in filename]
-
-        if not any(".geojson.zip" in filename for filename in filelist): 
-            self.status = "needs segments"
-
-        # If the original segments file has been uploaded
-        # But the transformed segments arent there
-        if any(".geojson.zip" in filename for filename in filelist):
-            if not self.id + "/opentrails/segments.geojson.zip" in filelist:
-                self.status = "show uploaded segments"
-
-        if self.id + "/opentrails/segments.geojson.zip" in filelist:
-            self.status = "show opentrails segments"
 
 class FilesystemDatastore:
 

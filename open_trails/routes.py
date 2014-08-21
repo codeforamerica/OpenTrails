@@ -555,32 +555,6 @@ def existing_dataset(id):
     dataset = get_dataset(datastore, id)
     if not dataset:
         return make_response("No dataset Found", 404)
-    # steward.get_status()
-
-    # # if steward.status == "transform segments":
-    # #     # transform segments
-    # #     return redirect("/stewards/"+steward.id+"/transform/segments")
-
-    # if steward.status == "show uploaded segments":
-    #     sample_segment = get_sample_of_original_segments(steward)
-
-    # if steward.status == "show opentrails segments":
-    #     sample_segment = get_sample_of_original_segments(steward)
-
-    #     # Get the segments.geojson.zip
-    #     # Download the transformed segments file
-    #     segments_zip = steward.id + "/opentrails/segments.geojson.zip"
-    #     datastore.download(segments_zip)
-
-    #     # Unzip it
-    #     zf = zipfile.ZipFile(segments_zip, 'r')
-    #     zf.extractall(os.path.split(segments_zip)[0])
-
-    #     segmentsfile = open(steward.id + "/opentrails/segments.geojson")
-    #     trasformed_segments = json.load(segmentsfile)
-    #     segmentsfile.close()
-    #     opentrails_sample_segment = {'type': 'FeatureCollection', 'features': []}
-    #     opentrails_sample_segment['features'].append(trasformed_segments['features'][0])
 
     # return render_template('index.html', steward = steward, sample_segment = sample_segment, opentrails_sample_segment = opentrails_sample_segment)
     return render_template('dataset-01-upload-segments.html', dataset=dataset)
