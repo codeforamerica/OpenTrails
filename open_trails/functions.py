@@ -97,24 +97,21 @@ def get_sample_of_original_segments(dataset):
     return sample_segment
 
 def get_sample_uploaded_features(dataset, zipped_geojson_name):
-    # Download the original segments file
-    upload_dir = os.path.join(dataset.id, 'uploads')
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-    segments_zip = os.path.join(upload_dir, zipped_geojson_name)
-    dataset.datastore.download(segments_zip)
-
-    # Unzip it
-    zf = zipfile.ZipFile(segments_zip, 'r')
-    zf.extractall(os.path.split(segments_zip)[0])
-
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/uploads/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/uploads/" + file)
-            original_segments = json.load(segmentsfile)
-            segmentsfile.close()
-            return original_segments['features'][:3]
+    '''
+    '''
+    zip_path = os.path.join(dataset.id, 'uploads', zipped_geojson_name)
+    zip_buffer = dataset.datastore.read(zip_path)
+    zf = zipfile.ZipFile(zip_buffer, 'r')
+    
+    # Search for a .geojson file
+    for name in zf.namelist():
+        _, ext = os.path.splitext(name)
+        
+        if ext == '.geojson':
+            # Return its first three features
+            gf = zf.open(name, 'r')
+            geojson = json.load(gf)
+            return geojson['features'][:3]
 
     return []
 

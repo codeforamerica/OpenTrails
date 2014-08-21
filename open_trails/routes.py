@@ -119,9 +119,6 @@ def show_sample_segment(dataset_id):
 
     features = get_sample_segment_features(dataset)
 
-    # Clean up after ourselves.
-    shutil.rmtree(dataset.id)
-
     keys = list(sorted(features[0]['properties'].keys()))
     args = dict(dataset=dataset, uploaded_features=features, uploaded_keys=keys)
     return render_template("dataset-02-show-sample-segment.html", **args)
@@ -382,9 +379,6 @@ def show_sample_trailhead(dataset_id):
         return make_response("No dataset Found", 404)
 
     features = get_sample_trailhead_features(dataset)
-
-    # Clean up after ourselves.
-    shutil.rmtree(dataset.id)
 
     keys = list(sorted(features[0]['properties'].keys()))
     args = dict(dataset=dataset, uploaded_features=features, uploaded_keys=keys)
