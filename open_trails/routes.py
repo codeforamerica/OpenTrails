@@ -3,7 +3,7 @@ from models import Dataset, make_datastore
 from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, compress, allowed_file,
     get_sample_segment_features, make_name_trails, package_opentrails_archive,
-    get_sample_trailhead_features
+    get_sample_trailhead_features, get_sample_transformed_trailhead_features
     )
 from transformers import shapefile2geojson, segments_transform, trailheads_transform
 from validators import check_open_trails
@@ -432,21 +432,12 @@ def transformed_trailheads(dataset_id):
     uploaded_keys = list(sorted(uploaded_features[0]['properties'].keys()))
 
     # Download the transformed trailheads file
-    opentrails_dir = os.path.join(dataset.id, 'opentrails')
-    if not os.path.exists(opentrails_dir):
-        os.makedirs(opentrails_dir)
-    transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
-    datastore.download(transformed_trailheads_zip)
-
-    # Unzip it
-    trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
-    transformed_trailheads = json.load(open(trailheads_path))
-    transformed_features = transformed_trailheads['features'][:3]
+    transformed_features = get_sample_transformed_trailhead_features(dataset)
     transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
 
     # Download the transformed trailheads messages file
-    transformed_trailheads_messages = dataset.id + '/opentrails/trailheads-messages.json'
-    data = json.load(datastore.read(transformed_trailheads_messages))
+    messages_path = os.path.join(dataset.id, 'opentrails', 'trailheads-messages.json')
+    data = json.load(datastore.read(messages_path))
 
     try:
         messages = [(type, id, words) for (type, id, words) in data]
@@ -465,9 +456,6 @@ def transformed_trailheads(dataset_id):
         transformed_keys = transformed_keys,
         transform_succeeded = bool('error' not in message_types)
         )
-
-    # Clean up after ourselves.
-    shutil.rmtree(dataset.id)
 
     return render_template('dataset-08-transformed-trailheads.html', **vars)
 

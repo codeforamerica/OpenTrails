@@ -73,10 +73,10 @@ def compress(input, output):
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
         myzip.write(input, os.path.split(input)[1])
 
-def get_sample_uploaded_features(dataset, zipped_geojson_name):
+def get_sample_features(dataset, zipped_geojson_name):
     '''
     '''
-    zip_path = os.path.join(dataset.id, 'uploads', zipped_geojson_name)
+    zip_path = os.path.join(dataset.id, zipped_geojson_name)
     zip_buffer = dataset.datastore.read(zip_path)
     zf = zipfile.ZipFile(zip_buffer, 'r')
     
@@ -93,10 +93,13 @@ def get_sample_uploaded_features(dataset, zipped_geojson_name):
     return []
 
 def get_sample_segment_features(dataset):
-    return get_sample_uploaded_features(dataset, 'trail-segments.geojson.zip')
+    return get_sample_features(dataset, 'uploads/trail-segments.geojson.zip')
 
 def get_sample_trailhead_features(dataset):
-    return get_sample_uploaded_features(dataset, 'trail-trailheads.geojson.zip')
+    return get_sample_features(dataset, 'uploads/trail-trailheads.geojson.zip')
+
+def get_sample_transformed_trailhead_features(dataset):
+    return get_sample_features(dataset, 'opentrails/trailheads.geojson.zip')
 
 def encode_list(items):
     '''
