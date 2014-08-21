@@ -1,5 +1,6 @@
 from open_trails import app
 import urlparse, os, urllib, boto, glob
+from StringIO import StringIO
 from boto.s3.key import Key
 
 class Dataset:
@@ -39,14 +40,20 @@ class FilesystemDatastore:
             with open(destination, 'w') as output:
                 output.write(input.read())
 
+    def read(self, filepath):
+        ''' Return a buffer for a single file.
+        '''
+        with open(os.path.join(self.dirpath, filepath), 'r') as input:
+            return StringIO(input.read())
+    
     def download(self, filepath):
         ''' Download a single file from datastore to local working directory.
         '''
         # Check if file already exists
         if not os.path.isfile(filepath):
-            with open(os.path.join(self.dirpath, filepath), 'r') as input:
-                with open(filepath, 'w') as output:
-                    output.write(input.read())
+            buffer = self.read(filepath)
+            with open(filepath, 'w') as output:
+                output.write(buffer.getvalue())
 
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
@@ -83,19 +90,20 @@ class S3Datastore:
         k.set_contents_from_filename(filepath)
         self.bucket.set_acl('public-read', k.key)
 
+    def read(self, filepath):
+        ''' Return a buffer for a single file.
+        '''
+        key = self.bucket.get_key(filepath)
+        return StringIO(key.get_contents_as_string())
+    
     def download(self, filepath):
         ''' Download a single file from S3 to local working directory.
         '''
         # Check if file already exists
         if not os.path.isfile(filepath):
-            key = self.bucket.get_key(filepath)
-            try:
-                dataset_id = filepath.split("/")[0]
-                os.makedirs(dataset_id + "/uploads")
-                os.makedirs(dataset_id + "/opentrails")
-            except OSError:
-                pass
-            key.get_contents_to_filename(filepath)
+            buffer = self.read(filepath)
+            with open(filepath, 'w') as output:
+                output.write(buffer.getvalue())
 
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
