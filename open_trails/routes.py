@@ -483,7 +483,7 @@ def download_opentrails_data(dataset_id):
 
     return send_file(buffer, 'application/zip')
 
-@app.route('/datasets/<id>')
+@app.route('/datasets/<id>/')
 def existing_dataset(id):
     '''
     Reads available files on S3 to figure out how far a dataset has gotten in the process
