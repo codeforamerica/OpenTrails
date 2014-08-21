@@ -27,18 +27,24 @@ class FilesystemDatastore:
     def __init__(self, dirpath):
         self.dirpath = dirpath
 
-    def upload(self, filepath):
-        ''' Upload a file to the datastore.
+    def write(self, filepath, buffer):
+        ''' Write a buffer for a single file.
         '''
         destination = os.path.join(self.dirpath, filepath)
+
         try:
             os.makedirs(os.path.dirname(destination))
         except OSError:
             pass
-        with open(filepath, 'r') as input:
-            # filepath example: "dataset/uploads/file.csv"
+        finally:
             with open(destination, 'w') as output:
-                output.write(input.read())
+                output.write(buffer.getvalue())
+    
+    def upload(self, filepath):
+        ''' Upload a file to the datastore.
+        '''
+        with open(filepath, 'r') as input:
+            self.write(filepath, StringIO(input.read()))
 
     def read(self, filepath):
         ''' Return a buffer for a single file.
@@ -82,13 +88,19 @@ class S3Datastore:
     #def __delete__(self):
     #    self.conn.close()
 
-    def upload(self, filepath):
-        ''' Upload a file to S3.
+    def write(self, filepath, buffer):
+        ''' Write a buffer for a single file.
         '''
         k = Key(self.bucket)
         k.key = filepath
-        k.set_contents_from_filename(filepath)
+        k.set_contents_from_string(buffer.getvalue())
         self.bucket.set_acl('public-read', k.key)
+    
+    def upload(self, filepath):
+        ''' Upload a file to S3.
+        '''
+        with open(filepath, 'r') as input:
+            self.write(filepath, StringIO(input.read()))
 
     def read(self, filepath):
         ''' Return a buffer for a single file.
