@@ -528,16 +528,16 @@ def validate_upload(dataset_id):
     if not os.path.exists(opentrails_dir):
         os.makedirs(opentrails_dir)
 
-    # Save zip file to disk
-    # /blahblahblah/uploads/trail-segments.zip
+    # Read zip data to buffer
+    zipfile_data = StringIO()
     zipfile_path = os.path.join(upload_dir, 'open-trails.zip')
-    request.files['file'].save(zipfile_path)
+    request.files['file'].save(zipfile_data)
 
-    # Upload original file to S3
-    datastore.upload(zipfile_path)
+    # Upload original file data to S3
+    datastore.write(zipfile_path, zipfile_data)
 
     #
-    zf = zipfile.ZipFile(zipfile_path, 'r')
+    zf = zipfile.ZipFile(zipfile_data, 'r')
     dirname = os.path.dirname(zipfile_path)
     shapefile_path = None
 
