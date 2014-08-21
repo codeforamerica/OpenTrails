@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from itertools import groupby, count
 from operator import itemgetter
 from StringIO import StringIO
+from tempfile import mkdtemp
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 
 from boto.s3.key import Key
@@ -47,11 +48,11 @@ def make_id_from_url(url):
 
 
 def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
-    ''' Unzip and return the path of a shapefile.
+    ''' Unzip and return the path of a shapefile in a temp directory.
     '''
     zf = zipfile.ZipFile(zipfile_path, 'r')
-    dirname = os.path.dirname(zipfile_path)
-    shapefile_path = None
+    dirname = mkdtemp(prefix='unzip-', suffix=search_ext)
+    foundfile_path = None
     
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
@@ -66,9 +67,9 @@ def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
                 f.write(zf.open(name).read())
             
             if ext == search_ext:
-                shapefile_path = unzipped_path
+                foundfile_path = unzipped_path
     
-    return shapefile_path
+    return foundfile_path
 
 def compress(input, output):
     '''Zips up a file
