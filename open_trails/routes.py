@@ -284,22 +284,15 @@ def create_steward(dataset_id):
 
     steward_values[steward_fields.index('id')] = '0' # This is assigned in segments_transform()
     steward_values[steward_fields.index('publisher')] = 'no' # Better safe than sorry
-
-    opentrails_dir = os.path.join(dataset.id, 'opentrails')
-    if not os.path.exists(opentrails_dir):
-        os.makedirs(opentrails_dir)
-    stewards_path = os.path.join(opentrails_dir, 'stewards.csv')
-
-    with open(stewards_path, 'w') as stewards_file:
-        cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
-        writer = csv.writer(stewards_file)
-        writer.writerow(steward_fields)
-        writer.writerow([(v or '').encode('utf8') for v in steward_values])
-
-    datastore.upload(stewards_path)
-
-    # Clean up after ourselves.
-    shutil.rmtree(dataset.id)
+    
+    file = StringIO()
+    cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
+    writer = csv.writer(file)
+    writer.writerow(steward_fields)
+    writer.writerow([(v or '').encode('utf8') for v in steward_values])
+    
+    stewards_path = os.path.join(dataset.id, 'opentrails', 'stewards.csv')
+    datastore.write(stewards_path, file)
 
     return redirect('/datasets/' + dataset.id + '/stewards', code=303)
 
