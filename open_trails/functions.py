@@ -19,15 +19,14 @@ def get_dataset(datastore, id):
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
         valid_path = os.path.join(upload_dir, '.valid')
-        datastore.download(valid_path)
+        valid_file = datastore.read(valid_path)
     except AttributeError:
         return None
-    with open(id + '/uploads/.valid', 'r') as validfile:
-        if validfile.read() == id:
-            dataset = Dataset(id)
-            dataset.datastore = datastore
-            return dataset
-
+    
+    if valid_file.read() == id:
+        dataset = Dataset(id)
+        dataset.datastore = datastore
+        return dataset
 
 def allowed_file(filename):
     return '.' in filename and \

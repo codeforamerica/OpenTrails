@@ -242,17 +242,16 @@ def name_trails(dataset_id):
 
     # Generate a list of (name, ids) tuples
     named_trails = make_name_trails(transformed_segments['features'])
+    
+    file = StringIO()
+    cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
+    writer = csv.writer(file)
+    writer.writerow(cols)
+    for row in named_trails:
+        writer.writerow([(row[c] or '').encode('utf8') for c in cols])
 
-    named_trails_path = os.path.join(dataset.id, 'opentrails/named_trails.csv')
-
-    with open(named_trails_path, 'w') as named_trails_file:
-        cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
-        writer = csv.writer(named_trails_file)
-        writer.writerow(cols)
-        for row in named_trails:
-            writer.writerow([(row[c] or '').encode('utf8') for c in cols])
-
-    datastore.upload(named_trails_path)
+    named_trails_path = os.path.join(dataset.id, 'opentrails', 'named_trails.csv')
+    datastore.write(named_trails_path, file)
 
     # Clean up after ourselves.
     shutil.rmtree(dataset.id)
