@@ -40,27 +40,12 @@ class FilesystemDatastore:
             with open(destination, 'w') as output:
                 output.write(buffer.getvalue())
     
-    def upload(self, filepath):
-        ''' Upload a file to the datastore.
-        '''
-        with open(filepath, 'r') as input:
-            self.write(filepath, StringIO(input.read()))
-
     def read(self, filepath):
         ''' Return a buffer for a single file.
         '''
         with open(os.path.join(self.dirpath, filepath), 'r') as input:
             return StringIO(input.read())
     
-    def download(self, filepath):
-        ''' Download a single file from datastore to local working directory.
-        '''
-        # Check if file already exists
-        if not os.path.isfile(filepath):
-            buffer = self.read(filepath)
-            with open(filepath, 'w') as output:
-                output.write(buffer.getvalue())
-
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''
@@ -96,27 +81,12 @@ class S3Datastore:
         k.set_contents_from_string(buffer.getvalue())
         self.bucket.set_acl('public-read', k.key)
     
-    def upload(self, filepath):
-        ''' Upload a file to S3.
-        '''
-        with open(filepath, 'r') as input:
-            self.write(filepath, StringIO(input.read()))
-
     def read(self, filepath):
         ''' Return a buffer for a single file.
         '''
         key = self.bucket.get_key(filepath)
         return StringIO(key.get_contents_as_string())
     
-    def download(self, filepath):
-        ''' Download a single file from S3 to local working directory.
-        '''
-        # Check if file already exists
-        if not os.path.isfile(filepath):
-            buffer = self.read(filepath)
-            with open(filepath, 'w') as output:
-                output.write(buffer.getvalue())
-
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''
