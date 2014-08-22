@@ -317,45 +317,39 @@ def upload_trailheads(dataset_id):
     datastore = make_datastore(app.config['DATASTORE'])
 
     # Check that they uploaded a .zip file
-    if request.files['file'] and allowed_file(request.files['file'].filename):
-
-        # Save zip file to disk
-        # /blahblahblah/uploads/trail-trailheads.zip
-        upload_dir = os.path.join(dataset_id, 'uploads')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        zipfilepath = os.path.join(upload_dir, 'trail-trailheads.zip')
-        request.files['file'].save(zipfilepath)
-
-        # Upload original file to S3
-        datastore.upload(zipfilepath)
-
-        # Unzip orginal file
-        shapefilepath = unzip(zipfilepath)
-
-        # Get geojson data from shapefile
-        geojson = shapefile2geojson(shapefilepath)
-
-        # Write original geojson to file
-        geojsonfilepath = zipfilepath.replace('.zip', '.geojson')
-        geojsonfile = open(geojsonfilepath,'w')
-        geojsonfile.write(json.dumps(geojson, sort_keys=True))
-        geojsonfile.close()
-
-        # Compress geojson file
-        compress(geojsonfilepath, geojsonfilepath + ".zip")
-
-        # Upload .geojson.zip file to datastore
-        datastore.upload(geojsonfilepath + ".zip")
-
-        # Clean up after ourselves.
-        shutil.rmtree(dataset_id)
-
-        # Show sample data from original file
-        return redirect('/datasets/' + dataset_id + "/sample-trailhead")
-
-    else:
+    if not request.files['file'] or not allowed_file(request.files['file'].filename):
         return make_response("Only .zip files allowed", 403)
+
+    # Upload original file to S3
+    zip_file = StringIO(request.files['file'].read())
+    zip_path = os.path.join(dataset_id, 'uploads', 'trail-trailheads.zip')
+    datastore.write(zip_path, zip_file)
+
+    # Unzip orginal file
+    shapefile_path = unzip(zip_file)
+
+    # Get geojson data from shapefile
+    geojson = shapefile2geojson(shapefile_path)
+
+    # Write geojson to file in a temporary directory
+    geojson_dir = mkdtemp(prefix='geojson-')
+    geojson_base, _ = os.path.splitext(os.path.basename(zip_path))
+    geojson_path = os.path.join(geojson_dir, geojson_base + '.geojson')
+    
+    with open(geojson_path, 'w') as file:
+        json.dump(geojson, file, sort_keys=True)
+    
+    # Compress geojson file
+    geojson_zip = StringIO()
+    compress(geojson_path, geojson_zip)
+    shutil.rmtree(geojson_dir)
+    
+    # Upload .geojson.zip file to datastore
+    zip_base, _ = os.path.splitext(zip_path)
+    datastore.write(zip_base + '.geojson.zip', geojson_zip)
+
+    # Show sample data from original file
+    return redirect('/datasets/' + dataset_id + "/sample-trailhead")
 
 @app.route('/datasets/<dataset_id>/sample-trailhead')
 def show_sample_trailhead(dataset_id):
@@ -409,6 +403,7 @@ def transform_trailheads(dataset_id):
     # zip up transformed trailheads
     opentrails_trailheads_zip = StringIO()
     compress(opentrails_trailheads_path, opentrails_trailheads_zip)
+    shutil.rmtree(opentrails_dir)
 
     # Upload transformed trailheads and messages
     zip_path = os.path.join(dataset.id, 'opentrails', 'trailheads.geojson.zip')
