@@ -10,6 +10,7 @@ from validators import check_open_trails
 from flask import request, render_template, redirect, make_response, send_file
 import json, os, csv, zipfile, time, re, shutil, uuid
 from StringIO import StringIO
+from tempfile import mkdtemp
 
 @app.route('/')
 def index():
@@ -387,36 +388,31 @@ def transform_trailheads(dataset_id):
 
     # Download the original trailheads file
     upload_dir = os.path.join(dataset.id, 'uploads')
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-    trailheads_zip = os.path.join(upload_dir, 'trail-trailheads.geojson.zip')
-    datastore.download(trailheads_zip)
+    trailheads_name = os.path.join(upload_dir, 'trail-trailheads.geojson.zip')
+    trailheads_zip = datastore.read(trailheads_name)
 
     # Unzip it
     trailheads_path = unzip(trailheads_zip, '.geojson', [])
     original_trailheads = json.load(open(trailheads_path))
     messages, opentrails_trailheads = trailheads_transform(original_trailheads, dataset)
 
-    # Write files from transformed trailheads
-    opentrails_dir = os.path.join(dataset.id, 'opentrails')
-    if not os.path.exists(opentrails_dir):
-        os.makedirs(opentrails_dir)
-    opentrails_trailheads_path = os.path.join(opentrails_dir, 'trailheads.geojson')
-    opentrails_trailheads_file = open(opentrails_trailheads_path ,'w')
-    opentrails_trailheads_file.write(json.dumps(opentrails_trailheads, sort_keys=True))
-    opentrails_trailheads_file.close()
-
     transform_messages_path = dataset.id + "/opentrails/trailheads-messages.json"
     datastore.write(transform_messages_path, StringIO(json.dumps(messages)))
 
+    # Write files from transformed trailheads
+    opentrails_dir = mkdtemp(prefix='trailheads-')
+    opentrails_trailheads_path = os.path.join(opentrails_dir, 'trailheads.geojson')
+    
+    with open(opentrails_trailheads_path, 'w') as file:
+        json.dump(opentrails_trailheads, file, sort_keys=True)
+    
     # zip up transformed trailheads
-    compress(opentrails_trailheads_path, opentrails_trailheads_path + ".zip")
+    opentrails_trailheads_zip = StringIO()
+    compress(opentrails_trailheads_path, opentrails_trailheads_zip)
 
     # Upload transformed trailheads and messages
-    datastore.upload(opentrails_trailheads_path + ".zip")
-
-    # Clean up after ourselves.
-    shutil.rmtree(dataset.id)
+    zip_path = os.path.join(dataset.id, 'opentrails', 'trailheads.geojson.zip')
+    datastore.write(zip_path, opentrails_trailheads_zip)
 
     return redirect('/datasets/' + dataset.id + '/transformed-trailheads', code=303)
 
