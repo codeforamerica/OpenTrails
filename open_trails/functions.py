@@ -98,6 +98,9 @@ def get_sample_segment_features(dataset):
 def get_sample_trailhead_features(dataset):
     return get_sample_features(dataset, 'uploads/trail-trailheads.geojson.zip')
 
+def get_sample_transformed_segments_features(dataset):
+    return get_sample_features(dataset, 'opentrails/segments.geojson.zip')
+
 def get_sample_transformed_trailhead_features(dataset):
     return get_sample_features(dataset, 'opentrails/trailheads.geojson.zip')
 
