@@ -133,33 +133,26 @@ def transform_segments(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original segments file
-    upload_dir = os.path.join(dataset.id, 'uploads')
-    segments_name = os.path.join(upload_dir, 'trail-segments.geojson.zip')
-    segments_zip = datastore.read(segments_name)
+    up_segments_name = os.path.join(dataset.id, 'uploads', 'trail-segments.geojson.zip')
+    up_segments_zip = datastore.read(up_segments_name)
 
     # Unzip it
-    segments_path = unzip(segments_zip, '.geojson', [])
-    original_segments = json.load(open(segments_path))
-    messages, opentrails_segments = segments_transform(original_segments, dataset)
+    up_segments_path = unzip(up_segments_zip, '.geojson', [])
+    up_segments = json.load(open(up_segments_path))
+    messages, ot_segments = segments_transform(up_segments, dataset)
 
+    # Save messages for output
     transform_messages_path = dataset.id + "/opentrails/segments-messages.json"
     datastore.write(transform_messages_path, StringIO(json.dumps(messages)))
 
-    # Write files from transformed segments
-    opentrails_dir = mkdtemp(prefix='segments-')
-    opentrails_segments_path = os.path.join(opentrails_dir, 'segments.geojson')
-    
-    with open(opentrails_segments_path, 'w') as file:
-        json.dump(opentrails_segments, file, sort_keys=True)
-    
-    # zip up transformed segments
-    opentrails_segments_zip = StringIO()
-    compress(opentrails_segments_path, opentrails_segments_zip)
-    shutil.rmtree(opentrails_dir)
+    # Make a zip from transformed segments
+    ot_segments_zip = StringIO()
+    ot_segments_raw = json.dumps(ot_segments, sort_keys=True)
+    zip_file(ot_segments_zip, ot_segments_raw, 'segments.geojson')
 
-    # Upload transformed trailheads and messages
+    # Upload transformed segments and messages
     zip_path = os.path.join(dataset.id, 'opentrails', 'segments.geojson.zip')
-    datastore.write(zip_path, opentrails_segments_zip)
+    datastore.write(zip_path, ot_segments_zip)
 
     return redirect('/datasets/' + dataset.id + '/transformed-segments', code=303)
 
