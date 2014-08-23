@@ -73,6 +73,12 @@ def compress(input, output):
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
         myzip.write(input, os.path.split(input)[1])
 
+def zip_file(destination, content, filename):
+    ''' Adds an entry to a zip file.
+    '''
+    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(filename, content)
+
 def get_sample_features(dataset, zipped_geojson_name):
     '''
     '''
