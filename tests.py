@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from StringIO import StringIO
 
 from open_trails import app, transformers, validators
-from open_trails.functions import unzip, compress
+from open_trails.functions import unzip
 from open_trails.models import make_datastore
 
 class FakeUpload:

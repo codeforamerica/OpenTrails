@@ -67,12 +67,6 @@ def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
     
     return foundfile_path
 
-def compress(input, output):
-    '''Zips up a file
-    '''
-    with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
-        myzip.write(input, os.path.split(input)[1])
-
 def zip_file(destination, content, filename):
     ''' Adds an entry to a zip file.
     '''
