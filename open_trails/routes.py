@@ -436,26 +436,17 @@ def validate_upload(dataset_id):
     if not request.files['file'] or not allowed_file(request.files['file'].filename):
         return make_response("Only .zip files allowed", 403)
         
-    upload_dir = os.path.join(dataset_id, 'uploads')
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-
-    opentrails_dir = os.path.join(dataset_id, 'opentrails')
-    if not os.path.exists(opentrails_dir):
-        os.makedirs(opentrails_dir)
-
     # Read zip data to buffer
     zipfile_data = StringIO()
-    zipfile_path = os.path.join(upload_dir, 'open-trails.zip')
+    zipfile_path = '{0}/uploads/open-trails.zip'.format(dataset_id)
     request.files['file'].save(zipfile_data)
 
     # Upload original file data to S3
     datastore.write(zipfile_path, zipfile_data)
 
-    #
+    # Validate data locally.
     zf = zipfile.ZipFile(zipfile_data, 'r')
-    dirname = os.path.dirname(zipfile_path)
-    shapefile_path = None
+    local_dir = mkdtemp(prefix='validate-')
 
     names = ['trail_segments.geojson', 'named_trails.csv',
              'trailheads.geojson', 'stewards.csv', 'areas.geojson']
@@ -464,16 +455,16 @@ def validate_upload(dataset_id):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
 
         if base in names:
-            with open(os.path.join(upload_dir, base), 'w') as file:
+            with open(os.path.join(local_dir, base), 'w') as file:
                 file.write(zf.open(name).read())
 
-    args = [os.path.join(upload_dir, base) for base in names]
+    args = [os.path.join(local_dir, base) for base in names]
     messages, succeeded = check_open_trails(*args)
     
     # Clean up after ourselves.
-    shutil.rmtree(dataset_id)
+    shutil.rmtree(local_dir)
     
-    path = '{0}/validate-messages.json'.format(opentrails_dir)
+    path = '{0}/opentrails/validate-messages.json'.format(dataset_id)
     datastore.write(path, StringIO(json.dumps(messages)))
 
     # Show sample data from original file
