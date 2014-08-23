@@ -73,31 +73,20 @@ def upload(dataset_id):
         return make_response("Only .zip files allowed", 403)
 
     # Upload original file to S3
-    zip_file = StringIO(request.files['file'].read())
-    zip_path = os.path.join(dataset_id, 'uploads', 'trail-segments.zip')
-    datastore.write(zip_path, zip_file)
-
-    # Unzip orginal file
-    shapefile_path = unzip(zip_file)
+    zip_buff = StringIO(request.files['file'].read())
+    zip_base = os.path.join(dataset_id, 'uploads', 'trail-segments')
+    datastore.write(zip_base + '.zip', zip_buff)
 
     # Get geojson data from shapefile
-    geojson = shapefile2geojson(shapefile_path)
+    shapefile_path = unzip(zip_buff)
+    geojson_obj = shapefile2geojson(shapefile_path)
 
-    # Write geojson to file in a temporary directory
-    geojson_dir = mkdtemp(prefix='geojson-')
-    geojson_base, _ = os.path.splitext(os.path.basename(zip_path))
-    geojson_path = os.path.join(geojson_dir, geojson_base + '.geojson')
-    
-    with open(geojson_path, 'w') as file:
-        json.dump(geojson, file, sort_keys=True)
-    
     # Compress geojson file
     geojson_zip = StringIO()
-    compress(geojson_path, geojson_zip)
-    shutil.rmtree(geojson_dir)
+    geojson_raw = json.dumps(geojson_obj)
+    zip_file(geojson_zip, geojson_raw, 'trail-segments.geojson')
     
     # Upload .geojson.zip file to datastore
-    zip_base, _ = os.path.splitext(zip_path)
     datastore.write(zip_base + '.geojson.zip', geojson_zip)
 
     # Show sample data from original file
