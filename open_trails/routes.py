@@ -38,7 +38,7 @@ def check_dataset():
     dataset.datastore = make_datastore(app.config['DATASTORE'])
     
     # Write a verifying file to prove we created these folders
-    validname = os.path.join(dataset.id, 'uploads', '.valid')
+    validname = '{0}/uploads/.valid'.format(dataset.id)
     dataset.datastore.write(validname, StringIO(dataset.id))
 
     return redirect('/checks/' + dataset.id)
@@ -55,7 +55,7 @@ def new_dataset():
     dataset.datastore = make_datastore(app.config['DATASTORE'])
     
     # Write a verifying file to prove we created these folders
-    validname = os.path.join(dataset.id, 'uploads', '.valid')
+    validname = '{0}/uploads/.valid'.format(dataset.id)
     dataset.datastore.write(validname, StringIO(dataset.id))
 
     return redirect('/datasets/' + dataset.id)
@@ -74,7 +74,7 @@ def upload(dataset_id):
 
     # Upload original file to S3
     zip_buff = StringIO(request.files['file'].read())
-    zip_base = os.path.join(dataset_id, 'uploads', 'trail-segments')
+    zip_base = '{0}/uploads/trail-segments'.format(dataset_id)
     datastore.write(zip_base + '.zip', zip_buff)
 
     # Get geojson data from shapefile
@@ -122,7 +122,7 @@ def transform_segments(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original segments file
-    up_segments_name = os.path.join(dataset.id, 'uploads', 'trail-segments.geojson.zip')
+    up_segments_name = '{0}/uploads/trail-segments.geojson.zip'.format(dataset.id)
     up_segments_zip = datastore.read(up_segments_name)
 
     # Unzip it
@@ -140,7 +140,7 @@ def transform_segments(dataset_id):
     zip_file(ot_segments_zip, ot_segments_raw, 'segments.geojson')
 
     # Upload transformed segments and messages
-    zip_path = os.path.join(dataset.id, 'opentrails', 'segments.geojson.zip')
+    zip_path = '{0}/opentrails/segments.geojson.zip'.format(dataset.id)
     datastore.write(zip_path, ot_segments_zip)
 
     return redirect('/datasets/' + dataset.id + '/transformed-segments', code=303)
@@ -192,7 +192,7 @@ def name_trails(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the transformed segments file
-    transformed_segments_path = os.path.join(dataset.id, 'opentrails', 'segments.geojson.zip')
+    transformed_segments_path = '{0}/opentrails/segments.geojson.zip'.format(dataset.id)
     transformed_segments_zip = datastore.read(transformed_segments_path)
 
     # Unzip it
@@ -209,7 +209,7 @@ def name_trails(dataset_id):
     for row in named_trails:
         writer.writerow([(row[c] or '').encode('utf8') for c in cols])
 
-    named_trails_path = os.path.join(dataset.id, 'opentrails', 'named_trails.csv')
+    named_trails_path = '{0}/opentrails/named_trails.csv'.format(dataset.id)
     datastore.write(named_trails_path, file)
 
     return redirect('/datasets/' + dataset.id + '/named-trails', code=303)
@@ -242,7 +242,7 @@ def create_steward(dataset_id):
     writer.writerow(steward_fields)
     writer.writerow([(v or '').encode('utf8') for v in steward_values])
     
-    stewards_path = os.path.join(dataset.id, 'opentrails', 'stewards.csv')
+    stewards_path = '{0}/opentrails/stewards.csv'.format(dataset.id)
     datastore.write(stewards_path, file)
 
     return redirect('/datasets/' + dataset.id + '/stewards', code=303)
@@ -277,7 +277,7 @@ def upload_trailheads(dataset_id):
 
     # Upload original file to S3
     zip_buff = StringIO(request.files['file'].read())
-    zip_base = os.path.join(dataset_id, 'uploads', 'trail-trailheads')
+    zip_base = '{0}/uploads/trail-trailheads'.format(dataset_id)
     datastore.write(zip_base + '.zip', zip_buff)
 
     # Get geojson data from shapefile
@@ -325,7 +325,7 @@ def transform_trailheads(dataset_id):
         return make_response("No Dataset Found", 404)
 
     # Download the original trailheads file
-    up_trailheads_name = os.path.join(dataset.id, 'uploads', 'trail-trailheads.geojson.zip')
+    up_trailheads_name = '{0}/uploads/trail-trailheads.geojson.zip'.format(dataset.id)
     up_trailheads_zip = datastore.read(up_trailheads_name)
 
     # Unzip it
@@ -343,7 +343,7 @@ def transform_trailheads(dataset_id):
     zip_file(ot_trailheads_zip, ot_trailheads_raw, 'trailheads.geojson')
 
     # Upload transformed trailheads and messages
-    zip_path = os.path.join(dataset.id, 'opentrails', 'trailheads.geojson.zip')
+    zip_path = '{0}/opentrails/trailheads.geojson.zip'.format(dataset.id)
     datastore.write(zip_path, ot_trailheads_zip)
 
     return redirect('/datasets/' + dataset.id + '/transformed-trailheads', code=303)
@@ -364,7 +364,7 @@ def transformed_trailheads(dataset_id):
     transformed_keys = list(sorted(transformed_features[0]['properties'].keys()))
 
     # Download the transformed trailheads messages file
-    messages_path = os.path.join(dataset.id, 'opentrails', 'trailheads-messages.json')
+    messages_path = '{0}/opentrails/trailheads-messages.json'.format(dataset.id)
     data = json.load(datastore.read(messages_path))
 
     try:
@@ -473,7 +473,7 @@ def validate_upload(dataset_id):
     # Clean up after ourselves.
     shutil.rmtree(dataset_id)
     
-    path = os.path.join(opentrails_dir, 'validate-messages.json')
+    path = '{0}/validate-messages.json'.format(opentrails_dir)
     datastore.write(path, StringIO(json.dumps(messages)))
 
     # Show sample data from original file
@@ -488,7 +488,7 @@ def validated_results(dataset_id):
     if not dataset:
         return make_response("No dataset Found", 404)
 
-    path = os.path.join(dataset.id, 'opentrails', 'validate-messages.json')
+    path = '{0}/opentrails/validate-messages.json'.format(dataset.id)
     messages = map(tuple, json.load(datastore.read(path)))
     
     return render_template('check-02-validated-opentrails.html', messages=messages)
