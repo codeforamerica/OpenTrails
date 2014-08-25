@@ -9,5 +9,8 @@ before_install:
   - sudo apt-get install -y gdal-bin
 install: pip install -r requirements.txt
 script:  python tests.py
+branches:
+  only:
+    - master
 notifications:
   webhooks: http://project-monitor.codeforamerica.org/projects/6ee3ad02-a7ba-4f9d-aab5-fc4ce55a59d5/status
