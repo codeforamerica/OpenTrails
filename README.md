@@ -6,15 +6,15 @@ OpenTrails Converter and Validator
 Description
 -----------
 
-These in-development tools will allow park agencies and other trail stewards to upload and transform their existing shapefile data describing trail systems—including trail segments, trailheads, and the areas they traverse—into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
+These in-development tools will allow park agencies and other trail stewards to upload and transform their existing shapefile data describing trail systems—-including trail segments, trailheads, and the areas they traverse—-into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
 
 Current Status
 --------------
 
-The converter tool currently transformers shapefiles containing trail segment data (lines), proudcing:
-* trail_segments.geojson
-* named_trails.csv
-* stewards.csv
+The converter tool currently transforms shapefiles containing trail segment data (lines), producing:
+* `trail_segments.geojson`
+* `named_trails.csv`
+* `stewards.csv`
 
 Future functionality will provide a similar transformation for shapefiles describing trailheads (points) and areas (polygons).
 
