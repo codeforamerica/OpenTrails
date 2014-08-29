@@ -6,7 +6,7 @@ OpenTrails Converter and Validator
 Description
 -----------
 
-These in-development tools will allow park agencies and other trail stewards to upload and transform their existing shapefile data describing trail systems—-including trail segments, trailheads, and the areas they traverse—-into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
+These in-development tools will allow park agencies and other trail stewards to upload and transform their existing shapefile data describing trail systems--including trail segments, trailheads, and the areas they traverse--into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
 
 Current Status
 --------------
@@ -43,6 +43,21 @@ source venv-opentrails/bin/activate
 $ pip install -r requirements.txt
 ```
 
+Test
+----
+
+```
+python tests.py
+```
+
+Run
+---
+
+OpenTrails uses a [Procfile](https://github.com/codeforamerica/howto/blob/master/Procfile.md) to get up and running. You can use a library like [foreman](http://blog.daviddollar.org/2011/05/06/introducing-foreman.html) or [honcho](https://github.com/nickstenning/honcho) to run the application locally.
+
+```
+foreman start
+```
 
 
 Contributing
