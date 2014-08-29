@@ -6,12 +6,12 @@ OpenTrails Converter and Validator
 Description
 -----------
 
-These in-development tools will allow park agencies and other trail stewards to upload and transformer their existing shapefile data describing trail systems—including trail segments, trailheads, and the areas they traverse—into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
+These in-development tools will allow park agencies and other trail stewards to upload and transform their existing shapefile data describing trail systems—including trail segments, trailheads, and the areas they traverse—into [OpenTrails](http://codeforamerica.org/specifications/trails)-compliant GeoJSON and CSV files.
 
 Current Status
 --------------
 
-The converter tool currently transformers shapefiles containing trail segment data, proudcing:
+The converter tool currently transformers shapefiles containing trail segment data (lines), proudcing:
 * trail_segments.geojson
 * named_trails.csv
 * stewards.csv
@@ -22,8 +22,7 @@ Future functionality will provide a similar transformation for shapefiles descri
 Install
 -------
 
-PLATS is a [Python Flask application](https://github.com/codeforamerica/howto/blob/master/Python-Virtualenv.md),
-and depends on [Amazon S3](http://aws.amazon.com/s3/) for storage of uploads.
+PLATS is a [Python Flask application](https://github.com/codeforamerica/howto/blob/master/Python-Virtualenv.md) that depends on [Amazon S3](http://aws.amazon.com/s3/) for storage of uploads.
 
 * Amazon Web Services configuration comes from the `DATASTORE` environmental
 variable, given in this form:
