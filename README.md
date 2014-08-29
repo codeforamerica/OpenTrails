@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/codeforamerica/PLATS.png)](https://travis-ci.org/codeforamerica/PLATS)
+[![Build Status](https://travis-ci.org/codeforamerica/OpenTrails.png)](https://travis-ci.org/codeforamerica/OpenTrails)
 
 OpenTrails Converter and Validator
 =====
@@ -22,7 +22,7 @@ Future functionality will provide a similar transformation for shapefiles descri
 Install
 -------
 
-PLATS is a [Python Flask application](https://github.com/codeforamerica/howto/blob/master/Python-Virtualenv.md) that depends on [Amazon S3](http://aws.amazon.com/s3/) for storage of uploads.
+OpenTrails is a [Python Flask application](https://github.com/codeforamerica/howto/blob/master/Python-Virtualenv.md) that depends on [Amazon S3](http://aws.amazon.com/s3/) for storage of uploads.
 
 * Amazon Web Services configuration comes from the `DATASTORE` environmental
 variable, given in this form:
@@ -33,11 +33,11 @@ variable, given in this form:
 
 ```
 pip install virtualenv
-virtualenv venv-plats
-source venv-plats/bin/activate
+virtualenv venv-opentrails
+source venv-opentrails/bin/activate
 ```
 
-* Install the required libraries 
+* Install the required libraries
 
 ```
 $ pip install -r requirements.txt
