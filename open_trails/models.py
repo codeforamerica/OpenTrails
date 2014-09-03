@@ -1,5 +1,6 @@
 from open_trails import app
 import urlparse, os, urllib, boto, glob
+from StringIO import StringIO
 from boto.s3.key import Key
 
 class Dataset:
@@ -20,56 +21,31 @@ class Dataset:
         
         # for key in initial_data:
         #     setattr(self, key, initial_data[key])
-        
-
-    def get_status(self):
-        '''
-        Use the filelist from datastore to figure out how far along
-        this dataset is in the process.
-        '''
-
-        filelist = self.datastore.filelist(self.id)
-        # matching = [filename for filename in filelist if ".geojson.zip" in filename]
-
-        if not any(".geojson.zip" in filename for filename in filelist): 
-            self.status = "needs segments"
-
-        # If the original segments file has been uploaded
-        # But the transformed segments arent there
-        if any(".geojson.zip" in filename for filename in filelist):
-            if not self.id + "/opentrails/segments.geojson.zip" in filelist:
-                self.status = "show uploaded segments"
-
-        if self.id + "/opentrails/segments.geojson.zip" in filelist:
-            self.status = "show opentrails segments"
 
 class FilesystemDatastore:
 
     def __init__(self, dirpath):
         self.dirpath = dirpath
 
-    def upload(self, filepath):
-        ''' Upload a file to the datastore.
+    def write(self, filepath, buffer):
+        ''' Write a buffer for a single file.
         '''
         destination = os.path.join(self.dirpath, filepath)
+
         try:
             os.makedirs(os.path.dirname(destination))
         except OSError:
             pass
-        with open(filepath, 'r') as input:
-            # filepath example: "dataset/uploads/file.csv"
+        finally:
             with open(destination, 'w') as output:
-                output.write(input.read())
-
-    def download(self, filepath):
-        ''' Download a single file from datastore to local working directory.
+                output.write(buffer.getvalue())
+    
+    def read(self, filepath):
+        ''' Return a buffer for a single file.
         '''
-        # Check if file already exists
-        if not os.path.isfile(filepath):
-            with open(os.path.join(self.dirpath, filepath), 'r') as input:
-                with open(filepath, 'w') as output:
-                    output.write(input.read())
-
+        with open(os.path.join(self.dirpath, filepath), 'r') as input:
+            return StringIO(input.read())
+    
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''
@@ -97,28 +73,20 @@ class S3Datastore:
     #def __delete__(self):
     #    self.conn.close()
 
-    def upload(self, filepath):
-        ''' Upload a file to S3.
+    def write(self, filepath, buffer):
+        ''' Write a buffer for a single file.
         '''
         k = Key(self.bucket)
         k.key = filepath
-        k.set_contents_from_filename(filepath)
+        k.set_contents_from_string(buffer.getvalue())
         self.bucket.set_acl('public-read', k.key)
-
-    def download(self, filepath):
-        ''' Download a single file from S3 to local working directory.
+    
+    def read(self, filepath):
+        ''' Return a buffer for a single file.
         '''
-        # Check if file already exists
-        if not os.path.isfile(filepath):
-            key = self.bucket.get_key(filepath)
-            try:
-                dataset_id = filepath.split("/")[0]
-                os.makedirs(dataset_id + "/uploads")
-                os.makedirs(dataset_id + "/opentrails")
-            except OSError:
-                pass
-            key.get_contents_to_filename(filepath)
-
+        key = self.bucket.get_key(filepath)
+        return StringIO(key.get_contents_as_string())
+    
     def filelist(self, prefix):
         ''' Retrieve a list of files under a name prefix.
         '''

@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 from shutil import rmtree, copy
 from unittest import TestCase, main
-from os.path import join, dirname
+from os.path import join, dirname, basename, splitext
 import os, glob, json, re
 from urlparse import urljoin
 from tempfile import mkdtemp
@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from StringIO import StringIO
 
 from open_trails import app, transformers, validators
-from open_trails.functions import unzip, compress
+from open_trails.functions import unzip
 from open_trails.models import make_datastore
 
 class FakeUpload:
@@ -40,7 +40,16 @@ class TestValidators (TestCase):
     def test_validate_GGNRA(self):
         '''
         '''
-        unzip(join(self.tmp, 'open-trails-GGNRA.zip'), None, ('.geojson', '.csv'))
+        zf = ZipFile(join(self.tmp, 'open-trails-GGNRA.zip'))
+        
+        for name in zf.namelist():
+            _, ext = splitext(name)
+            
+            if ext not in ('.csv', '.geojson'):
+                continue
+            
+            with open(join(self.tmp, basename(name)), 'w') as local:
+                local.write(zf.read(name))
         
         files = (join(self.tmp, 'trail_segments.geojson'),
                  join(self.tmp, 'named_trails.csv'),

@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from itertools import groupby, count
 from operator import itemgetter
 from StringIO import StringIO
+from tempfile import mkdtemp
 import os, os.path, json, subprocess, zipfile, csv, boto, tempfile, urlparse, urllib, zipfile
 
 from boto.s3.key import Key
@@ -14,19 +15,15 @@ def get_dataset(datastore, id):
     Creates a dataset object from the .valid file
     '''
     try:
-        upload_dir = os.path.join(id, 'uploads')
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        valid_path = os.path.join(upload_dir, '.valid')
-        datastore.download(valid_path)
+        valid_path = '{0}/uploads/.valid'.format(id)
+        valid_file = datastore.read(valid_path)
     except AttributeError:
         return None
-    with open(id + '/uploads/.valid', 'r') as validfile:
-        if validfile.read() == id:
-            dataset = Dataset(id)
-            dataset.datastore = datastore
-            return dataset
-
+    
+    if valid_file.read() == id:
+        dataset = Dataset(id)
+        dataset.datastore = datastore
+        return dataset
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -47,11 +44,11 @@ def make_id_from_url(url):
 
 
 def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
-    ''' Unzip and return the path of a shapefile.
+    ''' Unzip and return the path of a shapefile in a temp directory.
     '''
     zf = zipfile.ZipFile(zipfile_path, 'r')
-    dirname = os.path.dirname(zipfile_path)
-    shapefile_path = None
+    dirname = mkdtemp(prefix='unzip-', suffix=search_ext)
+    foundfile_path = None
     
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
@@ -60,69 +57,52 @@ def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
             continue
         
         if ext in [search_ext] + list(other_exts):
-            unzipped_path = os.path.join(dirname, base)
+            unzipped_path = '{0}/{1}'.format(dirname, base)
             
             with open(unzipped_path, 'w') as f:
                 f.write(zf.open(name).read())
             
             if ext == search_ext:
-                shapefile_path = unzipped_path
+                foundfile_path = unzipped_path
     
-    return shapefile_path
+    return foundfile_path
 
-def compress(input, output):
-    '''Zips up a file
+def zip_file(destination, content, filename):
+    ''' Adds an entry to a zip file.
     '''
-    with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as myzip:
-        myzip.write(input, os.path.split(input)[1])
+    with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr(filename, content)
 
-def get_sample_of_original_segments(dataset):
-    # Download the original segments file
-    segments_zip = dataset.id + '/uploads/trail-segments.geojson.zip'
-    dataset.datastore.download(segments_zip)
-
-    # Unzip it
-    zf = zipfile.ZipFile(segments_zip, 'r')
-    zf.extractall(os.path.split(segments_zip)[0])
-
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/uploads/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/uploads/" + file)
-            original_segments = json.load(segmentsfile)
-            segmentsfile.close()
-            sample_segment = {'type': 'FeatureCollection', 'features': []}
-            sample_segment['features'].append(original_segments['features'][0])
-
-    return sample_segment
-
-def get_sample_uploaded_features(dataset, zipped_geojson_name):
-    # Download the original segments file
-    upload_dir = os.path.join(dataset.id, 'uploads')
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-    segments_zip = os.path.join(upload_dir, zipped_geojson_name)
-    dataset.datastore.download(segments_zip)
-
-    # Unzip it
-    zf = zipfile.ZipFile(segments_zip, 'r')
-    zf.extractall(os.path.split(segments_zip)[0])
-
-    # Find geojson file
-    for file in os.listdir(dataset.id + "/uploads/"):
-        if file.endswith(".geojson"):
-            segmentsfile = open(dataset.id + "/uploads/" + file)
-            original_segments = json.load(segmentsfile)
-            segmentsfile.close()
-            return original_segments['features'][:3]
+def get_sample_features(dataset, zipped_geojson_name):
+    '''
+    '''
+    zip_path = '{0}/{1}'.format(dataset.id, zipped_geojson_name)
+    zip_buffer = dataset.datastore.read(zip_path)
+    zf = zipfile.ZipFile(zip_buffer, 'r')
+    
+    # Search for a .geojson file
+    for name in zf.namelist():
+        _, ext = os.path.splitext(name)
+        
+        if ext == '.geojson':
+            # Return its first three features
+            gf = zf.open(name, 'r')
+            geojson = json.load(gf)
+            return geojson['features'][:3]
 
     return []
 
 def get_sample_segment_features(dataset):
-    return get_sample_uploaded_features(dataset, 'trail-segments.geojson.zip')
+    return get_sample_features(dataset, 'uploads/trail-segments.geojson.zip')
 
 def get_sample_trailhead_features(dataset):
-    return get_sample_uploaded_features(dataset, 'trail-trailheads.geojson.zip')
+    return get_sample_features(dataset, 'uploads/trail-trailheads.geojson.zip')
+
+def get_sample_transformed_segments_features(dataset):
+    return get_sample_features(dataset, 'opentrails/segments.geojson.zip')
+
+def get_sample_transformed_trailhead_features(dataset):
+    return get_sample_features(dataset, 'opentrails/trailheads.geojson.zip')
 
 def encode_list(items):
     '''
@@ -157,38 +137,34 @@ def package_opentrails_archive(dataset):
     '''
     buffer = StringIO()
     zf = zipfile.ZipFile(buffer, 'w')
-    
-    # Download the transformed segments and trailheads files
-    opentrails_dir = os.path.join(dataset.id, 'opentrails')
-    if not os.path.exists(opentrails_dir):
-        os.makedirs(opentrails_dir)
+    ot_prefix = '{0}/opentrails'.format(dataset.id)
 
-    transformed_segments_zip = os.path.join(opentrails_dir, 'segments.geojson.zip')
-    transformed_trailheads_zip = os.path.join(opentrails_dir, 'trailheads.geojson.zip')
-    dataset.datastore.download(transformed_segments_zip)
     # We moved this up from below the unzip and re-zip section
     # If a user skips adding and converting trailheads, we want to give them the option
     # to download a zip of their data thus far.
     try:
-        dataset.datastore.download(transformed_trailheads_zip)
-        trailheads_path = unzip(transformed_trailheads_zip, '.geojson', [])
-        zf.write(trailheads_path, 'trailheads.geojson')
+        trailheads_zipname = '{0}/trailheads.geojson.zip'.format(ot_prefix)
+        trailheads_zipfile = dataset.datastore.read(trailheads_zipname)
+        trailheads_path = unzip(trailheads_zipfile, '.geojson', [])
+        zf.writestr('trailheads.geojson', open(trailheads_path).read())
     except AttributeError:
         pass
 
-    # Unzip it and re-zip them.
-    segments_path = unzip(transformed_segments_zip, '.geojson', [])
-    zf.write(segments_path, 'trail_segments.geojson')
+    # Add the segments file
+    segments_zipname = '{0}/segments.geojson.zip'.format(ot_prefix)
+    segments_zipfile = dataset.datastore.read(segments_zipname)
+    segments_path = unzip(segments_zipfile, '.geojson', [])
+    zf.writestr('trail_segments.geojson', open(segments_path).read())
 
-    # Download the named trails file
-    named_trails_path = os.path.join(opentrails_dir, 'named_trails.csv')
-    dataset.datastore.download(named_trails_path)
-    zf.write(named_trails_path, 'named_trails.csv')
+    # Add the named trails file
+    named_trails_path = '{0}/named_trails.csv'.format(ot_prefix)
+    named_trails_data = dataset.datastore.read(named_trails_path)
+    zf.writestr('named_trails.csv', named_trails_data.read())
     
-    # Download the stewards file
-    stewards_path = os.path.join(opentrails_dir, 'stewards.csv')
-    dataset.datastore.download(stewards_path)
-    zf.write(stewards_path, 'stewards.csv')
+    # Add the stewards file
+    stewards_path = '{0}/stewards.csv'.format(ot_prefix)
+    stewards_data = dataset.datastore.read(stewards_path)
+    zf.writestr('stewards.csv', stewards_data.read())
     
     zf.close()
     buffer.seek(0)
