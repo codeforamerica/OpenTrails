@@ -296,9 +296,12 @@ class TestTransformers (TestCase):
         named_trails = make_named_trails(converted_geojson['features'])
         coal_creek = [t['name'] for t in named_trails if t['name'] == 'Coal Creek Trail']
         willows = [t['name'] for t in named_trails if t['name'] == 'Willows Trail']
+        ninetyfifth = [t['name'] for t in named_trails if t['name'] == '95th Street']
+        niwot = [t['name'] for t in named_trails if t['name'] == 'Niwot Trail System']
 
-        self.assertEqual(len(coal_creek),1)
-        self.assertEqual(len(willows),1)
+        expected = [1,1,1,1]
+        actual = [len(willows),len(niwot),len(coal_creek),len(ninetyfifth)]
+        self.assertEqual(actual,expected)
 
     def test_segments_conversion_Santa_Clara(self):
         ''' Test overall segments conversion.
