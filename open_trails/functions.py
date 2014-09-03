@@ -121,7 +121,9 @@ def make_named_trails(segment_features):
         return []
 
     # Generate a list of (name, ids) tuples
+    names = sorted(names, key=itemgetter(0))
     groups = groupby(names, itemgetter(0))
+
     name_ids = [(name, encode_list(map(itemgetter(1), names_ids)))
                 for (name, names_ids) in groups]
 
