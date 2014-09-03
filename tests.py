@@ -10,7 +10,7 @@ from zipfile import ZipFile
 from StringIO import StringIO
 
 from open_trails import app, transformers, validators
-from open_trails.functions import unzip
+from open_trails.functions import unzip, make_named_trails
 from open_trails.models import make_datastore
 
 class FakeUpload:
@@ -36,32 +36,32 @@ class TestValidators (TestCase):
 
     def tearDown(self):
         rmtree(self.tmp)
-    
+
     def test_validate_GGNRA(self):
         '''
         '''
         zf = ZipFile(join(self.tmp, 'open-trails-GGNRA.zip'))
-        
+
         for name in zf.namelist():
             _, ext = splitext(name)
-            
+
             if ext not in ('.csv', '.geojson'):
                 continue
-            
+
             with open(join(self.tmp, basename(name)), 'w') as local:
                 local.write(zf.read(name))
-        
+
         files = (join(self.tmp, 'trail_segments.geojson'),
                  join(self.tmp, 'named_trails.csv'),
                  join(self.tmp, 'trailheads.geojson'),
                  join(self.tmp, 'stewards.csv'),
                  join(self.tmp, 'areas.geojson')
                  )
-        
+
         messages, result = validators.check_open_trails(*files)
-        
+
         self.assertFalse(result)
-        
+
         expected_messages = [
             ('error', 'bad-data-stewards', 'Required stewards field "license" is missing.'),
             ('success', 'valid-file-trail-segments', 'Your trail-segments.geojson file looks good.'),
@@ -69,9 +69,9 @@ class TestValidators (TestCase):
             ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
             ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
             ]
-        
+
         self.assertEqual(len(messages), len(expected_messages))
-        
+
         for expected in expected_messages:
             self.assertTrue(expected in messages, expected)
 
@@ -101,11 +101,11 @@ class TestTransformers (TestCase):
         for name in os.listdir(self.tmp):
             path = unzip(join(self.tmp, name))
             self.doFileConversion(path)
-            
+
             # clean up - delete uneeded shapefiles
             dont_delete = ['csv','zip','geojson']
             for file in os.listdir(self.tmp):
-                if file.split('.')[1] not in dont_delete: 
+                if file.split('.')[1] not in dont_delete:
                     os.remove(self.tmp +'/'+file)
 
     def doFileConversion(self, path):
@@ -117,7 +117,7 @@ class TestTransformers (TestCase):
         # Is it GeoJSON?
         #
         self.assertEqual(geojson['type'], 'FeatureCollection')
-        
+
         if 'lake-man-' in path:
             self.assertEqual(len(geojson['features']), 6)
             self.assertEqual(set([f['geometry']['type'] for f in geojson['features']]), set(['LineString']))
@@ -138,7 +138,7 @@ class TestTransformers (TestCase):
             elif f['geometry']['type'] == 'Point':
                 lons.append(f['geometry']['coordinates'][0])
                 lats.append(f['geometry']['coordinates'][1])
-        
+
         self.assertTrue(37.8007 < min(lats) and max(lats) < 37.8044)
         self.assertTrue(-122.2593 < min(lons) and max(lons) < -122.2567)
 
@@ -147,167 +147,197 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Portland.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['TRAILID'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
-    
+
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
         expected_names = [f['properties']['TRAILNAME'] for f in geojson['features']]
         self.assertEqual(converted_names, expected_names)
-    
+
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = ['yes' for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
-    
+
         converted_bikes = [f['properties']['bicycle'] for f in converted_geojson['features']]
         expected_bikes = ['yes' for f in geojson['features']]
         self.assertEqual(converted_bikes, expected_bikes)
-    
+
         converted_horses = [f['properties']['horse'] for f in converted_geojson['features']]
         expected_horses = [None for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
-    
+
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = [None for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
-    
+
         converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
-    
+
         converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
         expected_motor_vehicles = [None for f in geojson['features']]
         self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
-    
+
     def test_segments_conversion_San_Antonio(self):
         ''' Test overall segments conversion.
         '''
         path = unzip(join(self.tmp, 'lake-man-San-Antonio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 7)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = map(str, range(1, len(converted_ids) + 1))
         self.assertEqual(converted_ids, expected_ids)
-    
+
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
         expected_names = [f['properties']['Name'] for f in geojson['features']]
         self.assertEqual(converted_names, expected_names)
-    
+
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [None for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
-    
+
         converted_bikes = [f['properties']['bicycle'] for f in converted_geojson['features']]
         expected_bikes = [None for f in geojson['features']]
         self.assertEqual(converted_bikes, expected_bikes)
-    
+
         converted_horses = [f['properties']['horse'] for f in converted_geojson['features']]
         expected_horses = [None for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
-    
+
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = [None for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
-    
+
         converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
-    
+
         converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
         expected_motor_vehicles = [None for f in geojson['features']]
         self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
-    
+
     def test_segments_conversion_GGNRA(self):
         ''' Test overall segments conversion.
         '''
         path = unzip(join(self.tmp, 'lake-man-GGNRA.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = map(str, range(1, len(converted_ids) + 1))
         self.assertEqual(converted_ids, expected_ids)
-    
+
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
         expected_names = [f['properties']['trail_name'] for f in geojson['features']]
         self.assertEqual(converted_names, expected_names)
-        
+
+        named_trails = make_named_trails(converted_geojson['features'])
+        self.assertEqual(len(named_trails), 4)
+
         uses = {'Multi-Use': 'yes', 'Hiking': 'yes', 'Hiking and Horses': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [uses.get(f['properties']['use_type'], None) for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
-        
+
         uses = {'Multi-Use': 'yes', 'Hiking': 'no', 'Hiking and Horses': 'no'}
         converted_bikes = [f['properties']['bicycle'] for f in converted_geojson['features']]
         expected_bikes = [uses.get(f['properties']['use_type'], None) for f in geojson['features']]
         self.assertEqual(converted_bikes, expected_bikes)
-        
+
         uses = {'Multi-Use': 'no', 'Hiking': 'no', 'Hiking and Horses': 'yes'}
         converted_horses = [f['properties']['horse'] for f in converted_geojson['features']]
         expected_horses = [uses.get(f['properties']['use_type'], None) for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
-    
+
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = ['yes', 'no', 'yes', 'yes', None, 'yes']
         self.assertEqual(converted_skis, expected_skis)
-    
+
         converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
         expected_wheelchairs = [None] * 6
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
-    
+
         converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
         expected_motor_vehicles = [None for f in geojson['features']]
         self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
-    
+
+    def test_segments_conversion_Boulder_County(self):
+        ''' Test overall segments conversion.
+        '''
+
+        copy('test-files/Boulder_County_Trails.zip', self.tmp)
+
+        path = unzip(join(self.tmp, 'Boulder_County_Trails.zip'))
+        geojson = transformers.shapefile2geojson(join(self.tmp, path))
+
+        m, converted_geojson = transformers.segments_transform(geojson, None)
+        # self.assertEqual(len(m), 2)
+
+        # converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
+        # expected_ids = map(str, range(1, len(converted_ids) + 1))
+        # self.assertEqual(converted_ids, expected_ids)
+
+        converted_names = [f['properties']['name'] for f in converted_geojson['features']]
+        expected_names = [f['properties']['trailname'] for f in geojson['features']]
+        self.assertEqual(converted_names, expected_names)
+
+        self.assertEqual(converted_names.count('Coal Creek Trail'),12)
+
+        named_trails = make_named_trails(converted_geojson['features'])
+        coal_creek = [t['name'] for t in named_trails if t['name'] == 'Coal Creek Trail']
+        self.assertEqual(len(coal_creek),1)
+        self.assertEqual(len(named_trails), 4)
+
     def test_segments_conversion_Santa_Clara(self):
         ''' Test overall segments conversion.
         '''
         path = unzip(join(self.tmp, 'lake-man-Santa-Clara.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [str(f['properties']['OBJECTID']) for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
-    
+
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
         expected_names = [f['properties']['NAME'] for f in geojson['features']]
         self.assertEqual(converted_names, expected_names)
-        
+
         uses = {'hiking': 'yes', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
         converted_foots = [f['properties']['foot'] for f in converted_geojson['features']]
         expected_foots = [uses.get(f['properties']['PUBUSE'], None) for f in geojson['features']]
         self.assertEqual(converted_foots, expected_foots)
-        
+
         uses = {'hiking': 'no', 'hiking/equestrian': 'no', 'hiking/equestrian/bicycling': 'yes'}
         converted_bikes = [f['properties']['bicycle'] for f in converted_geojson['features']]
         expected_bikes = [uses.get(f['properties']['PUBUSE'], None) for f in geojson['features']]
         self.assertEqual(converted_bikes, expected_bikes)
-        
+
         uses = {'hiking': 'no', 'hiking/equestrian': 'yes', 'hiking/equestrian/bicycling': 'yes'}
         converted_horses = [f['properties']['horse'] for f in converted_geojson['features']]
         expected_horses = [uses.get(f['properties']['PUBUSE'], None) for f in geojson['features']]
         self.assertEqual(converted_horses, expected_horses)
-    
+
         converted_skis = [f['properties']['ski'] for f in converted_geojson['features']]
         expected_skis = ['no' for f in geojson['features']]
         self.assertEqual(converted_skis, expected_skis)
-    
+
         converted_wheelchairs = [f['properties']['wheelchair'] for f in converted_geojson['features']]
         expected_wheelchairs = [None for f in geojson['features']]
         self.assertEqual(converted_wheelchairs, expected_wheelchairs)
-    
+
         converted_motor_vehicles = [f['properties']['motor_vehicles'] for f in converted_geojson['features']]
         expected_motor_vehicles = [None for f in geojson['features']]
         self.assertEqual(converted_motor_vehicles, expected_motor_vehicles)
@@ -317,28 +347,28 @@ class TestTransformers (TestCase):
         '''
         path = unzip(join(self.tmp, 'lake-man-Nested.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.segments_transform(geojson, None)
         self.assertEqual(len(m), 2)
-    
+
     def test_trailheads_conversion_Ohio(self):
         ''' Test overall segments conversion.
         '''
         path = unzip(join(self.tmp, 'lake-points-Ohio.zip'))
         geojson = transformers.shapefile2geojson(join(self.tmp, path))
-        
+
         m, converted_geojson = transformers.trailheads_transform(geojson, None)
-        
+
         self.assertEqual(len(m), 1)
 
         converted_ids = [f['properties']['id'] for f in converted_geojson['features']]
         expected_ids = [f['properties']['id'] for f in geojson['features']]
         self.assertEqual(converted_ids, expected_ids)
-    
+
         converted_names = [f['properties']['name'] for f in converted_geojson['features']]
         expected_names = [f['properties']['name'] for f in geojson['features']]
         self.assertEqual(converted_names, expected_names)
-    
+
 class TestApp (TestCase):
 
     def setUp(self):
@@ -354,6 +384,7 @@ class TestApp (TestCase):
                  'test-files/lake-man-Portland.zip',
                  'test-files/lake-points-Ohio.zip',
                  'test-files/open-trails-GGNRA.zip',
+                 'test-files/Boulder_County_Trails.zip',
                  'test-files/portland-segments.geojson',
                  'test-files/san-antonio-segments.geojson',
                  'test-files/sa-trailheads-test.zip',
@@ -386,7 +417,7 @@ class TestApp (TestCase):
         '''
         started = self.app.post('/new-dataset', follow_redirects=True)
         self.assertEqual(started.status_code, 200)
-        
+
         datastore = make_datastore(self.config['DATASTORE'])
 
         # Ensure there is exactly one file and that it's called ".valid"
@@ -416,12 +447,12 @@ class TestApp (TestCase):
         # Do the transforming
         transformed1 = self.app.post(form['action'], follow_redirects=True)
         self.assertTrue('714115' in transformed1.data)
-        
+
         soup = BeautifulSoup(transformed1.data)
         form = soup.find('button').find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/name-trails'))
-        
+
         # Ask to name the trails
         named = self.app.post(form['action'], follow_redirects=True)
 
@@ -429,11 +460,11 @@ class TestApp (TestCase):
         form = soup.find('input', attrs=dict(name='name')).find_parent('form')
         self.assertTrue(form['action'].startswith('/datasets'))
         self.assertTrue(form['action'].endswith('/create-steward'))
-        
+
         # Submit stewards information
         args = dict(name='Winterfell', url='http://codeforamerica.org/governments/winterfell/')
         stewarded = self.app.post(form['action'], data=args, follow_redirects=True)
-        
+
         #
         # Check for a file upload field in the next page form.
         #
@@ -457,13 +488,13 @@ class TestApp (TestCase):
         # Do the transforming
         transformed2 = self.app.post(form['action'], follow_redirects=True)
         self.assertTrue('Rockside' in transformed2.data)
-        
+
         soup = BeautifulSoup(transformed2.data)
         link = soup.find('a', attrs=dict(href=re.compile(r'.+\.zip$')))
-        
+
         zipfile = self.app.get(link['href'])
         zipfile = ZipFile(StringIO(zipfile.data))
-        
+
         self.assertTrue('trail_segments.geojson' in zipfile.namelist())
         self.assertTrue('trailheads.geojson' in zipfile.namelist())
         self.assertTrue('named_trails.csv' in zipfile.namelist())
@@ -474,7 +505,7 @@ class TestApp (TestCase):
         '''
         response = self.app.post('/check-dataset', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        
+
         datastore = make_datastore(self.config['DATASTORE'])
 
         # Ensure there is exactly one file and that it's called ".valid"
@@ -495,7 +526,7 @@ class TestApp (TestCase):
         file = open(os.path.join(self.tmp, 'working-dir', 'open-trails-GGNRA.zip'))
         uploaded = self.app.post(form['action'], data={"file" : file}, follow_redirects=True)
         self.assertTrue('Notes' in uploaded.data)
-        
+
         # Check for some error notes
         soup = BeautifulSoup(uploaded.data)
         self.assertTrue(soup.find(text='Optional trailheads field "area_id" is missing.'))
@@ -527,14 +558,14 @@ class TestApp (TestCase):
         #
         response = self.app.get("/stewards/testurl")
         self.assertEqual(response.status_code, 200)
-        
+
         # Test that steward info shows up where its supposed to
         soup = BeautifulSoup(response.data)
         name = soup.find(id='steward-name')
         self.assertTrue('Test Steward' in name.string)
         url = soup.find(id='steward-url')
         self.assertTrue('testurl' in url.string)
-        
+
         #
         # Check for a file upload field in the home page form.
         #

@@ -351,13 +351,13 @@ def find_trailhead_trail_ids(messages, properties, dataset):
     '''
 
     keys, values = zip(*[(k.lower(), v) for (k, v) in properties.items()])
-    
+
     id_values = list()
-    
+
     for key in keys:
         if key.startswith('trail') or key.startswith('segment'):
             id_values.append(values[keys.index(key)])
-    
+
     if len(id_values):
         return encode_list(id_values)
 

@@ -19,7 +19,7 @@ def get_dataset(datastore, id):
         valid_file = datastore.read(valid_path)
     except AttributeError:
         return None
-    
+
     if valid_file.read() == id:
         dataset = Dataset(id)
         dataset.datastore = datastore
@@ -49,22 +49,22 @@ def unzip(zipfile_path, search_ext='.shp', other_exts=('.dbf', '.prj', '.shx')):
     zf = zipfile.ZipFile(zipfile_path, 'r')
     dirname = mkdtemp(prefix='unzip-', suffix=search_ext)
     foundfile_path = None
-    
+
     for name in sorted(zf.namelist()):
         base, (_, ext) = os.path.basename(name), os.path.splitext(name)
-        
+
         if base.startswith('.'):
             continue
-        
+
         if ext in [search_ext] + list(other_exts):
             unzipped_path = '{0}/{1}'.format(dirname, base)
-            
+
             with open(unzipped_path, 'w') as f:
                 f.write(zf.open(name).read())
-            
+
             if ext == search_ext:
                 foundfile_path = unzipped_path
-    
+
     return foundfile_path
 
 def zip_file(destination, content, filename):
@@ -79,11 +79,11 @@ def get_sample_features(dataset, zipped_geojson_name):
     zip_path = '{0}/{1}'.format(dataset.id, zipped_geojson_name)
     zip_buffer = dataset.datastore.read(zip_path)
     zf = zipfile.ZipFile(zip_buffer, 'r')
-    
+
     # Search for a .geojson file
     for name in zf.namelist():
         _, ext = os.path.splitext(name)
-        
+
         if ext == '.geojson':
             # Return its first three features
             gf = zf.open(name, 'r')
@@ -109,22 +109,22 @@ def encode_list(items):
     '''
     return '; '.join(map(str, items))
 
-def make_name_trails(segment_features):
+def make_named_trails(segment_features):
     '''
     '''
     names = [(f['properties']['name'], f['properties']['id'])
              for f in segment_features
              if f['properties']['name']]
-    
+
     # Cut to the chase if there's no name.
     if not names:
         return []
-    
+
     # Generate a list of (name, ids) tuples
     groups = groupby(names, itemgetter(0))
     name_ids = [(name, encode_list(map(itemgetter(1), names_ids)))
                 for (name, names_ids) in groups]
-    
+
     id_counter = count(1)
 
     return [dict(id=str(id_counter.next()),
@@ -160,13 +160,13 @@ def package_opentrails_archive(dataset):
     named_trails_path = '{0}/named_trails.csv'.format(ot_prefix)
     named_trails_data = dataset.datastore.read(named_trails_path)
     zf.writestr('named_trails.csv', named_trails_data.read())
-    
+
     # Add the stewards file
     stewards_path = '{0}/stewards.csv'.format(ot_prefix)
     stewards_data = dataset.datastore.read(stewards_path)
     zf.writestr('stewards.csv', stewards_data.read())
-    
+
     zf.close()
     buffer.seek(0)
-    
+
     return buffer

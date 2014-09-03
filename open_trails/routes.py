@@ -2,7 +2,7 @@ from open_trails import app
 from models import Dataset, make_datastore
 from functions import (
     get_dataset, clean_name, unzip, make_id_from_url, zip_file, allowed_file,
-    get_sample_segment_features, make_name_trails, package_opentrails_archive,
+    get_sample_segment_features, make_named_trails, package_opentrails_archive,
     get_sample_trailhead_features, get_sample_transformed_trailhead_features,
     get_sample_transformed_segments_features
     )
@@ -200,7 +200,7 @@ def name_trails(dataset_id):
     transformed_segments = json.load(open(segments_path))
 
     # Generate a list of (name, ids) tuples
-    named_trails = make_name_trails(transformed_segments['features'])
+    named_trails = make_named_trails(transformed_segments['features'])
     
     file = StringIO()
     cols = 'id', 'name', 'segment_ids', 'description', 'part_of'
