@@ -67,6 +67,7 @@ class TestValidators (TestCase):
             ('success', 'valid-file-trail-segments', 'Your trail-segments.geojson file looks good.'),
             ('success', 'valid-file-named-trails', 'Your named-trails.csv file looks good.'),
             ('warning', 'bad-data-trailheads', 'Optional trailheads field "area_id" is missing.'),
+            ('warning', 'bad-data-trailheads', 'Optional trailheads field "segment_ids" is missing.'),
             ('warning', 'missing-file-areas', 'Could not find optional file areas.geojson.'),
             ]
 
