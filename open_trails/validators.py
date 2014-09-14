@@ -242,10 +242,10 @@ def check_trailheads(msgs, path):
         for field in ('name', 'trail_ids', 'steward_id'):
             _check_required_string_field(msgs, field, properties, 'trailheads')
 
-        for field in ('address', 'area_id'):
+        for field in ('address', 'area_id', 'osm_tags'):
             _check_optional_string_field(msgs, field, properties, 'trailheads')
         
-        for field in ('parking', 'drinkwater', 'restrooms', 'kiosk', 'osm_tags'):
+        for field in ('parking', 'drinkwater', 'restrooms', 'kiosk'):
             _check_optional_boolean_field(msgs, field, properties, 'trailheads')
     
     if len(msgs) == starting_count:
