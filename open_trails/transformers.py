@@ -7,7 +7,7 @@ def shapefile2geojson(shapefilepath):
     '''
     geojsonfilepath = '{0}.geojson'.format(shapefilepath)
 
-    args = 'ogr2ogr -t_srs EPSG:4326  -f GeoJSON ___ ___'.split()
+    args = 'ogr2ogr -t_srs EPSG:4326 -dim 2 -f GeoJSON ___ ___'.split()
     args[-2:] = geojsonfilepath, shapefilepath
     if os.path.exists(geojsonfilepath):
         os.remove(geojsonfilepath)
