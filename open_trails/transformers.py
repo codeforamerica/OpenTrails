@@ -417,7 +417,7 @@ def find_trailhead_restrooms(messages, properties):
         Gather messages along the way about potential problems.
     '''
 
-    fieldnames = 'restroom', 'bathroom', 'toilet'
+    fieldnames = 'restroom', 'bathroom', 'toilet', 'restrooms'
 
     if _has_listed_field(properties, fieldnames):
         return _get_value_yes_no(properties, fieldnames)
